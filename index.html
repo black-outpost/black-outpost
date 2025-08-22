@@ -441,12 +441,12 @@
             </div>
 
             <div class="menu-grid">
-                <div class="menu-card" onclick="alert('🔧 Funkcja w budowie')">
+                <div class="menu-card" onclick="viewPlayerCharacter()">
                     <h3>📜 Karta Postaci</h3>
                     <p>Przeglądaj swoją kartę dostępu</p>
                 </div>
 
-                <div class="menu-card" onclick="alert('🔧 Funkcja w budowie')">
+                <div class="menu-card" onclick="viewPlayerStats()">
                     <h3>📊 Statystyki</h3>
                     <p>Sprawdź swoje umiejętności i atrybuty</p>
                 </div>
@@ -558,12 +558,232 @@
                 <div id="characterDisplay"></div>
             </div>
         </div>
+
+        <!-- Character Edit Modal -->
+        <div id="editCharacterModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeEditModal()">&times;</span>
+                <div id="editCharacterContent">
+                    <h2>✏️ Edycja Postaci</h2>
+                    <form id="editCharacterForm" class="character-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Imię *</label>
+                                <input type="text" id="edit_firstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Nazwisko *</label>
+                                <input type="text" id="edit_lastName" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Login *</label>
+                                <input type="text" id="edit_login" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Rasa *</label>
+                                <select id="edit_race" required>
+                                    <option value="Soul-Reaper">Soul-Reaper</option>
+                                    <option value="Quincy">Quincy</option>
+                                    <option value="Fullbringer">Fullbringer</option>
+                                    <option value="Arrancar">Arrancar</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Ranga</label>
+                                <select id="edit_rank">
+                                    <option value="I">I</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                    <option value="V">V</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Pozycja</label>
+                                <input type="text" id="edit_position" placeholder="np. Delver">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>SLV</label>
+                                <input type="text" id="edit_slv" placeholder="np. Main Delve Team">
+                            </div>
+                            <div class="form-group">
+                                <label>Sc.A.</label>
+                                <input type="text" id="edit_scA" placeholder="np. I">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Wzrost (cm)</label>
+                                <input type="number" id="edit_height" min="100" max="250">
+                            </div>
+                            <div class="form-group">
+                                <label>Waga (kg)</label>
+                                <input type="number" id="edit_weight" min="30" max="200">
+                            </div>
+                        </div>
+
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>URL zdjęcia karty</label>
+                                <input type="url" id="edit_photoUrl" placeholder="https://...">
+                            </div>
+                        </div>
+
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Opis Wyglądu</label>
+                                <textarea id="edit_appearance" placeholder="Opisz wygląd postaci..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Opis Charakteru</label>
+                                <textarea id="edit_personality" placeholder="Opisz charakter postaci..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Historia</label>
+                                <textarea id="edit_history" placeholder="Historia postaci..."></textarea>
+                            </div>
+                        </div>
+
+                        <h3 style="margin: 30px 0 20px 0; border-top: 2px solid #e1e1e1; padding-top: 20px;">📊 Statystyki Podstawowe</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Strength</label>
+                                <input type="number" id="edit_strength" min="0" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label>Vitality</label>
+                                <input type="number" id="edit_vitality" min="0" max="100">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Speed</label>
+                                <input type="number" id="edit_speed" min="0" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label>Defense</label>
+                                <input type="number" id="edit_defense" min="0" max="100">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Reiatsu</label>
+                                <input type="number" id="edit_reiatsu" min="0" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label>Hakuda</label>
+                                <input type="number" id="edit_hakuda" min="0" max="100">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Weaponship</label>
+                                <input type="number" id="edit_weaponship" min="0" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label>Tamashi</label>
+                                <input type="number" id="edit_tamashi" min="0" max="100">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Magic</label>
+                                <input type="number" id="edit_magic" min="0" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label id="nazoLabel">Nazo (???)</label>
+                                <input type="number" id="edit_nazo" min="0" max="100">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nazwa zdolności Nazo</label>
+                                <input type="text" id="edit_nazoName" placeholder="??? lub nazwa zdolności">
+                            </div>
+                            <div class="form-group">
+                                <!-- Puste miejsce -->
+                            </div>
+                        </div>
+
+                        <h3 style="margin: 30px 0 20px 0; border-top: 2px solid #e1e1e1; padding-top: 20px;">🎮 Statystyki Gracza</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Points to Distribute</label>
+                                <input type="number" id="edit_pointsToDistribute" min="0" max="999">
+                            </div>
+                            <div class="form-group">
+                                <label>Node Points to Distribute</label>
+                                <input type="number" id="edit_nodePointsToDistribute" min="0" max="999">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Reisen (in hand)</label>
+                                <input type="number" id="edit_reisenInHand" min="0" max="9999">
+                            </div>
+                            <div class="form-group">
+                                <label>Reisen (absorbed)</label>
+                                <input type="number" id="edit_reisenAbsorbed" min="0" max="9999">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Next Node Progress</label>
+                                <input type="text" id="edit_nextNodeProgress" placeholder="np. 3/4">
+                            </div>
+                            <div class="form-group">
+                                <label>Yen (in hand)</label>
+                                <input type="number" id="edit_yenInHand" min="0" max="999999">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Loyalty Left</label>
+                                <input type="number" id="edit_loyaltyLeft" min="0" max="100">
+                            </div>
+                            <div class="form-group">
+                                <!-- Puste miejsce -->
+                            </div>
+                        </div>
+
+                        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #e1e1e1;">
+                            <button type="button" class="btn-secondary" onclick="closeEditModal()" style="margin-right: 15px;">Anuluj</button>
+                            <button type="submit" class="btn-primary">💾 Zapisz Zmiany</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, collection, addDoc, setDoc, getDocs, query, orderBy, limit, where } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, setDoc, getDocs, query, orderBy, limit, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
@@ -589,6 +809,8 @@
         window.orderBy = orderBy;
         window.limit = limit;
         window.where = where;
+        window.updateDoc = updateDoc;
+        window.deleteDoc = deleteDoc;
     </script>
 
     <script>
@@ -677,6 +899,42 @@
                     type: 'text'
                 };
             }
+        }
+
+        function getFieldDisplayName(field) {
+            const fieldNames = {
+                'firstName': 'Imię',
+                'lastName': 'Nazwisko',
+                'race': 'Rasa',
+                'height': 'Wzrost',
+                'weight': 'Waga',
+                'appearance': 'Opis wyglądu',
+                'personality': 'Opis charakteru',
+                'history': 'Historia',
+                'photoUrl': 'URL zdjęcia',
+                'strength': 'Siła',
+                'vitality': 'Witalność',
+                'speed': 'Szybkość',
+                'defense': 'Obrona',
+                'reiatsu': 'Reiatsu',
+                'hakuda': 'Hakuda',
+                'weaponship': 'Broń',
+                'tamashi': 'Tamashi',
+                'magic': 'Magia',
+                'nazo': 'Nazo',
+                'nazoName': 'Nazwa zdolności Nazo',
+                'pointsToDistribute': 'Punkty do rozdania',
+                'nodePointsToDistribute': 'Punkty węzłów',
+                'reisenInHand': 'Reisen (w ręku)',
+                'reisenAbsorbed': 'Reisen (wchłonięty)',
+                'yenInHand': 'Yen',
+                'loyaltyLeft': 'Lojalność',
+                'rank': 'Ranga',
+                'position': 'Pozycja',
+                'riatsuColor': 'Kolor Reiatsu',
+                'login': 'Login'
+            };
+            return fieldNames[field] || field;
         }
 
         function showError(message) {
@@ -824,6 +1082,7 @@
             logs.forEach(function(log) {
                 const time = new Date(log.timestamp).toLocaleString('pl-PL');
                 const actionText = getActionText(log.action);
+                const changesHtml = formatChangesForDisplay(log.changes);
                 
                 logsHtml += `
                     <div class="log-entry">
@@ -837,12 +1096,43 @@
                             <strong>${log.targetName}</strong>
                             ${log.details ? ` - ${log.details}` : ''}
                         </div>
+                        ${changesHtml ? `<div class="log-changes">${changesHtml}</div>` : ''}
                     </div>
                 `;
             });
             
             logsHtml += '</div>';
             container.innerHTML = logsHtml;
+        }
+
+        function formatChangesForDisplay(changes) {
+            if (!changes || Object.keys(changes).length === 0) return '';
+            
+            let changeItems = [];
+            Object.entries(changes).forEach(function([field, change]) {
+                const fieldName = getFieldDisplayName(field);
+                
+                if (change.type === 'numeric') {
+                    changeItems.push(`
+                        <div style="margin: 3px 0;">
+                            <strong>${fieldName}:</strong> 
+                            <span style="color: #dc3545;">${change.before}</span> → 
+                            <span style="color: #28a745;">${change.after}</span> 
+                            <span style="color: #6f42c1; font-weight: bold;">(${change.diff})</span>
+                        </div>
+                    `);
+                } else {
+                    changeItems.push(`
+                        <div style="margin: 3px 0;">
+                            <strong>${fieldName}:</strong><br>
+                            <span style="color: #dc3545;">Przed: "${change.before}"</span><br>
+                            <span style="color: #28a745;">Po: "${change.after}"</span>
+                        </div>
+                    `);
+                }
+            });
+            
+            return changeItems.join('');
         }
 
         function getActionText(action) {
@@ -878,12 +1168,16 @@
                     `<span class="reiatsu-color" style="background-color: ${character.riatsuColor.hex};" title="${character.riatsuColor.name} Reiatsu"></span>` : 
                     '';
                 
+                const nazoDisplay = character.nazoName && character.nazoName !== '???' ? 
+                    `<span style="background: #6c757d; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; margin-left: 5px;" title="Zdolność Nazo: ${character.nazoName}">🔮 ${character.nazoName}</span>` : 
+                    '';
+                
                 charactersHtml += `
                     <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #333;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
                                 <h3 style="margin: 0 0 5px 0; color: #333;">
-                                    ${character.firstName} ${character.lastName} ${riatsuDisplay}
+                                    ${character.firstName} ${character.lastName} ${riatsuDisplay} ${nazoDisplay}
                                 </h3>
                                 <p style="margin: 0; color: #666;">
                                     <strong>Login:</strong> ${character.login} | 
@@ -1081,7 +1375,8 @@
                 weaponship: 0,
                 tamashi: 0,
                 magic: 0,
-                nazo: '???',
+                nazo: 0,
+                nazoName: '???', // Nazwa statystyki Nazo (zmieniana przez admina)
                 
                 // Statystyki gracza
                 pointsToDistribute: 10,
@@ -1118,9 +1413,10 @@
                     {
                         login: formatChangeValue('', login, 'login'),
                         race: formatChangeValue('', race, 'race'),
-                        riatsuColor: formatChangeValue('', riatsuColor.name, 'riatsuColor')
+                        riatsuColor: formatChangeValue('', riatsuColor.name, 'riatsuColor'),
+                        nazoName: formatChangeValue('', '???', 'nazoName')
                     },
-                    `Nowa karta postaci została utworzona. ID: ${characterData.id}, Reiatsu: ${riatsuColor.name}`
+                    `Nowa karta postaci została utworzona. ID: ${characterData.id}, Reiatsu: ${riatsuColor.name}, Nazo: ???`
                 );
                 
                 console.log('Postać utworzona pomyślnie!');
@@ -1253,8 +1549,8 @@
                                 <span class="stat-value">${character.magic || 0}</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-label">Nazo:</span>
-                                <span class="stat-value">${character.nazo || '???'}</span>
+                                <span class="stat-label">${character.nazoName || '???'}:</span>
+                                <span class="stat-value">${character.nazo || 0}</span>
                             </div>
                         </div>
                         
@@ -1268,6 +1564,18 @@
                             <p>Yen: ${character.yenInHand || 0}</p>
                             <p>Loyalty left: ${character.loyaltyLeft || 0}</p>
                         </div>
+
+                        ${currentUser && currentUser.role === 'admin' ? `
+                        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #dee2e6;">
+                            <h4>Panel Administratora:</h4>
+                            <button class="btn-secondary" onclick="changeNazoName('${character.docId}')" style="margin-right: 10px;">
+                                🔮 Zmień nazwę "${character.nazoName || '???'}"
+                            </button>
+                            <button class="btn-primary" onclick="editCharacter('${character.docId}')">
+                                ✏️ Edytuj postać
+                            </button>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
             `;
@@ -1280,13 +1588,425 @@
             document.getElementById('characterModal').style.display = 'none';
         }
 
+        async function changeNazoName(docId) {
+            const character = allCharacters.find(function(c) {
+                return c.docId === docId;
+            });
+            
+            if (!character) {
+                showError('Nie znaleziono postaci!');
+                return;
+            }
+
+            const currentName = character.nazoName || '???';
+            const newName = prompt(`Zmień nazwę zdolności Nazo dla ${character.firstName} ${character.lastName}:\n\nAktualna nazwa: "${currentName}"\n\nWpisz nową nazwę (lub zostaw puste aby wrócić do "???"):`, currentName === '???' ? '' : currentName);
+            
+            if (newName === null) return; // Użytkownik anulował
+            
+            const finalName = newName.trim() || '???';
+            
+            try {
+                // Aktualizuj w Firebase
+                const characterRef = window.doc(window.db, 'characters', docId);
+                await window.updateDoc(characterRef, {
+                    nazoName: finalName
+                });
+                
+                // Stwórz log
+                await createLog(
+                    'character_updated',
+                    character.id,
+                    `${character.firstName} ${character.lastName}`,
+                    {
+                        nazoName: formatChangeValue(currentName, finalName, 'nazoName')
+                    },
+                    `Administrator zmienił nazwę zdolności Nazo z "${currentName}" na "${finalName}"`
+                );
+                
+                // Aktualizuj lokalnie
+                character.nazoName = finalName;
+                
+                // Odśwież wyświetlanie karty jeśli jest otwarta
+                if (document.getElementById('characterModal').style.display === 'block') {
+                    displayCharacterCard(character);
+                }
+                
+                // Odśwież listę postaci
+                await loadAllCharacters();
+                
+                showSuccess(`Nazwa zdolności została zmieniona na "${finalName}"`);
+                
+            } catch (error) {
+                console.error('Błąd zmiany nazwy Nazo:', error);
+                showError('Błąd podczas zmiany nazwy zdolności: ' + error.message);
+            }
+        }
+
         function editCharacter(docId) {
             const character = allCharacters.find(function(c) {
                 return c.docId === docId;
             });
             
             if (character) {
-                alert('✏️ Edycja postaci: ' + character.firstName + ' ' + character.lastName + '\n\nFunkcja w budowie - zostanie dodana w następnej wersji');
+                populateEditForm(character);
+                document.getElementById('editCharacterModal').style.display = 'block';
+            } else {
+                showError('Nie znaleziono postaci do edycji!');
+            }
+        }
+
+        function populateEditForm(character) {
+            // Podstawowe dane
+            document.getElementById('edit_firstName').value = character.firstName || '';
+            document.getElementById('edit_lastName').value = character.lastName || '';
+            document.getElementById('edit_login').value = character.login || '';
+            document.getElementById('edit_race').value = character.race || '';
+            document.getElementById('edit_rank').value = character.rank || 'I';
+            document.getElementById('edit_position').value = character.position || '';
+            document.getElementById('edit_slv').value = character.slv || '';
+            document.getElementById('edit_scA').value = character.scA || '';
+            document.getElementById('edit_height').value = character.height || '';
+            document.getElementById('edit_weight').value = character.weight || '';
+            document.getElementById('edit_photoUrl').value = character.photoUrl || '';
+            document.getElementById('edit_appearance').value = character.appearance || '';
+            document.getElementById('edit_personality').value = character.personality || '';
+            document.getElementById('edit_history').value = character.history || '';
+            
+            // Statystyki podstawowe
+            document.getElementById('edit_strength').value = character.strength || 0;
+            document.getElementById('edit_vitality').value = character.vitality || 0;
+            document.getElementById('edit_speed').value = character.speed || 0;
+            document.getElementById('edit_defense').value = character.defense || 0;
+            document.getElementById('edit_reiatsu').value = character.reiatsu || 0;
+            document.getElementById('edit_hakuda').value = character.hakuda || 0;
+            document.getElementById('edit_weaponship').value = character.weaponship || 0;
+            document.getElementById('edit_tamashi').value = character.tamashi || 0;
+            document.getElementById('edit_magic').value = character.magic || 0;
+            document.getElementById('edit_nazo').value = character.nazo || 0;
+            document.getElementById('edit_nazoName').value = character.nazoName || '???';
+            
+            // Statystyki gracza
+            document.getElementById('edit_pointsToDistribute').value = character.pointsToDistribute || 0;
+            document.getElementById('edit_nodePointsToDistribute').value = character.nodePointsToDistribute || 0;
+            document.getElementById('edit_reisenInHand').value = character.reisenInHand || 0;
+            document.getElementById('edit_reisenAbsorbed').value = character.reisenAbsorbed || 0;
+            document.getElementById('edit_nextNodeProgress').value = character.nextNodeProgress || '0/1';
+            document.getElementById('edit_yenInHand').value = character.yenInHand || 0;
+            document.getElementById('edit_loyaltyLeft').value = character.loyaltyLeft || 0;
+            
+            // Ustaw aktualną nazwę Nazo w label
+            document.getElementById('nazoLabel').textContent = `Nazo (${character.nazoName || '???'})`;
+            
+            // Zapisz docId dla późniejszego użycia
+            document.getElementById('editCharacterForm').setAttribute('data-character-id', character.docId);
+        }
+
+        function closeEditModal() {
+            document.getElementById('editCharacterModal').style.display = 'none';
+        }
+
+        async function handleEditSubmit(e) {
+            e.preventDefault();
+            
+            const characterDocId = e.target.getAttribute('data-character-id');
+            const originalCharacter = allCharacters.find(function(c) {
+                return c.docId === characterDocId;
+            });
+            
+            if (!originalCharacter) {
+                showError('Nie znaleziono oryginalnych danych postaci!');
+                return;
+            }
+            
+            // Pobierz nowe dane z formularza
+            const newData = {
+                firstName: document.getElementById('edit_firstName').value.trim(),
+                lastName: document.getElementById('edit_lastName').value.trim(),
+                login: document.getElementById('edit_login').value.trim(),
+                race: document.getElementById('edit_race').value,
+                rank: document.getElementById('edit_rank').value,
+                position: document.getElementById('edit_position').value.trim(),
+                slv: document.getElementById('edit_slv').value.trim(),
+                scA: document.getElementById('edit_scA').value.trim(),
+                height: parseInt(document.getElementById('edit_height').value) || null,
+                weight: parseInt(document.getElementById('edit_weight').value) || null,
+                photoUrl: document.getElementById('edit_photoUrl').value.trim(),
+                appearance: document.getElementById('edit_appearance').value.trim(),
+                personality: document.getElementById('edit_personality').value.trim(),
+                history: document.getElementById('edit_history').value.trim(),
+                
+                strength: parseInt(document.getElementById('edit_strength').value) || 0,
+                vitality: parseInt(document.getElementById('edit_vitality').value) || 0,
+                speed: parseInt(document.getElementById('edit_speed').value) || 0,
+                defense: parseInt(document.getElementById('edit_defense').value) || 0,
+                reiatsu: parseInt(document.getElementById('edit_reiatsu').value) || 0,
+                hakuda: parseInt(document.getElementById('edit_hakuda').value) || 0,
+                weaponship: parseInt(document.getElementById('edit_weaponship').value) || 0,
+                tamashi: parseInt(document.getElementById('edit_tamashi').value) || 0,
+                magic: parseInt(document.getElementById('edit_magic').value) || 0,
+                nazo: parseInt(document.getElementById('edit_nazo').value) || 0,
+                nazoName: document.getElementById('edit_nazoName').value.trim() || '???',
+                
+                pointsToDistribute: parseInt(document.getElementById('edit_pointsToDistribute').value) || 0,
+                nodePointsToDistribute: parseInt(document.getElementById('edit_nodePointsToDistribute').value) || 0,
+                reisenInHand: parseInt(document.getElementById('edit_reisenInHand').value) || 0,
+                reisenAbsorbed: parseInt(document.getElementById('edit_reisenAbsorbed').value) || 0,
+                nextNodeProgress: document.getElementById('edit_nextNodeProgress').value.trim() || '0/1',
+                yenInHand: parseInt(document.getElementById('edit_yenInHand').value) || 0,
+                loyaltyLeft: parseInt(document.getElementById('edit_loyaltyLeft').value) || 0,
+                
+                lastEditedAt: new Date().toISOString(),
+                lastEditedBy: currentUser.login
+            };
+            
+            // Walidacja podstawowych pól
+            if (!newData.firstName || !newData.lastName || !newData.login || !newData.race) {
+                showError('Imię, nazwisko, login i rasa są wymagane!');
+                return;
+            }
+            
+            // Sprawdź czy login się zmienił i czy nowy login już istnieje
+            if (newData.login !== originalCharacter.login) {
+                try {
+                    const existingUser = await window.getDoc(window.doc(window.db, 'users', newData.login));
+                    if (existingUser.exists()) {
+                        showError('Login "' + newData.login + '" już istnieje! Wybierz inny login.');
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Błąd sprawdzania loginu:', error);
+                }
+            }
+            
+            try {
+                // Porównaj zmiany
+                const changes = compareCharacterData(originalCharacter, newData);
+                
+                if (Object.keys(changes).length === 0) {
+                    showSuccess('Brak zmian do zapisania.');
+                    closeEditModal();
+                    return;
+                }
+                
+                // Aktualizuj postać w Firebase
+                const characterRef = window.doc(window.db, 'characters', characterDocId);
+                await window.updateDoc(characterRef, newData);
+                
+                // Jeśli login się zmienił, zaktualizuj users collection
+                if (newData.login !== originalCharacter.login) {
+                    // Usuń stary login
+                    await window.deleteDoc(window.doc(window.db, 'users', originalCharacter.login));
+                    
+                    // Dodaj nowy login
+                    await window.setDoc(window.doc(window.db, 'users', newData.login), {
+                        role: 'player',
+                        name: newData.firstName + ' ' + newData.lastName,
+                        characterId: originalCharacter.id
+                    });
+                }
+                
+                // Stwórz szczegółowy log
+                await createLog(
+                    'character_updated',
+                    originalCharacter.id,
+                    newData.firstName + ' ' + newData.lastName,
+                    changes,
+                    `Administrator zaktualizował kartę postaci. Zmieniono ${Object.keys(changes).length} pól.`
+                );
+                
+                // Aktualizuj lokalnie
+                Object.assign(originalCharacter, newData);
+                originalCharacter.docId = characterDocId; // Zachowaj docId
+                
+                showSuccess('Karta postaci została zaktualizowana! Zmieniono ' + Object.keys(changes).length + ' pól.');
+                closeEditModal();
+                
+                // Odśwież listę i wyświetlanie
+                await loadAllCharacters();
+                
+            } catch (error) {
+                console.error('Błąd aktualizacji postaci:', error);
+                showError('Błąd podczas aktualizacji karty postaci: ' + error.message);
+            }
+        }
+
+        function compareCharacterData(original, updated) {
+            const changes = {};
+            const fieldsToCheck = [
+                'firstName', 'lastName', 'login', 'race', 'rank', 'position', 'slv', 'scA',
+                'height', 'weight', 'photoUrl', 'appearance', 'personality', 'history',
+                'strength', 'vitality', 'speed', 'defense', 'reiatsu', 'hakuda', 
+                'weaponship', 'tamashi', 'magic', 'nazo', 'nazoName',
+                'pointsToDistribute', 'nodePointsToDistribute', 'reisenInHand', 
+                'reisenAbsorbed', 'nextNodeProgress', 'yenInHand', 'loyaltyLeft'
+            ];
+            
+            fieldsToCheck.forEach(function(field) {
+                const oldValue = original[field];
+                const newValue = updated[field];
+                
+                // Porównaj wartości (uwzględniając null/undefined/empty)
+                const normalizedOld = oldValue === null || oldValue === undefined ? '' : String(oldValue);
+                const normalizedNew = newValue === null || newValue === undefined ? '' : String(newValue);
+                
+                if (normalizedOld !== normalizedNew) {
+                    changes[field] = formatChangeValue(oldValue, newValue, field);
+                }
+            });
+            
+            return changes;
+        }
+
+        async function viewPlayerCharacter() {
+            if (!currentUser || !currentUser.characterId) {
+                showError('Nie znaleziono powiązanej postaci!');
+                return;
+            }
+
+            try {
+                // Znajdź postać gracza po characterId
+                const playerCharacter = allCharacters.find(function(char) {
+                    return char.id === currentUser.characterId;
+                });
+
+                if (playerCharacter) {
+                    displayCharacterCard(playerCharacter);
+                } else {
+                    // Jeśli nie ma w cache, pobierz z Firebase
+                    const charactersRef = window.collection(window.db, 'characters');
+                    const q = window.query(charactersRef, window.where('id', '==', currentUser.characterId));
+                    const querySnapshot = await window.getDocs(q);
+                    
+                    if (!querySnapshot.empty) {
+                        querySnapshot.forEach(function(doc) {
+                            const character = { docId: doc.id, ...doc.data() };
+                            displayCharacterCard(character);
+                        });
+                    } else {
+                        showError('Nie znaleziono karty postaci!');
+                    }
+                }
+            } catch (error) {
+                console.error('Błąd ładowania postaci gracza:', error);
+                showError('Błąd ładowania karty postaci: ' + error.message);
+            }
+        }
+
+        async function viewPlayerStats() {
+            if (!currentUser || !currentUser.characterId) {
+                showError('Nie znaleziono powiązanej postaci!');
+                return;
+            }
+
+            try {
+                // Znajdź postać gracza
+                let playerCharacter = allCharacters.find(function(char) {
+                    return char.id === currentUser.characterId;
+                });
+
+                if (!playerCharacter) {
+                    // Pobierz z Firebase jeśli nie ma w cache
+                    const charactersRef = window.collection(window.db, 'characters');
+                    const q = window.query(charactersRef, window.where('id', '==', currentUser.characterId));
+                    const querySnapshot = await window.getDocs(q);
+                    
+                    if (!querySnapshot.empty) {
+                        querySnapshot.forEach(function(doc) {
+                            playerCharacter = { docId: doc.id, ...doc.data() };
+                        });
+                    }
+                }
+
+                if (playerCharacter) {
+                    const raceWeaponNames = {
+                        'Soul-Reaper': 'Zanjutsu',
+                        'Arrancar': 'Zanjutsu', 
+                        'Quincy': 'Ojigi',
+                        'Fullbringer': 'Weapon Mastery'
+                    };
+                    
+                    const raceTamashiNames = {
+                        'Soul-Reaper': 'Zanpakuto Mastery',
+                        'Arrancar': 'Zanpakuto Mastery',
+                        'Quincy': 'Blood Legacy',
+                        'Fullbringer': 'Fullbring Mastery'
+                    };
+                    
+                    const raceMagicNames = {
+                        'Soul-Reaper': 'Kido Mastery',
+                        'Arrancar': 'Primal Reiryoku',
+                        'Quincy': 'Ginto Mastery',
+                        'Fullbringer': 'Soul Manipulation'
+                    };
+
+                    const statsHtml = `
+                        <h3>📊 Twoje Statystyki</h3>
+                        <div style="margin: 20px 0;">
+                            <p><strong>Points to Distribute:</strong> ${playerCharacter.pointsToDistribute || 0}</p>
+                            <p><strong>Node Points:</strong> ${playerCharacter.nodePointsToDistribute || 0}</p>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Strength:</span>
+                                <span class="stat-value">${playerCharacter.strength || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Vitality:</span>
+                                <span class="stat-value">${playerCharacter.vitality || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Speed:</span>
+                                <span class="stat-value">${playerCharacter.speed || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Defense:</span>
+                                <span class="stat-value">${playerCharacter.defense || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Reiatsu:</span>
+                                <span class="stat-value">${playerCharacter.reiatsu || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Hakuda:</span>
+                                <span class="stat-value">${playerCharacter.hakuda || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${raceWeaponNames[playerCharacter.race]}:</span>
+                                <span class="stat-value">${playerCharacter.weaponship || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${raceTamashiNames[playerCharacter.race]}:</span>
+                                <span class="stat-value">${playerCharacter.tamashi || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${raceMagicNames[playerCharacter.race]}:</span>
+                                <span class="stat-value">${playerCharacter.magic || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${playerCharacter.nazoName || '???'}:</span>
+                                <span class="stat-value">${playerCharacter.nazo || 0}</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px;">
+                            <h4>Zasoby:</h4>
+                            <p>Reisen (in hand): ${playerCharacter.reisenInHand || 0}</p>
+                            <p>Reisen (absorbed): ${playerCharacter.reisenAbsorbed || 0}</p>
+                            <p>Next node progress: ${playerCharacter.nextNodeProgress || '0/1'}</p>
+                            <p>Yen: ${playerCharacter.yenInHand || 0}</p>
+                            <p>Loyalty left: ${playerCharacter.loyaltyLeft || 0}</p>
+                        </div>
+                    `;
+                    
+                    document.getElementById('characterDisplay').innerHTML = statsHtml;
+                    document.getElementById('characterModal').style.display = 'block';
+                } else {
+                    showError('Nie znaleziono danych postaci!');
+                }
+            } catch (error) {
+                console.error('Błąd ładowania statystyk:', error);
+                showError('Błąd ładowania statystyk: ' + error.message);
             }
         }
 
@@ -1311,9 +2031,14 @@
 
         // Close modal when clicking outside
         window.onclick = function(event) {
-            const modal = document.getElementById('characterModal');
-            if (event.target === modal) {
+            const characterModal = document.getElementById('characterModal');
+            const editModal = document.getElementById('editCharacterModal');
+            
+            if (event.target === characterModal) {
                 closeCharacterModal();
+            }
+            if (event.target === editModal) {
+                closeEditModal();
             }
         }
 
@@ -1321,10 +2046,11 @@
         window.addEventListener('load', function() {
             console.log('Strona załadowana, Firebase skonfigurowany');
             
-            // Add event listeners for form
+            // Add event listeners for forms
             const firstNameInput = document.getElementById('firstName');
             const lastNameInput = document.getElementById('lastName');
             const addCharacterForm = document.getElementById('addCharacterForm');
+            const editCharacterForm = document.getElementById('editCharacterForm');
             
             if (firstNameInput) {
                 firstNameInput.addEventListener('input', updateGeneratedLogin);
@@ -1334,6 +2060,9 @@
             }
             if (addCharacterForm) {
                 addCharacterForm.addEventListener('submit', handleAddCharacterSubmit);
+            }
+            if (editCharacterForm) {
+                editCharacterForm.addEventListener('submit', handleEditSubmit);
             }
         });
     </script>
