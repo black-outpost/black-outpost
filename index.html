@@ -321,8 +321,7 @@
             <div id="admin-characters" class="admin-section" style="display: block;">
                 <h2>📋 Lista Wszystkich Postaci</h2>
                 <div style="text-align: center; padding: 40px; color: #666;">
-                    <p>Lista postaci będzie tutaj...</p>
-                    <p>Funkcja w budowie</p>
+                    <p>Ładowanie listy postaci...</p>
                 </div>
             </div>
 
@@ -397,7 +396,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, setDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
@@ -417,10 +416,15 @@
         window.doc = doc;
         window.collection = collection;
         window.addDoc = addDoc;
+        window.setDoc = setDoc;
+        window.getDocs = getDocs;
+        window.query = query;
+        window.orderBy = orderBy;
     </script>
 
     <script>
         let currentUser = null;
+        let allCharacters = [];
 
         function showError(message) {
             const errorDiv = document.getElementById('errorMessage');
@@ -463,6 +467,7 @@
                     
                     if (userData.role === 'admin') {
                         showAdminPanel();
+                        await loadAllCharacters();
                     } else {
                         showDashboard();
                     }
@@ -495,6 +500,80 @@
             showAdminSection('characters');
         }
 
+        async function loadAllCharacters() {
+            try {
+                console.log('Ładowanie wszystkich postaci...');
+                const charactersRef = window.collection(window.db, 'characters');
+                const q = window.query(charactersRef, window.orderBy('createdAt', 'desc'));
+                const querySnapshot = await window.getDocs(q);
+                
+                allCharacters = [];
+                querySnapshot.forEach(function(doc) {
+                    allCharacters.push({ 
+                        docId: doc.id, 
+                        ...doc.data() 
+                    });
+                });
+                
+                console.log('Załadowano postaci:', allCharacters);
+                displayCharacters(allCharacters);
+            } catch (error) {
+                console.error('Błąd ładowania postaci:', error);
+                showError('Błąd ładowania listy postaci: ' + error.message);
+            }
+        }
+
+        function displayCharacters(characters) {
+            const container = document.getElementById('admin-characters');
+            
+            if (characters.length === 0) {
+                container.innerHTML = `
+                    <h2>📋 Lista Wszystkich Postaci</h2>
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <p>Brak postaci w systemie</p>
+                        <p>Stwórz pierwszą kartę w zakładce "➕ Dodaj Kartę"</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let charactersHtml = '<h2>📋 Lista Wszystkich Postaci (' + characters.length + ')</h2>';
+            charactersHtml += '<div style="display: grid; gap: 15px; margin-top: 20px;">';
+            
+            characters.forEach(function(character) {
+                charactersHtml += `
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #333;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h3 style="margin: 0 0 5px 0; color: #333;">
+                                    ${character.firstName} ${character.lastName}
+                                </h3>
+                                <p style="margin: 0; color: #666;">
+                                    <strong>Login:</strong> ${character.login} | 
+                                    <strong>Rasa:</strong> ${character.race} | 
+                                    <strong>ID:</strong> ${character.id}
+                                </p>
+                                <p style="margin: 5px 0 0 0; color: #888; font-size: 0.9em;">
+                                    Utworzono: ${new Date(character.createdAt).toLocaleString('pl-PL')} przez ${character.createdBy}
+                                </p>
+                            </div>
+                            <div>
+                                <button class="btn-primary" style="margin-right: 10px; padding: 8px 15px;" onclick="viewCharacter('${character.docId}')">
+                                    👁️ Zobacz
+                                </button>
+                                <button class="btn-secondary" style="padding: 8px 15px;" onclick="editCharacter('${character.docId}')">
+                                    ✏️ Edytuj
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            charactersHtml += '</div>';
+            container.innerHTML = charactersHtml;
+        }
+
         function showAdminSection(section) {
             // Hide all sections
             const sections = document.querySelectorAll('.admin-section');
@@ -510,6 +589,23 @@
             // Show selected section
             document.getElementById('admin-' + section).style.display = 'block';
             document.getElementById('btn-' + section).classList.add('active');
+            
+            // Load data if needed
+            if (section === 'characters' && allCharacters.length > 0) {
+                displayCharacters(allCharacters);
+            }
+        }
+
+        function getNextId() {
+            if (allCharacters.length === 0) {
+                return '030001';
+            }
+            
+            const maxId = Math.max(...allCharacters.map(function(c) {
+                return parseInt(c.id);
+            }));
+            
+            return String(maxId + 1).padStart(6, '0');
         }
 
         function generateLogin(firstName, lastName) {
@@ -609,8 +705,19 @@
                 document.getElementById('generatedLogin').value = login;
             }
             
+            // Sprawdź czy login już istnieje
+            try {
+                const existingUser = await window.getDoc(window.doc(window.db, 'users', login));
+                if (existingUser.exists()) {
+                    showError('Login "' + login + '" już istnieje! Wygeneruj nowy lub wprowadź inny.');
+                    return;
+                }
+            } catch (error) {
+                console.error('Błąd sprawdzania loginu:', error);
+            }
+            
             const characterData = {
-                id: '030001', // Będziemy to później dynamicznie generować
+                id: getNextId(),
                 login: login,
                 firstName: firstName,
                 lastName: lastName,
@@ -625,18 +732,25 @@
             
             try {
                 console.log('Tworzenie postaci:', characterData);
+                
+                // Dodaj postać do characters collection
                 await window.addDoc(window.collection(window.db, 'characters'), characterData);
                 
-                // Dodaj też login do users collection
-                await window.addDoc(window.collection(window.db, 'users'), {
+                // WAŻNE: Dodaj login do users collection z konkretnym ID (loginem)
+                await window.setDoc(window.doc(window.db, 'users', login), {
                     role: 'player',
                     name: firstName + ' ' + lastName,
                     characterId: characterData.id
                 });
                 
+                console.log('Postać utworzona pomyślnie!');
                 showSuccess('Karta postaci została utworzona! Login: ' + login);
                 resetForm();
+                
+                // Odśwież listę postaci
+                await loadAllCharacters();
                 showAdminSection('characters');
+                
             } catch (error) {
                 console.error('Błąd tworzenia postaci:', error);
                 showError('Błąd podczas tworzenia karty postaci: ' + error.message);
@@ -648,8 +762,29 @@
             document.getElementById('generatedLogin').value = '';
         }
 
+        function viewCharacter(docId) {
+            const character = allCharacters.find(function(c) {
+                return c.docId === docId;
+            });
+            
+            if (character) {
+                alert('👁️ Przeglądanie postaci: ' + character.firstName + ' ' + character.lastName + '\n\nFunkcja w budowie');
+            }
+        }
+
+        function editCharacter(docId) {
+            const character = allCharacters.find(function(c) {
+                return c.docId === docId;
+            });
+            
+            if (character) {
+                alert('✏️ Edycja postaci: ' + character.firstName + ' ' + character.lastName + '\n\nFunkcja w budowie');
+            }
+        }
+
         function logout() {
             currentUser = null;
+            allCharacters = [];
             document.getElementById('loginScreen').style.display = 'block';
             document.getElementById('dashboardScreen').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'none';
