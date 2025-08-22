@@ -1105,6 +1105,19 @@
                             </div>
                         </div>
 
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Kolor Reiatsu</label>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <input type="color" id="edit_riatsuColorHex" style="width: 50px; height: 40px; border: none; border-radius: 6px; cursor: pointer;">
+                                    <input type="text" id="edit_riatsuColorName" placeholder="Nazwa koloru" style="flex: 1;">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <!-- Puste miejsce -->
+                            </div>
+                        </div>
+
                         <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #e1e1e1;">
                             <button type="button" class="btn-secondary" onclick="closeEditModal()" style="margin-right: 15px;">Anuluj</button>
                             <button type="submit" class="btn-primary">💾 Zapisz Zmiany</button>
@@ -1361,30 +1374,16 @@
 
             try {
                 console.log('Próba logowania:', loginInput);
-                
-                // Sprawdź czy Firebase jest dostępne
-                if (!window.db) {
-                    showError('Błąd połączenia z bazą danych - Firebase nie jest zainicjalizowany');
-                    return;
-                }
-                
-                // Sprawdź czy to login użytkownika
-                console.log('Sprawdzanie w users collection...');
                 const userDoc = await window.getDoc(window.doc(window.db, 'users', loginInput));
                 
-                console.log('Wynik zapytania users:', userDoc.exists());
-                
                 if (userDoc.exists()) {
-                    // Logowanie przez login
                     const userData = userDoc.data();
-                    console.log('Dane użytkownika:', userData);
-                    
                     currentUser = {
                         login: loginInput,
                         ...userData
                     };
                     
-                    console.log('Zalogowano przez login:', currentUser);
+                    console.log('Zalogowano:', currentUser);
                     
                     if (userData.role === 'admin') {
                         showAdminPanel();
@@ -1395,7 +1394,6 @@
                     
                     showSuccess('Pomyślnie zalogowano jako ' + userData.name + '!');
                 } else {
-                    console.log('Użytkownik nie istnieje w users collection');
                     showError('Nieprawidłowy login! Skontaktuj się z administratorem.');
                 }
             } catch (error) {
@@ -2965,22 +2963,7 @@
 
         // Test Firebase connection
         window.addEventListener('load', function() {
-            console.log('Strona załadowana, sprawdzanie Firebase...');
-            
-            // Test Firebase
-            if (window.db) {
-                console.log('✅ Firebase DB dostępne');
-                // Sprawdź i utwórz konto administratora jeśli nie istnieje
-                checkAndCreateAdmin();
-            } else {
-                console.error('❌ Firebase DB niedostępne');
-            }
-            
-            if (window.getDoc) {
-                console.log('✅ Firebase funkcje dostępne');
-            } else {
-                console.error('❌ Firebase funkcje niedostępne');
-            }
+            console.log('Strona załadowana, Firebase skonfigurowany');
             
             // Add event listeners for forms
             const firstNameInput = document.getElementById('firstName');
@@ -3001,24 +2984,3 @@
                 editCharacterForm.addEventListener('submit', handleEditSubmit);
             }
         });
-
-        async function checkAndCreateAdmin() {
-            try {
-                console.log('Sprawdzanie konta administratora...');
-                const adminDoc = await window.getDoc(window.doc(window.db, 'users', 'admin'));
-                
-                if (!adminDoc.exists()) {
-                    console.log('Tworzenie konta administratora...');
-                    await window.setDoc(window.doc(window.db, 'users', 'admin'), {
-                        role: 'admin',
-                        name: 'Administrator',
-                        characterId: null
-                    });
-                    console.log('✅ Konto administratora utworzone');
-                } else {
-                    console.log('✅ Konto administratora istnieje');
-                }
-            } catch (error) {
-                console.error('Błąd sprawdzania/tworzenia konta admin:', error);
-            }
-        }
