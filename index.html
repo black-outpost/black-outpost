@@ -367,6 +367,78 @@
                 margin-top: 20px;
             }
         }
+
+        .log-entry {
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px;
+            transition: background-color 0.2s;
+        }
+
+        .log-entry:hover {
+            background-color: #f8f9fa;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .log-action {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .log-time {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .log-details {
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .log-changes {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 10px;
+            margin-top: 8px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        .log-actor {
+            color: #0056b3;
+            font-weight: bold;
+        }
+
+        .log-target {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .change-item {
+            margin: 3px 0;
+        }
+
+        .change-before {
+            color: #dc3545;
+        }
+
+        .change-after {
+            color: #28a745;
+        }
+
+        .change-diff {
+            color: #6f42c1;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -436,6 +508,7 @@
             <div class="admin-nav">
                 <button onclick="showAdminSection('characters')" class="active" id="btn-characters">📋 Wszystkie Karty</button>
                 <button onclick="showAdminSection('addCharacter')" id="btn-addCharacter">➕ Dodaj Kartę</button>
+                <button onclick="showAdminSection('logs')" id="btn-logs">📜 Logi Systemu</button>
                 <button onclick="showAdminSection('settings')" id="btn-settings">⚙️ Ustawienia</button>
             </div>
 
@@ -483,6 +556,10 @@
             <!-- Add Character Section -->
             <div id="admin-addCharacter" class="admin-section" style="display: none;">
                 <h2>Dodaj Nową Kartę Postaci</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    <strong>Wymagane pola:</strong> Imię, Nazwisko, Rasa<br>
+                    <em>Pozostałe informacje można uzupełnić później podczas edycji karty.</em>
+                </p>
                 <form class="character-form" id="addCharacterForm">
                     <div class="form-row">
                         <div class="form-group">
@@ -497,12 +574,16 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Login (zostanie wygenerowany)</label>
-                            <input type="text" id="generatedLogin" readonly style="background: #f0f0f0;">
+                            <label>Login</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="generatedLogin" placeholder="Zostanie wygenerowany automatycznie" style="flex: 1;">
+                                <button type="button" class="btn-secondary" onclick="regenerateLogin()" style="padding: 10px 15px;">🎲 Przelosuj</button>
+                            </div>
+                            <small style="color: #666; margin-top: 5px; display: block;">Możesz wpisać własny login lub użyć przycisku do przelosowania</small>
                         </div>
                         <div class="form-group">
-                            <label>Data wydania karty *</label>
-                            <input type="date" id="issueDate" required>
+                            <label>Data wydania karty</label>
+                            <input type="date" id="issueDate">
                         </div>
                     </div>
 
@@ -518,40 +599,49 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Wzrost (cm)</label>
-                            <input type="number" id="height" min="100" max="250">
+                            <!-- Puste miejsce dla symetrii -->
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Waga (kg)</label>
-                            <input type="number" id="weight" min="30" max="200">
+                            <label>Wzrost (cm)</label>
+                            <input type="number" id="height" min="100" max="250" placeholder="Opcjonalne">
                         </div>
+                        <div class="form-group">
+                            <label>Waga (kg)</label>
+                            <input type="number" id="weight" min="30" max="200" placeholder="Opcjonalne">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
                         <div class="form-group">
                             <label>URL zdjęcia karty</label>
-                            <input type="url" id="photoUrl" placeholder="https://...">
+                            <input type="url" id="photoUrl" placeholder="https://... (opcjonalne)">
+                        </div>
+                        <div class="form-group">
+                            <!-- Puste miejsce dla symetrii -->
                         </div>
                     </div>
 
                     <div class="form-row full">
                         <div class="form-group">
-                            <label>Opis Wyglądu</label>
-                            <textarea id="appearance" placeholder="Opisz wygląd postaci..."></textarea>
+                            <label>Opis Wyglądu (opcjonalne)</label>
+                            <textarea id="appearance" placeholder="Opisz wygląd postaci... (można uzupełnić później)"></textarea>
                         </div>
                     </div>
 
                     <div class="form-row full">
                         <div class="form-group">
-                            <label>Opis Charakteru</label>
-                            <textarea id="personality" placeholder="Opisz charakter postaci..."></textarea>
+                            <label>Opis Charakteru (opcjonalne)</label>
+                            <textarea id="personality" placeholder="Opisz charakter postaci... (można uzupełnić później)"></textarea>
                         </div>
                     </div>
 
                     <div class="form-row full">
                         <div class="form-group">
-                            <label>Historia</label>
-                            <textarea id="history" placeholder="Historia postaci..."></textarea>
+                            <label>Historia (opcjonalne)</label>
+                            <textarea id="history" placeholder="Historia postaci... (można uzupełnić później)"></textarea>
                         </div>
                     </div>
 
@@ -560,6 +650,38 @@
                         <button type="submit" class="btn-primary">Stwórz Kartę</button>
                     </div>
                 </form>
+            </div>
+
+            <!-- Logs Section -->
+            <div id="admin-logs" class="admin-section" style="display: none;">
+                <h2>📜 Logi Systemu</h2>
+                
+                <div class="search-filters">
+                    <input type="text" id="searchLogs" placeholder="🔍 Szukaj w logach..." style="width: 250px;">
+                    <select id="filterLogType" style="width: 150px;">
+                        <option value="">Wszystkie akcje</option>
+                        <option value="character_created">Utworzenie karty</option>
+                        <option value="character_updated">Edycja karty</option>
+                        <option value="stats_distributed">Rozdanie punktów</option>
+                        <option value="admin_grant">Nadanie przez admin</option>
+                        <option value="profile_updated">Zmiana profilu</option>
+                    </select>
+                    <select id="filterLogPeriod" style="width: 120px;">
+                        <option value="">Wszystkie</option>
+                        <option value="today">Dzisiaj</option>
+                        <option value="week">Ostatni tydzień</option>
+                        <option value="month">Ostatni miesiąc</option>
+                    </select>
+                    <button class="btn-secondary" onclick="loadLogs()" style="padding: 10px 15px;">🔄 Odśwież</button>
+                </div>
+                
+                <div class="logs-container" style="background: white; border-radius: 10px; max-height: 600px; overflow-y: auto;">
+                    <div id="logsDisplay">
+                        <div style="text-align: center; padding: 40px; color: #666;">
+                            <p>Ładowanie logów...</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Settings Section -->
@@ -584,7 +706,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, orderBy, where, limit } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
@@ -607,12 +729,63 @@
         window.getDocs = getDocs;
         window.query = query;
         window.orderBy = orderBy;
+        window.where = where;
+        window.limit = limit;
     </script>
 
     <script>
         let currentUser = null;
         let allCharacters = [];
+        let allLogs = [];
         let currentSort = { field: 'id', direction: 'asc' };
+
+        // System logowania
+        async function createLog(action, targetId, targetName, changes, details = '') {
+            const logEntry = {
+                action: action,
+                actorLogin: currentUser ? getAnonymizedLogin(currentUser.login) : 'System',
+                actorRole: currentUser ? currentUser.role : 'system',
+                targetId: targetId,
+                targetName: targetName,
+                changes: changes || {},
+                details: details,
+                timestamp: new Date().toISOString(),
+                reverseData: null // Dane potrzebne do cofnięcia zmiany
+            };
+
+            try {
+                await window.addDoc(window.collection(window.db, 'logs'), logEntry);
+                console.log('Log created:', logEntry);
+            } catch (error) {
+                console.error('Error creating log:', error);
+            }
+        }
+
+        function getAnonymizedLogin(login) {
+            if (!currentUser || currentUser.role !== 'admin') return login;
+            
+            // Dla adminów usuń cyfry z loginu
+            return login.replace(/\d+/g, '');
+        }
+
+        function formatChangeValue(before, after, fieldName) {
+            if (typeof before === 'number' && typeof after === 'number') {
+                const diff = after - before;
+                const diffText = diff > 0 ? `+${diff}` : `${diff}`;
+                return {
+                    before: before,
+                    after: after,
+                    diff: diffText,
+                    type: 'numeric'
+                };
+            } else {
+                return {
+                    before: before || 'brak',
+                    after: after || 'brak',
+                    type: 'text'
+                };
+            }
+        }
 
         function showError(message) {
             const errorDiv = document.getElementById('errorMessage');
@@ -704,6 +877,11 @@
             // Show selected section
             document.getElementById('admin-' + section).style.display = 'block';
             document.getElementById('btn-' + section).classList.add('active');
+            
+            // Load data for specific sections
+            if (section === 'logs') {
+                loadLogs();
+            }
         }
 
         async function loadAllCharacters() {
@@ -750,14 +928,35 @@
             const firstSyllables = extractSyllables(firstName);
             const lastSyllables = extractSyllables(lastName);
             
+            // Wybierz losową sylabę z każdego imienia
             const randomFirst = firstSyllables[Math.floor(Math.random() * firstSyllables.length)];
             const randomLast = lastSyllables[Math.floor(Math.random() * lastSyllables.length)];
             const randomNumber = Math.floor(Math.random() * 9000) + 1000;
             
-            return randomFirst + randomLast + randomNumber;
+            // Kapitalizuj pierwszą literę każdej sylaby
+            const capitalizedFirst = randomFirst.charAt(0).toUpperCase() + randomFirst.slice(1).toLowerCase();
+            const capitalizedLast = randomLast.charAt(0).toUpperCase() + randomLast.slice(1).toLowerCase();
+            
+            return capitalizedFirst + capitalizedLast + randomNumber;
+        }
+
+        function regenerateLogin() {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            
+            if (!firstName || !lastName) {
+                showError('Wprowadź najpierw imię i nazwisko, żeby wygenerować login!');
+                return;
+            }
+            
+            const newLogin = generateLogin(firstName, lastName);
+            document.getElementById('generatedLogin').value = newLogin;
+            showSuccess('Login został przelosowany!');
         }
 
         function extractSyllables(name) {
+            if (!name) return [];
+            
             const vowels = 'aeiouAEIOU';
             const syllables = [];
             let currentSyllable = '';
@@ -765,23 +964,172 @@
             for (let i = 0; i < name.length; i++) {
                 currentSyllable += name[i];
                 
+                // Jeśli znaleźliśmy samogłoskę
                 if (vowels.includes(name[i])) {
+                    // Sprawdź czy następny znak to spółgłoska (dodaj ją do sylaby)
                     if (i + 1 < name.length && !vowels.includes(name[i + 1])) {
                         currentSyllable += name[i + 1];
-                        i++;
+                        i++; // Pomiń następny znak bo już go dodaliśmy
                     }
-                    syllables.push(currentSyllable);
+                    
+                    // Dodaj sylabę jeśli ma przynajmniej 2 znaki
+                    if (currentSyllable.length >= 2) {
+                        syllables.push(currentSyllable);
+                    }
                     currentSyllable = '';
                 }
             }
             
-            if (currentSyllable) syllables.push(currentSyllable);
-            if (syllables.length === 0) syllables.push(name.substring(0, 2));
+            // Dodaj resztę jeśli została
+            if (currentSyllable.length >= 2) {
+                syllables.push(currentSyllable);
+            }
+            
+            // Jeśli nie znaleziono sylab, użyj pierwszych 2-3 liter
+            if (syllables.length === 0) {
+                if (name.length >= 3) {
+                    syllables.push(name.substring(0, 3));
+                } else if (name.length >= 2) {
+                    syllables.push(name.substring(0, 2));
+                } else {
+                    syllables.push(name + 'x'); // Dodaj x jeśli nazwa ma tylko 1 literę
+                }
+            }
             
             return syllables;
         }
 
-        function getNextId() {
+        async function loadLogs() {
+            try {
+                const logsRef = window.collection(window.db, 'logs');
+                const q = window.query(logsRef, window.orderBy('timestamp', 'desc'), window.limit(100));
+                const querySnapshot = await window.getDocs(q);
+                
+                allLogs = [];
+                querySnapshot.forEach((doc) => {
+                    allLogs.push({ docId: doc.id, ...doc.data() });
+                });
+                
+                displayLogs(allLogs);
+            } catch (error) {
+                console.error('Błąd ładowania logów:', error);
+                document.getElementById('logsDisplay').innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #dc3545;">
+                        <p>Błąd ładowania logów: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayLogs(logs) {
+            const container = document.getElementById('logsDisplay');
+            
+            if (logs.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <p>Brak logów do wyświetlenia</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const logsHtml = logs.map(log => {
+                const time = new Date(log.timestamp).toLocaleString('pl-PL');
+                const actionText = getActionText(log.action);
+                const changesHtml = formatChangesForDisplay(log.changes);
+                
+                return `
+                    <div class="log-entry">
+                        <div class="log-header">
+                            <span class="log-action">${actionText}</span>
+                            <span class="log-time">${time}</span>
+                        </div>
+                        <div class="log-details">
+                            <span class="log-actor">${log.actorLogin}</span> 
+                            ${log.action.includes('created') ? 'stworzył' : 'zmodyfikował'} 
+                            <span class="log-target">${log.targetName}</span>
+                            ${log.details ? ` - ${log.details}` : ''}
+                        </div>
+                        ${changesHtml ? `<div class="log-changes">${changesHtml}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = logsHtml;
+        }
+
+        function getActionText(action) {
+            const actionTexts = {
+                'character_created': '🆕 Utworzenie karty',
+                'character_updated': '✏️ Edycja karty',
+                'stats_distributed': '📊 Rozdanie punktów',
+                'admin_grant': '👑 Nadanie przez admin',
+                'profile_updated': '🖼️ Zmiana profilu'
+            };
+            return actionTexts[action] || action;
+        }
+
+        function formatChangesForDisplay(changes) {
+            if (!changes || Object.keys(changes).length === 0) return '';
+            
+            const changeItems = Object.entries(changes).map(([field, change]) => {
+                const fieldName = getFieldDisplayName(field);
+                
+                if (change.type === 'numeric') {
+                    return `
+                        <div class="change-item">
+                            <strong>${fieldName}:</strong> 
+                            <span class="change-before">${change.before}</span> → 
+                            <span class="change-after">${change.after}</span> 
+                            <span class="change-diff">(${change.diff})</span>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="change-item">
+                            <strong>${fieldName}:</strong><br>
+                            <span class="change-before">Przed: "${change.before}"</span><br>
+                            <span class="change-after">Po: "${change.after}"</span>
+                        </div>
+                    `;
+                }
+            }).join('');
+            
+            return changeItems;
+        }
+
+        function getFieldDisplayName(field) {
+            const fieldNames = {
+                'firstName': 'Imię',
+                'lastName': 'Nazwisko',
+                'race': 'Rasa',
+                'height': 'Wzrost',
+                'weight': 'Waga',
+                'appearance': 'Opis wyglądu',
+                'personality': 'Opis charakteru',
+                'history': 'Historia',
+                'photoUrl': 'URL zdjęcia',
+                'strength': 'Siła',
+                'vitality': 'Witalność',
+                'speed': 'Szybkość',
+                'defense': 'Obrona',
+                'reiatsu': 'Reiatsu',
+                'hakuda': 'Hakuda',
+                'weaponship': 'Broń',
+                'tamashi': 'Tamashi',
+                'magic': 'Magia',
+                'nazo': 'Nazo',
+                'pointsToDistribute': 'Punkty do rozdania',
+                'nodePointsToDistribute': 'Punkty węzłów',
+                'reisenInHand': 'Reisen (w ręku)',
+                'reisenAbsorbed': 'Reisen (wchłonięty)',
+                'yenInHand': 'Yen',
+                'loyaltyLeft': 'Lojalność',
+                'rank': 'Ranga',
+                'position': 'Pozycja'
+            };
+            return fieldNames[field] || field;
+        }
             if (allCharacters.length === 0) return '030001';
             
             const maxId = Math.max(...allCharacters.map(c => parseInt(c.id)));
@@ -807,8 +1155,11 @@
         function updateGeneratedLogin() {
             const firstName = document.getElementById('firstName').value.trim();
             const lastName = document.getElementById('lastName').value.trim();
+            const currentLogin = document.getElementById('generatedLogin').value.trim();
             
-            if (firstName && lastName) {
+            // Tylko wygeneruj automatycznie jeśli pole loginu jest puste
+            // i oba pola imienia/nazwiska są wypełnione
+            if (firstName && lastName && !currentLogin) {
                 const login = generateLogin(firstName, lastName);
                 document.getElementById('generatedLogin').value = login;
             }
@@ -817,19 +1168,36 @@
         async function handleAddCharacterSubmit(e) {
             e.preventDefault();
             
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const race = document.getElementById('race').value;
+            let login = document.getElementById('generatedLogin').value.trim();
+            
+            // Sprawdź wymagane pola
+            if (!firstName || !lastName || !race) {
+                showError('Imię, nazwisko i rasa są wymagane!');
+                return;
+            }
+            
+            // Wygeneruj login jeśli nie został wprowadzony
+            if (!login) {
+                login = generateLogin(firstName, lastName);
+                document.getElementById('generatedLogin').value = login;
+            }
+            
             const characterData = {
                 id: getNextId(),
-                login: document.getElementById('generatedLogin').value,
-                firstName: document.getElementById('firstName').value,
-                lastName: document.getElementById('lastName').value,
-                race: document.getElementById('race').value,
+                login: login,
+                firstName: firstName,
+                lastName: lastName,
+                race: race,
                 height: parseInt(document.getElementById('height').value) || null,
                 weight: parseInt(document.getElementById('weight').value) || null,
-                photoUrl: document.getElementById('photoUrl').value,
-                appearance: document.getElementById('appearance').value,
-                personality: document.getElementById('personality').value,
-                history: document.getElementById('history').value,
-                issueDate: document.getElementById('issueDate').value,
+                photoUrl: document.getElementById('photoUrl').value || '',
+                appearance: document.getElementById('appearance').value || '',
+                personality: document.getElementById('personality').value || '',
+                history: document.getElementById('history').value || '',
+                issueDate: document.getElementById('issueDate').value || new Date().toISOString().split('T')[0],
                 
                 // Domyślne wartości
                 rank: 'I',
@@ -870,16 +1238,30 @@
             };
             
             try {
-                await window.addDoc(window.collection(window.db, 'characters'), characterData);
+                const docRef = await window.addDoc(window.collection(window.db, 'characters'), characterData);
                 
-                // Dodaj też login do users collection
+                // Stwórz log o utworzeniu karty
+                await createLog(
+                    'character_created',
+                    characterData.id,
+                    `${characterData.firstName} ${characterData.lastName}`,
+                    {
+                        login: formatChangeValue('', login, 'login'),
+                        race: formatChangeValue('', race, 'race'),
+                        rank: formatChangeValue('', 'I', 'rank'),
+                        position: formatChangeValue('', 'Delver', 'position')
+                    },
+                    `Nowa karta postaci została utworzona. ID: ${characterData.id}`
+                );
+                
+                // Dodaj też login do users collection jako nowy dokument z ID = login
                 await window.addDoc(window.collection(window.db, 'users'), {
                     role: 'player',
                     name: `${characterData.firstName} ${characterData.lastName}`,
                     characterId: characterData.id
                 });
                 
-                showSuccess('Karta postaci została utworzona!');
+                showSuccess(`Karta postaci została utworzona! Login: ${login}`);
                 resetForm();
                 await loadAllCharacters();
                 showAdminSection('characters');
@@ -892,6 +1274,7 @@
         function resetForm() {
             document.getElementById('addCharacterForm').reset();
             document.getElementById('generatedLogin').value = '';
+            // Ustaw dzisiejszą datę jako domyślną
             document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
         }
 
@@ -1068,10 +1451,54 @@
             displayCharacters(sorted);
         }
 
-        // Search and filter functions
+        // Search and filter functions for characters
         document.getElementById('searchCharacters').addEventListener('input', filterCharacters);
         document.getElementById('filterRace').addEventListener('change', filterCharacters);
         document.getElementById('filterRank').addEventListener('change', filterCharacters);
+
+        // Search and filter functions for logs
+        document.getElementById('searchLogs').addEventListener('input', filterLogs);
+        document.getElementById('filterLogType').addEventListener('change', filterLogs);
+        document.getElementById('filterLogPeriod').addEventListener('change', filterLogs);
+
+        function filterLogs() {
+            const search = document.getElementById('searchLogs').value.toLowerCase();
+            const typeFilter = document.getElementById('filterLogType').value;
+            const periodFilter = document.getElementById('filterLogPeriod').value;
+            
+            let filtered = allLogs.filter(log => {
+                const matchesSearch = !search || 
+                    log.actorLogin.toLowerCase().includes(search) ||
+                    log.targetName.toLowerCase().includes(search) ||
+                    log.details.toLowerCase().includes(search);
+                
+                const matchesType = !typeFilter || log.action === typeFilter;
+                
+                let matchesPeriod = true;
+                if (periodFilter) {
+                    const logDate = new Date(log.timestamp);
+                    const now = new Date();
+                    
+                    switch (periodFilter) {
+                        case 'today':
+                            matchesPeriod = logDate.toDateString() === now.toDateString();
+                            break;
+                        case 'week':
+                            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                            matchesPeriod = logDate >= weekAgo;
+                            break;
+                        case 'month':
+                            const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                            matchesPeriod = logDate >= monthAgo;
+                            break;
+                    }
+                }
+                
+                return matchesSearch && matchesType && matchesPeriod;
+            });
+            
+            displayLogs(filtered);
+        }
 
         function filterCharacters() {
             const search = document.getElementById('searchCharacters').value.toLowerCase();
@@ -1105,6 +1532,55 @@
             alert('🔧 Ekwipunek - funkcja w budowie!');
         }
 
+        // Przykład funkcji do logowania zmian statystyk (do wykorzystania później)
+        async function updateCharacterStats(characterId, characterName, statChanges) {
+            try {
+                // Tutaj będzie aktualizacja w Firebase
+                // const characterRef = doc(db, 'characters', characterId);
+                // await updateDoc(characterRef, statChanges);
+                
+                // Stwórz log o zmianie statystyk
+                const changes = {};
+                Object.entries(statChanges).forEach(([stat, newValue]) => {
+                    const oldValue = 0; // Pobierz starą wartość z bazy
+                    changes[stat] = formatChangeValue(oldValue, newValue, stat);
+                });
+                
+                await createLog(
+                    'stats_distributed',
+                    characterId,
+                    characterName,
+                    changes,
+                    'Gracz rozdał punkty statystyk'
+                );
+                
+                console.log('Stats updated and logged');
+            } catch (error) {
+                console.error('Error updating stats:', error);
+            }
+        }
+
+        // Przykład funkcji do logowania nadawania punktów przez admina
+        async function adminGrantPoints(characterId, characterName, pointType, amount) {
+            try {
+                // Tutaj będzie aktualizacja w Firebase
+                
+                await createLog(
+                    'admin_grant',
+                    characterId,
+                    characterName,
+                    {
+                        [pointType]: formatChangeValue(0, amount, pointType) // Tutaj też pobierz starą wartość
+                    },
+                    `Administrator nadał ${amount} punktów ${getFieldDisplayName(pointType)}`
+                );
+                
+                console.log('Points granted and logged');
+            } catch (error) {
+                console.error('Error granting points:', error);
+            }
+        }
+
         // Add form submit handler
         document.getElementById('addCharacterForm').addEventListener('submit', handleAddCharacterSubmit);
 
@@ -1113,6 +1589,11 @@
             if (e.key === 'Enter') {
                 loginUser();
             }
+        });
+
+        // Initialize date input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
         });
     </script>
 </body>
