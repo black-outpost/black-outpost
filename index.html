@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -68,14 +68,7 @@
             margin-bottom: 25px;
         }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #555;
-        }
-
-        .form-group input {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 15px;
             border: 2px solid #e1e1e1;
@@ -84,9 +77,14 @@
             transition: border-color 0.3s;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
             border-color: #333333;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
         }
 
         .dashboard {
@@ -111,17 +109,40 @@
             color: #333333;
         }
 
-        .logout-btn {
+        .logout-btn, .btn-primary, .btn-secondary, .btn-danger {
             padding: 10px 20px;
-            background: #dc3545;
-            color: white;
             border: none;
             border-radius: 6px;
             cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
         }
 
-        .logout-btn:hover {
+        .logout-btn, .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .logout-btn:hover, .btn-danger:hover {
             background: #c82333;
+        }
+
+        .btn-primary {
+            background: #333333;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #555555;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
         }
 
         .menu-grid {
@@ -171,6 +192,181 @@
             margin-bottom: 20px;
             display: none;
         }
+
+        .admin-panel {
+            display: none;
+        }
+
+        .admin-nav {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .admin-nav button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .admin-nav button.active {
+            background: #333333;
+            color: white;
+        }
+
+        .admin-nav button:not(.active) {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .admin-nav button:hover:not(.active) {
+            background: #dee2e6;
+        }
+
+        .characters-list {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .search-filters {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .search-filters input {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .character-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .character-table th, .character-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .character-table th {
+            background: #333333;
+            color: white;
+            cursor: pointer;
+        }
+
+        .character-table th:hover {
+            background: #555555;
+        }
+
+        .character-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .character-form {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .character-card {
+            background: white;
+            border: 2px solid #333;
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+        }
+
+        .card-photo {
+            width: 120px;
+            height: 150px;
+            border: 2px solid #333;
+            margin: 0 auto 15px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .stat-label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-value {
+            color: #666;
+        }
+
+        .character-summary {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin-left: 20px;
+        }
+
+        .character-display {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .character-display {
+                grid-template-columns: 1fr;
+            }
+            
+            .character-summary {
+                margin-left: 0;
+                margin-top: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -195,7 +391,7 @@
             </div>
         </div>
 
-        <!-- Dashboard Screen -->
+        <!-- Player Dashboard -->
         <div id="dashboardScreen" class="dashboard">
             <div class="user-info">
                 <div>
@@ -208,12 +404,12 @@
             </div>
 
             <div class="menu-grid">
-                <div class="menu-card" onclick="openCharacterSheet()">
+                <div class="menu-card" onclick="viewCharacterCard()">
                     <h3>📜 Karta Postaci</h3>
-                    <p>Przeglądaj i edytuj swoją postać</p>
+                    <p>Przeglądaj swoją kartę dostępu</p>
                 </div>
 
-                <div class="menu-card" onclick="openStats()">
+                <div class="menu-card" onclick="viewCharacterStats()">
                     <h3>📊 Statystyki</h3>
                     <p>Sprawdź swoje umiejętności i atrybuty</p>
                 </div>
@@ -222,14 +418,11 @@
                     <h3>🎒 Ekwipunek</h3>
                     <p>Zarządzaj przedmiotami</p>
                 </div>
-
-                <div id="adminPanel" class="menu-card" onclick="openAdminPanel()" style="display: none;">
-                    <h3>⚙️ Panel Admina</h3>
-                    <p>Zarządzaj wszystkimi postaciami</p>
-                </div>
             </div>
-        <!-- Admin Dashboard (tylko dla administratorów) -->
-        <div id="adminDashboard" class="dashboard">
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="adminPanel" class="dashboard admin-panel">
             <div class="user-info">
                 <div>
                     <h3 id="adminWelcomeText">Panel Administratora</h3>
@@ -239,21 +432,160 @@
                     🚪 Wyloguj
                 </button>
             </div>
-            
-            <div style="text-align: center; padding: 50px; color: #666;">
-                <h2>🔧 Panel administratora w budowie</h2>
-                <p>Funkcjonalność zostanie dodana w następnej wersji</p>
+
+            <div class="admin-nav">
+                <button onclick="showAdminSection('characters')" class="active" id="btn-characters">📋 Wszystkie Karty</button>
+                <button onclick="showAdminSection('addCharacter')" id="btn-addCharacter">➕ Dodaj Kartę</button>
+                <button onclick="showAdminSection('settings')" id="btn-settings">⚙️ Ustawienia</button>
             </div>
+
+            <!-- Characters List Section -->
+            <div id="admin-characters" class="admin-section">
+                <div class="characters-list">
+                    <div class="search-filters">
+                        <input type="text" id="searchCharacters" placeholder="🔍 Szukaj po imieniu, nazwisku lub loginie..." style="width: 300px;">
+                        <select id="filterRace" style="width: 150px;">
+                            <option value="">Wszystkie rasy</option>
+                            <option value="Soul-Reaper">Soul-Reaper</option>
+                            <option value="Quincy">Quincy</option>
+                            <option value="Fullbringer">Fullbringer</option>
+                            <option value="Arrancar">Arrancar</option>
+                        </select>
+                        <select id="filterRank" style="width: 150px;">
+                            <option value="">Wszystkie rangi</option>
+                            <option value="I">I</option>
+                            <option value="II">II</option>
+                            <option value="III">III</option>
+                            <option value="IV">IV</option>
+                            <option value="V">V</option>
+                        </select>
+                    </div>
+                    
+                    <table class="character-table" id="charactersTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('id')">ID</th>
+                                <th onclick="sortTable('login')">Login</th>
+                                <th onclick="sortTable('firstName')">Imię</th>
+                                <th onclick="sortTable('lastName')">Nazwisko</th>
+                                <th onclick="sortTable('race')">Rasa</th>
+                                <th onclick="sortTable('rank')">Ranga</th>
+                                <th>Akcje</th>
+                            </tr>
+                        </thead>
+                        <tbody id="charactersTableBody">
+                            <!-- Dane będą wstawiane przez JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Add Character Section -->
+            <div id="admin-addCharacter" class="admin-section" style="display: none;">
+                <h2>Dodaj Nową Kartę Postaci</h2>
+                <form class="character-form" id="addCharacterForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Imię *</label>
+                            <input type="text" id="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nazwisko *</label>
+                            <input type="text" id="lastName" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Login (zostanie wygenerowany)</label>
+                            <input type="text" id="generatedLogin" readonly style="background: #f0f0f0;">
+                        </div>
+                        <div class="form-group">
+                            <label>Data wydania karty *</label>
+                            <input type="date" id="issueDate" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Rasa *</label>
+                            <select id="race" required>
+                                <option value="">Wybierz rasę</option>
+                                <option value="Soul-Reaper">Soul-Reaper</option>
+                                <option value="Quincy">Quincy</option>
+                                <option value="Fullbringer">Fullbringer</option>
+                                <option value="Arrancar">Arrancar</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Wzrost (cm)</label>
+                            <input type="number" id="height" min="100" max="250">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Waga (kg)</label>
+                            <input type="number" id="weight" min="30" max="200">
+                        </div>
+                        <div class="form-group">
+                            <label>URL zdjęcia karty</label>
+                            <input type="url" id="photoUrl" placeholder="https://...">
+                        </div>
+                    </div>
+
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label>Opis Wyglądu</label>
+                            <textarea id="appearance" placeholder="Opisz wygląd postaci..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label>Opis Charakteru</label>
+                            <textarea id="personality" placeholder="Opisz charakter postaci..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label>Historia</label>
+                            <textarea id="history" placeholder="Historia postaci..."></textarea>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button type="button" class="btn-secondary" onclick="resetForm()">Wyczyść</button>
+                        <button type="submit" class="btn-primary">Stwórz Kartę</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="admin-settings" class="admin-section" style="display: none;">
+                <h2>🔧 Ustawienia Systemu</h2>
+                <p>Funkcja w budowie - tutaj będą globalne ustawienia systemu.</p>
+            </div>
+        </div>
+
+        <!-- Character View Modal -->
+        <div id="characterModal" class="dashboard" style="display: none;">
+            <div class="user-info">
+                <div>
+                    <h3>Karta Postaci</h3>
+                </div>
+                <button class="btn-secondary" onclick="closeCharacterModal()">🔙 Powrót</button>
+            </div>
+            <div id="characterDisplay"></div>
         </div>
     </div>
 
     <!-- Firebase SDK -->
     <script type="module">
-        // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
         
-        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
             authDomain: "bleach-black-outpost.firebaseapp.com",
@@ -264,18 +596,23 @@
             measurementId: "G-SBD3766NQ6"
         };
         
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         
-        // Make Firebase available globally
         window.db = db;
         window.getDoc = getDoc;
         window.doc = doc;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.getDocs = getDocs;
+        window.query = query;
+        window.orderBy = orderBy;
     </script>
 
     <script>
         let currentUser = null;
+        let allCharacters = [];
+        let currentSort = { field: 'id', direction: 'asc' };
 
         function showError(message) {
             const errorDiv = document.getElementById('errorMessage');
@@ -304,7 +641,6 @@
             }
 
             try {
-                // Sprawdź w Firebase Firestore
                 const userDoc = await window.getDoc(window.doc(window.db, 'users', loginInput));
                 
                 if (userDoc.exists()) {
@@ -315,7 +651,8 @@
                     };
                     
                     if (userData.role === 'admin') {
-                        showAdminDashboard();
+                        showAdminPanel();
+                        await loadAllCharacters();
                     } else {
                         showDashboard();
                     }
@@ -333,52 +670,445 @@
         function showDashboard() {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboardScreen').style.display = 'block';
-            document.getElementById('adminDashboard').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'none';
             
             document.getElementById('welcomeText').textContent = `Witaj, ${currentUser.name}!`;
             document.getElementById('userRole').textContent = `Rola: ${currentUser.role === 'admin' ? 'Administrator' : 'Gracz'}`;
-            
-            // Pokaż panel admina tylko dla administratorów
-            if (currentUser.role === 'admin') {
-                document.getElementById('adminPanel').style.display = 'block';
-            }
         }
 
-        function showAdminDashboard() {
+        function showAdminPanel() {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboardScreen').style.display = 'none';
-            document.getElementById('adminDashboard').style.display = 'block';
+            document.getElementById('adminPanel').style.display = 'block';
             
             document.getElementById('adminWelcomeText').textContent = `Witaj, ${currentUser.name}!`;
+            showAdminSection('characters');
         }
 
         function logout() {
             currentUser = null;
+            allCharacters = [];
             document.getElementById('loginScreen').style.display = 'block';
             document.getElementById('dashboardScreen').style.display = 'none';
-            document.getElementById('adminDashboard').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('characterModal').style.display = 'none';
             document.getElementById('loginInput').value = '';
             showSuccess('Zostałeś wylogowany!');
         }
 
-        function openCharacterSheet() {
-            alert('🔧 Karta postaci - funkcja w budowie!\nTutaj będzie formularz z danymi postaci.');
+        function showAdminSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none');
+            document.querySelectorAll('.admin-nav button').forEach(b => b.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById('admin-' + section).style.display = 'block';
+            document.getElementById('btn-' + section).classList.add('active');
         }
 
-        function openStats() {
-            alert('🔧 Statystyki - funkcja w budowie!\nTutaj będą wyświetlane umiejętności i atrybuty.');
+        async function loadAllCharacters() {
+            try {
+                const charactersRef = window.collection(window.db, 'characters');
+                const q = window.query(charactersRef, window.orderBy('id'));
+                const querySnapshot = await window.getDocs(q);
+                
+                allCharacters = [];
+                querySnapshot.forEach((doc) => {
+                    allCharacters.push({ docId: doc.id, ...doc.data() });
+                });
+                
+                displayCharacters(allCharacters);
+            } catch (error) {
+                console.error('Błąd ładowania postaci:', error);
+                showError('Błąd ładowania listy postaci.');
+            }
+        }
+
+        function displayCharacters(characters) {
+            const tbody = document.getElementById('charactersTableBody');
+            tbody.innerHTML = '';
+            
+            characters.forEach(character => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${character.id}</td>
+                    <td>${character.login}</td>
+                    <td>${character.firstName}</td>
+                    <td>${character.lastName}</td>
+                    <td>${character.race}</td>
+                    <td>${character.rank}</td>
+                    <td>
+                        <button class="btn-primary" onclick="viewCharacter('${character.docId}')" style="margin-right: 5px; padding: 5px 10px;">👁️ Zobacz</button>
+                        <button class="btn-secondary" onclick="editCharacter('${character.docId}')" style="padding: 5px 10px;">✏️ Edytuj</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function generateLogin(firstName, lastName) {
+            const firstSyllables = extractSyllables(firstName);
+            const lastSyllables = extractSyllables(lastName);
+            
+            const randomFirst = firstSyllables[Math.floor(Math.random() * firstSyllables.length)];
+            const randomLast = lastSyllables[Math.floor(Math.random() * lastSyllables.length)];
+            const randomNumber = Math.floor(Math.random() * 9000) + 1000;
+            
+            return randomFirst + randomLast + randomNumber;
+        }
+
+        function extractSyllables(name) {
+            const vowels = 'aeiouAEIOU';
+            const syllables = [];
+            let currentSyllable = '';
+            
+            for (let i = 0; i < name.length; i++) {
+                currentSyllable += name[i];
+                
+                if (vowels.includes(name[i])) {
+                    if (i + 1 < name.length && !vowels.includes(name[i + 1])) {
+                        currentSyllable += name[i + 1];
+                        i++;
+                    }
+                    syllables.push(currentSyllable);
+                    currentSyllable = '';
+                }
+            }
+            
+            if (currentSyllable) syllables.push(currentSyllable);
+            if (syllables.length === 0) syllables.push(name.substring(0, 2));
+            
+            return syllables;
+        }
+
+        function getNextId() {
+            if (allCharacters.length === 0) return '030001';
+            
+            const maxId = Math.max(...allCharacters.map(c => parseInt(c.id)));
+            return String(maxId + 1).padStart(6, '0');
+        }
+
+        function generateTrait() {
+            const traits = [
+                "Fated Choice - Pozwala wybrać aspekt/żywioł/element swojej zdolności duchowej, przed wykupieniem jej pierwszego poziomu z drzewka Tamashi.",
+                "Battle Instinct - +1 do wszystkich statystyk podczas walki.",
+                "Spiritual Sensitivity - Może wyczuć Reiatsu innych osób w większej odległości.",
+                "Lucky Strike - Szansa na zadanie dodatkowych obrażeń podczas ataku."
+            ];
+            
+            return traits[Math.floor(Math.random() * traits.length)];
+        }
+
+        // Event listeners
+        document.getElementById('firstName').addEventListener('input', updateGeneratedLogin);
+        document.getElementById('lastName').addEventListener('input', updateGeneratedLogin);
+        document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
+
+        function updateGeneratedLogin() {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            
+            if (firstName && lastName) {
+                const login = generateLogin(firstName, lastName);
+                document.getElementById('generatedLogin').value = login;
+            }
+        }
+
+        async function handleAddCharacterSubmit(e) {
+            e.preventDefault();
+            
+            const characterData = {
+                id: getNextId(),
+                login: document.getElementById('generatedLogin').value,
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                race: document.getElementById('race').value,
+                height: parseInt(document.getElementById('height').value) || null,
+                weight: parseInt(document.getElementById('weight').value) || null,
+                photoUrl: document.getElementById('photoUrl').value,
+                appearance: document.getElementById('appearance').value,
+                personality: document.getElementById('personality').value,
+                history: document.getElementById('history').value,
+                issueDate: document.getElementById('issueDate').value,
+                
+                // Domyślne wartości
+                rank: 'I',
+                position: 'Delver',
+                slv: 'Main Delve Team',
+                scA: 'I',
+                
+                // Statystyki podstawowe
+                strength: 0,
+                vitality: 0,
+                speed: 0,
+                defense: 0,
+                reiatsu: 0,
+                
+                // Statystyki umiejętności
+                hakuda: 0,
+                weaponship: 0,
+                tamashi: 0,
+                magic: 0,
+                nazo: '???',
+                
+                // Statystyki gracza
+                pointsToDistribute: 10,
+                nodePointsToDistribute: 0,
+                reisenInHand: 0,
+                reisenAbsorbed: 0,
+                totalNodesFromReisen: 0,
+                nextNodeProgress: '0/1',
+                yenInHand: 100,
+                loyaltyLeft: 100,
+                
+                // Trait i notatki
+                trait: generateTrait(),
+                adminNotes: [],
+                
+                createdAt: new Date().toISOString(),
+                createdBy: currentUser.login
+            };
+            
+            try {
+                await window.addDoc(window.collection(window.db, 'characters'), characterData);
+                
+                // Dodaj też login do users collection
+                await window.addDoc(window.collection(window.db, 'users'), {
+                    role: 'player',
+                    name: `${characterData.firstName} ${characterData.lastName}`,
+                    characterId: characterData.id
+                });
+                
+                showSuccess('Karta postaci została utworzona!');
+                resetForm();
+                await loadAllCharacters();
+                showAdminSection('characters');
+            } catch (error) {
+                console.error('Błąd tworzenia postaci:', error);
+                showError('Błąd podczas tworzenia karty postaci.');
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('addCharacterForm').reset();
+            document.getElementById('generatedLogin').value = '';
+            document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        function viewCharacter(docId) {
+            const character = allCharacters.find(c => c.docId === docId);
+            if (!character) return;
+            
+            displayCharacterCard(character);
+        }
+
+        function displayCharacterCard(character) {
+            const raceWeaponNames = {
+                'Soul-Reaper': 'Zanjutsu',
+                'Arrancar': 'Zanjutsu',
+                'Quincy': 'Ojigi',
+                'Fullbringer': 'Weapon Mastery'
+            };
+            
+            const raceTamashiNames = {
+                'Soul-Reaper': 'Zanpakuto Mastery',
+                'Arrancar': 'Zanpakuto Mastery',
+                'Quincy': 'Blood Legacy',
+                'Fullbringer': 'Fullbring Mastery'
+            };
+            
+            const raceMagicNames = {
+                'Soul-Reaper': 'Kido Mastery',
+                'Arrancar': 'Primal Reiryoku',
+                'Quincy': 'Ginto Mastery',
+                'Fullbringer': 'Soul Manipulation'
+            };
+            
+            const cardHtml = `
+                <div class="character-display">
+                    <div class="character-card">
+                        <div class="card-header">
+                            <h2>BLACK OUTPOST</h2>
+                            <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                                <div>DID: ${character.id}</div>
+                                <div>[${character.position}]</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                                <div>SLV: ${character.slv}</div>
+                                <div>Sc.A.: ${character.scA}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-photo">
+                            ${character.photoUrl ? `<img src="${character.photoUrl}" style="width: 100%; height: 100%; object-fit: cover;">` : 'Brak zdjęcia'}
+                        </div>
+                        
+                        <div style="text-align: center; margin: 15px 0;">
+                            <h3>${character.firstName} ${character.lastName}</h3>
+                            <p><strong>Ranga:</strong> ${character.rank}</p>
+                            <p><strong>Data wydania:</strong> ${character.issueDate}</p>
+                        </div>
+                        
+                        <div style="text-align: center; font-size: 12px; margin-top: 20px;">
+                            All times reserved under Central 46, Resolution XVI
+                        </div>
+                    </div>
+                    
+                    <div class="character-summary">
+                        <h3>${character.firstName} ${character.lastName}</h3>
+                        
+                        <div style="margin: 20px 0;">
+                            <p><strong>Rasa:</strong> ${character.race}</p>
+                            <p><strong>Wzrost:</strong> ${character.height ? character.height + ' cm' : 'Nieznany'}</p>
+                            <p><strong>Waga:</strong> ${character.weight ? character.weight + ' kg' : 'Nieznana'}</p>
+                        </div>
+                        
+                        ${character.appearance ? `<div style="margin: 15px 0;"><strong>Wygląd:</strong><br>${character.appearance}</div>` : ''}
+                        ${character.personality ? `<div style="margin: 15px 0;"><strong>Charakter:</strong><br>${character.personality}</div>` : ''}
+                        ${character.history ? `<div style="margin: 15px 0;"><strong>Historia:</strong><br>${character.history}</div>` : ''}
+                        
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Strength:</span>
+                                <span class="stat-value">${character.strength}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Vitality:</span>
+                                <span class="stat-value">${character.vitality}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Speed:</span>
+                                <span class="stat-value">${character.speed}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Defense:</span>
+                                <span class="stat-value">${character.defense}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Reiatsu:</span>
+                                <span class="stat-value">${character.reiatsu}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Hakuda:</span>
+                                <span class="stat-value">${character.hakuda}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${raceWeaponNames[character.race]}:</span>
+                                <span class="stat-value">${character.weaponship}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${raceTamashiNames[character.race]}:</span>
+                                <span class="stat-value">${character.tamashi}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${raceMagicNames[character.race]}:</span>
+                                <span class="stat-value">${character.magic}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Nazo:</span>
+                                <span class="stat-value">${character.nazo}</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px;">
+                            <h4>Trait:</h4>
+                            <p style="font-style: italic; margin: 10px 0;">${character.trait}</p>
+                        </div>
+                        
+                        <div style="margin-top: 20px;">
+                            <h4>Statystyki gracza:</h4>
+                            <p>Points to Distribute: ${character.pointsToDistribute}</p>
+                            <p>Node Points: ${character.nodePointsToDistribute}</p>
+                            <p>Reisen (in hand): ${character.reisenInHand}</p>
+                            <p>Reisen (absorbed): ${character.reisenAbsorbed}</p>
+                            <p>Next node progress: ${character.nextNodeProgress}</p>
+                            <p>Yen: ${character.yenInHand}</p>
+                            <p>Loyalty left: ${character.loyaltyLeft}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('characterDisplay').innerHTML = cardHtml;
+            document.getElementById('characterModal').style.display = 'block';
+            document.getElementById('adminPanel').style.display = 'none';
+        }
+
+        function closeCharacterModal() {
+            document.getElementById('characterModal').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+        }
+
+        function editCharacter(docId) {
+            alert('🔧 Edycja postaci - funkcja w budowie!');
+        }
+
+        function sortTable(field) {
+            if (currentSort.field === field) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.field = field;
+                currentSort.direction = 'asc';
+            }
+            
+            const sorted = [...allCharacters].sort((a, b) => {
+                let aVal = a[field];
+                let bVal = b[field];
+                
+                if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+                if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+                
+                if (currentSort.direction === 'asc') {
+                    return aVal > bVal ? 1 : -1;
+                } else {
+                    return aVal < bVal ? 1 : -1;
+                }
+            });
+            
+            displayCharacters(sorted);
+        }
+
+        // Search and filter functions
+        document.getElementById('searchCharacters').addEventListener('input', filterCharacters);
+        document.getElementById('filterRace').addEventListener('change', filterCharacters);
+        document.getElementById('filterRank').addEventListener('change', filterCharacters);
+
+        function filterCharacters() {
+            const search = document.getElementById('searchCharacters').value.toLowerCase();
+            const raceFilter = document.getElementById('filterRace').value;
+            const rankFilter = document.getElementById('filterRank').value;
+            
+            const filtered = allCharacters.filter(character => {
+                const matchesSearch = !search || 
+                    character.firstName.toLowerCase().includes(search) ||
+                    character.lastName.toLowerCase().includes(search) ||
+                    character.login.toLowerCase().includes(search);
+                
+                const matchesRace = !raceFilter || character.race === raceFilter;
+                const matchesRank = !rankFilter || character.rank === rankFilter;
+                
+                return matchesSearch && matchesRace && matchesRank;
+            });
+            
+            displayCharacters(filtered);
+        }
+
+        function viewCharacterCard() {
+            alert('🔧 Karta postaci gracza - funkcja w budowie!');
+        }
+
+        function viewCharacterStats() {
+            alert('🔧 Statystyki gracza - funkcja w budowie!');
         }
 
         function openInventory() {
-            alert('🔧 Ekwipunek - funkcja w budowie!\nTutaj będzie lista przedmiotów postaci.');
+            alert('🔧 Ekwipunek - funkcja w budowie!');
         }
 
-        function openAdminPanel() {
-            showAdminDashboard();
-        }
+        // Add form submit handler
+        document.getElementById('addCharacterForm').addEventListener('submit', handleAddCharacterSubmit);
 
-        // Enter key support dla logowania
+        // Enter key support
         document.getElementById('loginInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 loginUser();
