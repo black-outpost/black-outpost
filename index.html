@@ -2963,7 +2963,34 @@
 
         // Test Firebase connection
         window.addEventListener('load', function() {
-            console.log('Strona załadowana, Firebase skonfigurowany');
+            console.log('=== ŁADOWANIE STRONY ===');
+            
+            // Test Firebase
+            setTimeout(function() {
+                console.log('Firebase DB:', window.db ? 'DOSTĘPNE' : 'NIEDOSTĘPNE');
+                console.log('Firebase getDoc:', window.getDoc ? 'DOSTĘPNE' : 'NIEDOSTĘPNE');
+                
+                if (window.db) {
+                    console.log('✅ Firebase zainicjalizowane poprawnie');
+                } else {
+                    console.error('❌ Firebase nie zainicjalizowane!');
+                }
+            }, 1000);
+            
+            // Test przycisku Enter
+            const loginInput = document.getElementById('loginInput');
+            if (loginInput) {
+                console.log('✅ Input logowania znaleziony');
+                loginInput.addEventListener('keypress', function(e) {
+                    console.log('Wciśnięto klawisz:', e.key);
+                    if (e.key === 'Enter') {
+                        console.log('🔑 Wywołuję loginUser()');
+                        loginUser();
+                    }
+                });
+            } else {
+                console.error('❌ Nie znaleziono input logowania!');
+            }
             
             // Add event listeners for forms
             const firstNameInput = document.getElementById('firstName');
@@ -2983,4 +3010,6 @@
             if (editCharacterForm) {
                 editCharacterForm.addEventListener('submit', handleEditSubmit);
             }
+            
+            console.log('=== KONIEC ŁADOWANIA ===');
         });
