@@ -244,6 +244,166 @@
         .admin-section {
             display: none;
         }
+
+        .character-card {
+            background: white;
+            border: 2px solid #333;
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+        }
+
+        .card-photo {
+            width: 120px;
+            height: 150px;
+            border: 2px solid #333;
+            margin: 0 auto 15px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .character-display {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .character-summary {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .stat-label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-value {
+            color: #666;
+        }
+
+        .reiatsu-color {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #333;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .log-entry {
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px;
+            transition: background-color 0.2s;
+        }
+
+        .log-entry:hover {
+            background-color: #f8f9fa;
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .log-action {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .log-time {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .log-details {
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .log-changes {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 10px;
+            margin-top: 8px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .character-display {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -377,8 +537,7 @@
             <div id="admin-logs" class="admin-section">
                 <h2>📜 Logi Systemu</h2>
                 <div style="text-align: center; padding: 40px; color: #666;">
-                    <p>System logów będzie tutaj...</p>
-                    <p>Funkcja w budowie</p>
+                    <p>Ładowanie logów...</p>
                 </div>
             </div>
 
@@ -391,12 +550,20 @@
                 </div>
             </div>
         </div>
+
+        <!-- Character View Modal -->
+        <div id="characterModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeCharacterModal()">&times;</span>
+                <div id="characterDisplay"></div>
+            </div>
+        </div>
     </div>
 
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, collection, addDoc, setDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, setDoc, getDocs, query, orderBy, limit, where } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
@@ -420,11 +587,97 @@
         window.getDocs = getDocs;
         window.query = query;
         window.orderBy = orderBy;
+        window.limit = limit;
+        window.where = where;
     </script>
 
     <script>
         let currentUser = null;
         let allCharacters = [];
+        let allLogs = [];
+
+        // System kolorów Reiatsu
+        function generateRiatsuColor() {
+            const hex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+            const name = getColorName(hex);
+            return { hex: hex, name: name };
+        }
+
+        function getColorName(hex) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            
+            // Określ dominujący kolor
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            const diff = max - min;
+            
+            if (diff < 30) {
+                if (max < 80) return 'Black';
+                if (max > 200) return 'White';
+                return 'Gray';
+            }
+            
+            if (r === max) {
+                if (g > b + 30) return 'Orange';
+                if (b > g + 30) return 'Magenta';
+                return 'Red';
+            } else if (g === max) {
+                if (r > b + 30) return 'Yellow';
+                if (b > r + 30) return 'Cyan';
+                return 'Green';
+            } else {
+                if (r > g + 30) return 'Violet';
+                if (g > r + 30) return 'Teal';
+                return 'Blue';
+            }
+        }
+
+        // System logowania
+        async function createLog(action, targetId, targetName, changes, details = '') {
+            const logEntry = {
+                action: action,
+                actorLogin: currentUser ? getAnonymizedLogin(currentUser.login) : 'System',
+                actorRole: currentUser ? currentUser.role : 'system',
+                targetId: targetId,
+                targetName: targetName,
+                changes: changes || {},
+                details: details,
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                await window.addDoc(window.collection(window.db, 'logs'), logEntry);
+                console.log('Log created:', logEntry);
+            } catch (error) {
+                console.error('Error creating log:', error);
+            }
+        }
+
+        function getAnonymizedLogin(login) {
+            if (!currentUser || currentUser.role !== 'admin') return login;
+            return login.replace(/\d+/g, '');
+        }
+
+        function formatChangeValue(before, after, fieldName) {
+            if (typeof before === 'number' && typeof after === 'number') {
+                const diff = after - before;
+                const diffText = diff > 0 ? `+${diff}` : `${diff}`;
+                return {
+                    before: before,
+                    after: after,
+                    diff: diffText,
+                    type: 'numeric'
+                };
+            } else {
+                return {
+                    before: before || 'brak',
+                    after: after || 'brak',
+                    type: 'text'
+                };
+            }
+        }
 
         function showError(message) {
             const errorDiv = document.getElementById('errorMessage');
@@ -523,6 +776,86 @@
             }
         }
 
+        async function loadLogs() {
+            try {
+                console.log('Ładowanie logów...');
+                const logsRef = window.collection(window.db, 'logs');
+                const q = window.query(logsRef, window.orderBy('timestamp', 'desc'), window.limit(100));
+                const querySnapshot = await window.getDocs(q);
+                
+                allLogs = [];
+                querySnapshot.forEach(function(doc) {
+                    allLogs.push({ 
+                        docId: doc.id, 
+                        ...doc.data() 
+                    });
+                });
+                
+                console.log('Załadowano logi:', allLogs);
+                displayLogs(allLogs);
+            } catch (error) {
+                console.error('Błąd ładowania logów:', error);
+                document.getElementById('admin-logs').innerHTML = `
+                    <h2>📜 Logi Systemu</h2>
+                    <div style="text-align: center; padding: 40px; color: #dc3545;">
+                        <p>Błąd ładowania logów: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayLogs(logs) {
+            let container = document.getElementById('admin-logs');
+            
+            if (logs.length === 0) {
+                container.innerHTML = `
+                    <h2>📜 Logi Systemu</h2>
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <p>Brak logów w systemie</p>
+                        <p>Logi pojawią się po wykonaniu akcji</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let logsHtml = '<h2>📜 Logi Systemu (' + logs.length + ')</h2>';
+            logsHtml += '<div style="background: white; border-radius: 10px; margin-top: 20px;">';
+            
+            logs.forEach(function(log) {
+                const time = new Date(log.timestamp).toLocaleString('pl-PL');
+                const actionText = getActionText(log.action);
+                
+                logsHtml += `
+                    <div class="log-entry">
+                        <div class="log-header">
+                            <span class="log-action">${actionText}</span>
+                            <span class="log-time">${time}</span>
+                        </div>
+                        <div class="log-details">
+                            <strong>${log.actorLogin}</strong> 
+                            ${log.action.includes('created') ? 'stworzył' : 'zmodyfikował'} 
+                            <strong>${log.targetName}</strong>
+                            ${log.details ? ` - ${log.details}` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            logsHtml += '</div>';
+            container.innerHTML = logsHtml;
+        }
+
+        function getActionText(action) {
+            const actionTexts = {
+                'character_created': '🆕 Utworzenie karty',
+                'character_updated': '✏️ Edycja karty',
+                'stats_distributed': '📊 Rozdanie punktów',
+                'admin_grant': '👑 Nadanie przez admin',
+                'profile_updated': '🖼️ Zmiana profilu'
+            };
+            return actionTexts[action] || action;
+        }
+
         function displayCharacters(characters) {
             const container = document.getElementById('admin-characters');
             
@@ -541,12 +874,16 @@
             charactersHtml += '<div style="display: grid; gap: 15px; margin-top: 20px;">';
             
             characters.forEach(function(character) {
+                const riatsuDisplay = character.riatsuColor ? 
+                    `<span class="reiatsu-color" style="background-color: ${character.riatsuColor.hex};" title="${character.riatsuColor.name} Reiatsu"></span>` : 
+                    '';
+                
                 charactersHtml += `
                     <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #333;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
                                 <h3 style="margin: 0 0 5px 0; color: #333;">
-                                    ${character.firstName} ${character.lastName}
+                                    ${character.firstName} ${character.lastName} ${riatsuDisplay}
                                 </h3>
                                 <p style="margin: 0; color: #666;">
                                     <strong>Login:</strong> ${character.login} | 
@@ -593,6 +930,8 @@
             // Load data if needed
             if (section === 'characters' && allCharacters.length > 0) {
                 displayCharacters(allCharacters);
+            } else if (section === 'logs') {
+                loadLogs();
             }
         }
 
@@ -716,6 +1055,8 @@
                 console.error('Błąd sprawdzania loginu:', error);
             }
             
+            const riatsuColor = generateRiatsuColor();
+            
             const characterData = {
                 id: getNextId(),
                 login: login,
@@ -726,6 +1067,32 @@
                 position: 'Delver',
                 slv: 'Main Delve Team',
                 scA: 'I',
+                riatsuColor: riatsuColor,
+                
+                // Podstawowe statystyki
+                strength: 0,
+                vitality: 0,
+                speed: 0,
+                defense: 0,
+                reiatsu: 0,
+                
+                // Statystyki umiejętności
+                hakuda: 0,
+                weaponship: 0,
+                tamashi: 0,
+                magic: 0,
+                nazo: '???',
+                
+                // Statystyki gracza
+                pointsToDistribute: 10,
+                nodePointsToDistribute: 0,
+                reisenInHand: 0,
+                reisenAbsorbed: 0,
+                totalNodesFromReisen: 0,
+                nextNodeProgress: '0/1',
+                yenInHand: 100,
+                loyaltyLeft: 100,
+                
                 createdAt: new Date().toISOString(),
                 createdBy: currentUser.login
             };
@@ -736,15 +1103,28 @@
                 // Dodaj postać do characters collection
                 await window.addDoc(window.collection(window.db, 'characters'), characterData);
                 
-                // WAŻNE: Dodaj login do users collection z konkretnym ID (loginem)
+                // Dodaj login do users collection z konkretnym ID (loginem)
                 await window.setDoc(window.doc(window.db, 'users', login), {
                     role: 'player',
                     name: firstName + ' ' + lastName,
                     characterId: characterData.id
                 });
                 
+                // Stwórz log
+                await createLog(
+                    'character_created',
+                    characterData.id,
+                    firstName + ' ' + lastName,
+                    {
+                        login: formatChangeValue('', login, 'login'),
+                        race: formatChangeValue('', race, 'race'),
+                        riatsuColor: formatChangeValue('', riatsuColor.name, 'riatsuColor')
+                    },
+                    `Nowa karta postaci została utworzona. ID: ${characterData.id}, Reiatsu: ${riatsuColor.name}`
+                );
+                
                 console.log('Postać utworzona pomyślnie!');
-                showSuccess('Karta postaci została utworzona! Login: ' + login);
+                showSuccess('Karta postaci została utworzona! Login: ' + login + ', Reiatsu: ' + riatsuColor.name);
                 resetForm();
                 
                 // Odśwież listę postaci
@@ -768,8 +1148,136 @@
             });
             
             if (character) {
-                alert('👁️ Przeglądanie postaci: ' + character.firstName + ' ' + character.lastName + '\n\nFunkcja w budowie');
+                displayCharacterCard(character);
             }
+        }
+
+        function displayCharacterCard(character) {
+            const raceWeaponNames = {
+                'Soul-Reaper': 'Zanjutsu',
+                'Arrancar': 'Zanjutsu', 
+                'Quincy': 'Ojigi',
+                'Fullbringer': 'Weapon Mastery'
+            };
+            
+            const raceTamashiNames = {
+                'Soul-Reaper': 'Zanpakuto Mastery',
+                'Arrancar': 'Zanpakuto Mastery',
+                'Quincy': 'Blood Legacy',
+                'Fullbringer': 'Fullbring Mastery'
+            };
+            
+            const raceMagicNames = {
+                'Soul-Reaper': 'Kido Mastery',
+                'Arrancar': 'Primal Reiryoku',
+                'Quincy': 'Ginto Mastery',
+                'Fullbringer': 'Soul Manipulation'
+            };
+            
+            const cardHtml = `
+                <div class="character-display">
+                    <div class="character-card">
+                        <div class="card-header">
+                            <h2>BLACK OUTPOST</h2>
+                            <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                                <div>DID: ${character.id}</div>
+                                <div>[${character.position}]</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                                <div>SLV: ${character.slv}</div>
+                                <div>Sc.A.: ${character.scA}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-photo">
+                            ${character.photoUrl ? `<img src="${character.photoUrl}" style="width: 100%; height: 100%; object-fit: cover;">` : 'Brak zdjęcia'}
+                        </div>
+                        
+                        <div style="text-align: center; margin: 15px 0;">
+                            <h3>${character.firstName} ${character.lastName}</h3>
+                            <p><strong>Ranga:</strong> ${character.rank}</p>
+                            <p><strong>Data wydania:</strong> ${character.createdAt ? new Date(character.createdAt).toLocaleDateString('pl-PL') : 'Nieznana'}</p>
+                        </div>
+                        
+                        <div style="text-align: center; font-size: 12px; margin-top: 20px;">
+                            All rights reserved under Central 46, Resolution XVI
+                        </div>
+                    </div>
+                    
+                    <div class="character-summary">
+                        <h3>${character.firstName} ${character.lastName}</h3>
+                        
+                        <div style="margin: 20px 0;">
+                            <p><strong>Rasa:</strong> ${character.race}</p>
+                            <p><strong>Login:</strong> ${character.login}</p>
+                            <p><strong>Reiatsu Color:</strong> ${character.riatsuColor ? character.riatsuColor.name : 'Unknown'} 
+                               <span class="reiatsu-color" style="background-color: ${character.riatsuColor ? character.riatsuColor.hex : '#ccc'};"></span>
+                            </p>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Strength:</span>
+                                <span class="stat-value">${character.strength || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Vitality:</span>
+                                <span class="stat-value">${character.vitality || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Speed:</span>
+                                <span class="stat-value">${character.speed || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Defense:</span>
+                                <span class="stat-value">${character.defense || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Reiatsu:</span>
+                                <span class="stat-value">${character.reiatsu || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Hakuda:</span>
+                                <span class="stat-value">${character.hakuda || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${raceWeaponNames[character.race]}:</span>
+                                <span class="stat-value">${character.weaponship || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${raceTamashiNames[character.race]}:</span>
+                                <span class="stat-value">${character.tamashi || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${raceMagicNames[character.race]}:</span>
+                                <span class="stat-value">${character.magic || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Nazo:</span>
+                                <span class="stat-value">${character.nazo || '???'}</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px;">
+                            <h4>Statystyki gracza:</h4>
+                            <p>Points to Distribute: ${character.pointsToDistribute || 0}</p>
+                            <p>Node Points: ${character.nodePointsToDistribute || 0}</p>
+                            <p>Reisen (in hand): ${character.reisenInHand || 0}</p>
+                            <p>Reisen (absorbed): ${character.reisenAbsorbed || 0}</p>
+                            <p>Next node progress: ${character.nextNodeProgress || '0/1'}</p>
+                            <p>Yen: ${character.yenInHand || 0}</p>
+                            <p>Loyalty left: ${character.loyaltyLeft || 0}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('characterDisplay').innerHTML = cardHtml;
+            document.getElementById('characterModal').style.display = 'block';
+        }
+
+        function closeCharacterModal() {
+            document.getElementById('characterModal').style.display = 'none';
         }
 
         function editCharacter(docId) {
@@ -778,16 +1286,18 @@
             });
             
             if (character) {
-                alert('✏️ Edycja postaci: ' + character.firstName + ' ' + character.lastName + '\n\nFunkcja w budowie');
+                alert('✏️ Edycja postaci: ' + character.firstName + ' ' + character.lastName + '\n\nFunkcja w budowie - zostanie dodana w następnej wersji');
             }
         }
 
         function logout() {
             currentUser = null;
             allCharacters = [];
+            allLogs = [];
             document.getElementById('loginScreen').style.display = 'block';
             document.getElementById('dashboardScreen').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('characterModal').style.display = 'none';
             document.getElementById('loginInput').value = '';
             showSuccess('Zostałeś wylogowany!');
         }
@@ -798,6 +1308,14 @@
                 loginUser();
             }
         });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('characterModal');
+            if (event.target === modal) {
+                closeCharacterModal();
+            }
+        }
 
         // Test Firebase connection
         window.addEventListener('load', function() {
