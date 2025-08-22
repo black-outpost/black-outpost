@@ -2266,4 +2266,721 @@
             
             // Pobierz nowe dane z formularza
             const newData = {
-                firstName: document.getElementById('edit_firstName
+                firstName: document.getElementById('edit_firstName').value.trim(),
+                lastName: document.getElementById('edit_lastName').value.trim(),
+                login: document.getElementById('edit_login').value.trim(),
+                race: document.getElementById('edit_race').value,
+                rank: document.getElementById('edit_rank').value.trim(),
+                position: document.getElementById('edit_position').value.trim(),
+                slv: document.getElementById('edit_slv').value.trim(),
+                scA: document.getElementById('edit_scA').value.trim(),
+                height: parseInt(document.getElementById('edit_height').value) || null,
+                weight: parseInt(document.getElementById('edit_weight').value) || null,
+                photoUrl: document.getElementById('edit_photoUrl').value.trim(),
+                appearance: document.getElementById('edit_appearance').value.trim(),
+                personality: document.getElementById('edit_personality').value.trim(),
+                history: document.getElementById('edit_history').value.trim(),
+                
+                strength: parseInt(document.getElementById('edit_strength').value) || 0,
+                vitality: parseInt(document.getElementById('edit_vitality').value) || 0,
+                speed: parseInt(document.getElementById('edit_speed').value) || 0,
+                defense: parseInt(document.getElementById('edit_defense').value) || 0,
+                reiatsu: parseInt(document.getElementById('edit_reiatsu').value) || 0,
+                hakuda: parseInt(document.getElementById('edit_hakuda').value) || 0,
+                weaponship: parseInt(document.getElementById('edit_weaponship').value) || 0,
+                tamashi: parseInt(document.getElementById('edit_tamashi').value) || 0,
+                magic: parseInt(document.getElementById('edit_magic').value) || 0,
+                nazo: parseInt(document.getElementById('edit_nazo').value) || 0,
+                nazoName: document.getElementById('edit_nazoName').value.trim() || '???',
+                
+                pointsToDistribute: parseInt(document.getElementById('edit_pointsToDistribute').value) || 0,
+                nodePointsToDistribute: parseInt(document.getElementById('edit_nodePointsToDistribute').value) || 0,
+                reisenInHand: parseInt(document.getElementById('edit_reisenInHand').value) || 0,
+                reisenAbsorbed: reisenAbsorbed,
+                totalNodesFromReisen: nodeProgression.totalNodesFromReisen,
+                nextNodeProgress: nodeProgression.nextNodeProgress,
+                yenInHand: parseInt(document.getElementById('edit_yenInHand').value) || 0,
+                loyaltyLeft: parseInt(document.getElementById('edit_loyaltyLeft').value) || 0,
+                
+                riatsuColor: {
+                    hex: riatsuColorHex,
+                    name: riatsuColorName
+                },
+                
+                lastEditedAt: new Date().toISOString(),
+                lastEditedBy: currentUser.login
+            };
+            
+            // Walidacja podstawowych pól
+            if (!newData.firstName || !newData.lastName || !newData.login || !newData.race) {
+                showError('Imię, nazwisko, login i rasa są wymagane!');
+                return;
+            }
+            
+            // Sprawdź czy login się zmienił i czy nowy login już istnieje
+            if (newData.login !== originalCharacter.login) {
+                try {
+                    const existingUser = await window.getDoc(window.doc(window.db, 'users', newData.login));
+                    if (existingUser.exists()) {
+                        showError('Login "' + newData.login + '" już istnieje! Wybierz inny login.');
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Błąd sprawdzania loginu:', error);
+                }
+            }
+            
+            try {
+                // Porównaj zmiany
+                const changes = compareCharacterData(originalCharacter, newData);
+                
+                if (Object.keys(changes).length === 0) {
+                    showSuccess('Brak zmian do zapisania.');
+                    closeEditModal();
+                    return;
+                }
+                
+                // Aktualizuj postać w Firebase
+                const characterRef = window.doc(window.db, 'characters', characterDocId);
+                await window.updateDoc(characterRef, newData);
+                
+                // Jeśli login się zmienił, zaktualizuj users collection
+                if (newData.login !== originalCharacter.login) {
+                    // Usuń stary login
+                    await window.deleteDoc(window.doc(window.db, 'users', originalCharacter.login));
+                    
+                    // Dodaj nowy login
+                    await window.setDoc(window.doc(window.db, 'users', newData.login), {
+                        role: 'player',
+                        name: newData.firstName + ' ' + newData.lastName,
+                        characterId: originalCharacter.id
+                    });
+                }
+                
+                // Stwórz szczegółowy log
+                await createLog(
+                    'character_updated',
+                    originalCharacter.id,
+                    newData.firstName + ' ' + newData.lastName,
+                    changes,
+                    `Administrator zaktualizował kartę postaci. Zmieniono ${Object.keys(changes).length} pól. Node progression: ${nodeProgression.nextNodeProgress}`
+                );
+                
+                // Aktualizuj lokalnie
+                Object.assign(originalCharacter, newData);
+                originalCharacter.docId = characterDocId; // Zachowaj docId
+                
+                showSuccess('Karta postaci została zaktualizowana! Zmieniono ' + Object.keys(changes).length + ' pól.');
+                closeEditModal();
+                
+                // Odśwież listę i wyświetlanie
+                await loadAllCharacters();
+                
+            } catch (error) {
+                console.error('Błąd aktualizacji postaci:', error);
+                showError('Błąd podczas aktualizacji karty postaci: ' + error.message);
+            }
+        }
+
+        function compareCharacterData(original, updated) {
+            const changes = {};
+            const fieldsToCheck = [
+                'firstName', 'lastName', 'login', 'race', 'rank', 'position', 'slv', 'scA',
+                'height', 'weight', 'photoUrl', 'appearance', 'personality', 'history',
+                'strength', 'vitality', 'speed', 'defense', 'reiatsu', 'hakuda', 
+                'weaponship', 'tamashi', 'magic', 'nazo', 'nazoName',
+                'pointsToDistribute', 'nodePointsToDistribute', 'reisenInHand', 
+                'reisenAbsorbed', 'totalNodesFromReisen', 'nextNodeProgress', 'yenInHand', 'loyaltyLeft'
+            ];
+            
+            fieldsToCheck.forEach(function(field) {
+                const oldValue = original[field];
+                const newValue = updated[field];
+                
+                // Porównaj wartości (uwzględniając null/undefined/empty)
+                const normalizedOld = oldValue === null || oldValue === undefined ? '' : String(oldValue);
+                const normalizedNew = newValue === null || newValue === undefined ? '' : String(newValue);
+                
+                if (normalizedOld !== normalizedNew) {
+                    changes[field] = formatChangeValue(oldValue, newValue, field);
+                }
+            });
+            
+            // Sprawdź zmiany koloru Reiatsu
+            const oldColor = original.riatsuColor || { hex: '', name: '' };
+            const newColor = updated.riatsuColor || { hex: '', name: '' };
+            
+            if (oldColor.hex !== newColor.hex || oldColor.name !== newColor.name) {
+                changes['riatsuColor'] = formatChangeValue(
+                    `${oldColor.name} (${oldColor.hex})`,
+                    `${newColor.name} (${newColor.hex})`,
+                    'riatsuColor'
+                );
+            }
+            
+            return changes;
+        }
+
+        async function viewPlayerCharacter() {
+            if (!currentUser || !currentUser.characterId) {
+                showError('Nie znaleziono powiązanej postaci!');
+                return;
+            }
+
+            try {
+                // Znajdź postać gracza po characterId
+                let playerCharacter = allCharacters.find(function(char) {
+                    return char.id === currentUser.characterId;
+                });
+
+                if (!playerCharacter) {
+                    // Jeśli nie ma w cache, pobierz z Firebase
+                    const charactersRef = window.collection(window.db, 'characters');
+                    const q = window.query(charactersRef, window.where('id', '==', currentUser.characterId));
+                    const querySnapshot = await window.getDocs(q);
+                    
+                    if (!querySnapshot.empty) {
+                        querySnapshot.forEach(function(doc) {
+                            playerCharacter = { docId: doc.id, ...doc.data() };
+                        });
+                    }
+                }
+
+                if (playerCharacter) {
+                    displayCharacterCard(playerCharacter);
+                } else {
+                    showError('Nie znaleziono karty postaci!');
+                }
+            } catch (error) {
+                console.error('Błąd ładowania postaci gracza:', error);
+                showError('Błąd ładowania karty postaci: ' + error.message);
+            }
+        }
+
+        async function viewPlayerStats() {
+            if (!currentUser || !currentUser.characterId) {
+                showError('Nie znaleziono powiązanej postaci!');
+                return;
+            }
+
+            try {
+                // Znajdź postać gracza
+                let playerCharacter = allCharacters.find(function(char) {
+                    return char.id === currentUser.characterId;
+                });
+
+                if (!playerCharacter) {
+                    // Pobierz z Firebase jeśli nie ma w cache
+                    const charactersRef = window.collection(window.db, 'characters');
+                    const q = window.query(charactersRef, window.where('id', '==', currentUser.characterId));
+                    const querySnapshot = await window.getDocs(q);
+                    
+                    if (!querySnapshot.empty) {
+                        querySnapshot.forEach(function(doc) {
+                            playerCharacter = { docId: doc.id, ...doc.data() };
+                        });
+                    }
+                }
+
+                if (playerCharacter) {
+                    const raceWeaponNames = {
+                        'Soul-Reaper': 'Zanjutsu',
+                        'Arrancar': 'Zanjutsu', 
+                        'Quincy': 'Ojigi',
+                        'Fullbringer': 'Weapon Mastery'
+                    };
+                    
+                    const raceTamashiNames = {
+                        'Soul-Reaper': 'Zanpakuto Mastery',
+                        'Arrancar': 'Zanpakuto Mastery',
+                        'Quincy': 'Blood Legacy',
+                        'Fullbringer': 'Fullbring Mastery'
+                    };
+                    
+                    const raceMagicNames = {
+                        'Soul-Reaper': 'Kido Mastery',
+                        'Arrancar': 'Primal Reiryoku',
+                        'Quincy': 'Ginto Mastery',
+                        'Fullbringer': 'Soul Manipulation'
+                    };
+
+                    const statsHtml = `
+                        <h3>📊 Twoje Statystyki</h3>
+                        <div style="margin: 20px 0;">
+                            <p><strong>Points to Distribute:</strong> ${playerCharacter.pointsToDistribute || 0}</p>
+                            <p><strong>Node Points:</strong> ${playerCharacter.nodePointsToDistribute || 0}</p>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Strength:</span>
+                                <span class="stat-value">${playerCharacter.strength || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Vitality:</span>
+                                <span class="stat-value">${playerCharacter.vitality || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Speed:</span>
+                                <span class="stat-value">${playerCharacter.speed || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Defense:</span>
+                                <span class="stat-value">${playerCharacter.defense || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Reiatsu:</span>
+                                <span class="stat-value">${playerCharacter.reiatsu || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Hakuda:</span>
+                                <span class="stat-value">${playerCharacter.hakuda || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${raceWeaponNames[playerCharacter.race]}:</span>
+                                <span class="stat-value">${playerCharacter.weaponship || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${raceTamashiNames[playerCharacter.race]}:</span>
+                                <span class="stat-value">${playerCharacter.tamashi || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${raceMagicNames[playerCharacter.race]}:</span>
+                                <span class="stat-value">${playerCharacter.magic || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${playerCharacter.nazoName || '???'}:</span>
+                                <span class="stat-value">${playerCharacter.nazo || 0}</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px;">
+                            <h4>Zasoby:</h4>
+                            <p>Reisen (in hand): ${playerCharacter.reisenInHand || 0}</p>
+                            <p>Reisen (absorbed): ${playerCharacter.reisenAbsorbed || 0}</p>
+                            <p>Next node progress: ${playerCharacter.nextNodeProgress || '0/4'}</p>
+                            <p>Yen: ${playerCharacter.yenInHand || 0}</p>
+                            <p>Loyalty left: ${playerCharacter.loyaltyLeft || 0}</p>
+                        </div>
+                    `;
+                    
+                    document.getElementById('characterDisplay').innerHTML = statsHtml;
+                    document.getElementById('characterModal').style.display = 'block';
+                } else {
+                    showError('Nie znaleziono danych postaci!');
+                }
+            } catch (error) {
+                console.error('Błąd ładowania statystyk:', error);
+                showError('Błąd ładowania statystyk: ' + error.message);
+            }
+        }
+
+        async function openPlayerStatsManager() {
+            if (!currentUser || !currentUser.characterId) {
+                showError('Nie znaleziono powiązanej postaci!');
+                return;
+            }
+
+            try {
+                // Znajdź postać gracza
+                let playerCharacter = allCharacters.find(function(char) {
+                    return char.id === currentUser.characterId;
+                });
+
+                if (!playerCharacter) {
+                    // Pobierz z Firebase jeśli nie ma w cache
+                    const charactersRef = window.collection(window.db, 'characters');
+                    const q = window.query(charactersRef, window.where('id', '==', currentUser.characterId));
+                    const querySnapshot = await window.getDocs(q);
+                    
+                    if (!querySnapshot.empty) {
+                        querySnapshot.forEach(function(doc) {
+                            playerCharacter = { docId: doc.id, ...doc.data() };
+                        });
+                    }
+                }
+
+                if (playerCharacter) {
+                    displayPlayerStatsManager(playerCharacter);
+                } else {
+                    showError('Nie znaleziono danych postaci!');
+                }
+            } catch (error) {
+                console.error('Błąd ładowania managera statystyk:', error);
+                showError('Błąd ładowania managera statystyk: ' + error.message);
+            }
+        }
+
+        function displayPlayerStatsManager(character) {
+            const raceWeaponNames = {
+                'Soul-Reaper': 'Zanjutsu',
+                'Arrancar': 'Zanjutsu', 
+                'Quincy': 'Ojigi',
+                'Fullbringer': 'Weapon Mastery'
+            };
+            
+            const raceTamashiNames = {
+                'Soul-Reaper': 'Zanpakuto Mastery',
+                'Arrancar': 'Zanpakuto Mastery',
+                'Quincy': 'Blood Legacy',
+                'Fullbringer': 'Fullbring Mastery'
+            };
+            
+            const raceMagicNames = {
+                'Soul-Reaper': 'Kido Mastery',
+                'Arrancar': 'Primal Reiryoku',
+                'Quincy': 'Ginto Mastery',
+                'Fullbringer': 'Soul Manipulation'
+            };
+
+            const managerHtml = `
+                <div class="player-resources">
+                    <h3>📊 Dostępne Punkty</h3>
+                    <div class="resource-item">
+                        <strong>Points to Distribute:</strong>
+                        <span id="availablePoints">${character.pointsToDistribute || 0}</span>
+                    </div>
+                    <div class="resource-item">
+                        <strong>Node Points to Distribute:</strong>
+                        <span id="availableNodePoints">${character.nodePointsToDistribute || 0}</span>
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: 10px; padding: 20px; margin: 20px 0;">
+                    <h3>⚔️ Statystyki Podstawowe</h3>
+                    <div id="basicStats">
+                        ${createStatControl('strength', 'Strength', character.strength || 0)}
+                        ${createStatControl('vitality', 'Vitality', character.vitality || 0)}
+                        ${createStatControl('speed', 'Speed', character.speed || 0)}
+                        ${createStatControl('defense', 'Defense', character.defense || 0)}
+                        ${createStatControl('reiatsu', 'Reiatsu', character.reiatsu || 0)}
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: 10px; padding: 20px; margin: 20px 0;">
+                    <h3>🎯 Umiejętności Specjalne</h3>
+                    <div id="skillStats">
+                        ${createStatControl('hakuda', 'Hakuda', character.hakuda || 0)}
+                        ${createStatControl('weaponship', raceWeaponNames[character.race] || 'Weaponship', character.weaponship || 0)}
+                        ${createStatControl('tamashi', raceTamashiNames[character.race] || 'Tamashi', character.tamashi || 0)}
+                        ${createStatControl('magic', raceMagicNames[character.race] || 'Magic', character.magic || 0)}
+                        ${createStatControl('nazo', character.nazoName || '???', character.nazo || 0)}
+                    </div>
+                </div>
+
+                <div class="absorb-section">
+                    <h3>💎 Absorpcja Reisen</h3>
+                    <p>Zamień Reisen in hand na Reisen absorbed</p>
+                    <p><strong>Reisen in hand:</strong> ${character.reisenInHand || 0}</p>
+                    <div class="absorb-controls">
+                        <label>Ilość do absorpcji:</label>
+                        <input type="number" id="absorbAmount" class="absorb-input" min="0" max="${character.reisenInHand || 0}" value="0">
+                        <button class="btn-success" onclick="absorbReisen(${character.reisenInHand || 0})">
+                            💎 Zaabsorbuj
+                        </button>
+                    </div>
+                    <p style="margin-top: 10px;"><strong>Reisen absorbed:</strong> ${character.reisenAbsorbed || 0}</p>
+                    <p><strong>Next node progress:</strong> ${character.nextNodeProgress || '0/4'}</p>
+                </div>
+
+                <div class="player-resources">
+                    <h3>💰 Inne Zasoby</h3>
+                    <div class="resource-item">
+                        <strong>Yen:</strong>
+                        <span>${character.yenInHand || 0}</span>
+                    </div>
+                    <div class="resource-item">
+                        <strong>Loyalty Left:</strong>
+                        <span>${character.loyaltyLeft || 0}</span>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #e1e1e1;">
+                    <button class="btn-primary" onclick="savePlayerStats('${character.docId}')" style="margin-right: 15px;">
+                        💾 Zapisz Zmiany
+                    </button>
+                    <button class="btn-secondary" onclick="closePlayerStatsModal()">
+                        Anuluj
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('playerStatsDisplay').innerHTML = managerHtml;
+            document.getElementById('playerStatsModal').style.display = 'block';
+            
+            // Zapisz dane postaci dla dalszego użycia
+            window.currentPlayerCharacter = character;
+        }
+
+        function createStatControl(statName, statLabel, currentValue) {
+            return `
+                <div class="player-stat-item" data-stat="${statName}">
+                    <div>
+                        <strong>${statLabel}:</strong>
+                        <span class="stat-current-value">${currentValue}</span>
+                    </div>
+                    <div class="stat-controls">
+                        <button class="btn-decrease" onclick="adjustStat('${statName}', -1)">-</button>
+                        <button class="btn-increase" onclick="adjustStat('${statName}', 1)">+</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function adjustStat(statName, change) {
+            if (!window.currentPlayerCharacter) return;
+            
+            const availablePoints = parseInt(document.getElementById('availablePoints').textContent);
+            const currentValue = window.currentPlayerCharacter[statName] || 0;
+            
+            // Sprawdź czy można zwiększyć
+            if (change > 0 && availablePoints <= 0) {
+                showError('Brak dostępnych punktów!');
+                return;
+            }
+            
+            // Sprawdź czy można zmniejszyć
+            if (change < 0 && currentValue <= 0) {
+                showError('Statystyka nie może być mniejsza niż 0!');
+                return;
+            }
+            
+            // Sprawdź limit 100
+            if (change > 0 && currentValue >= 100) {
+                showError('Statystyka nie może być większa niż 100!');
+                return;
+            }
+            
+            // Wykonaj zmianę
+            const newValue = currentValue + change;
+            const newAvailablePoints = availablePoints - change;
+            
+            // Aktualizuj dane postaci
+            window.currentPlayerCharacter[statName] = newValue;
+            window.currentPlayerCharacter.pointsToDistribute = newAvailablePoints;
+            
+            // Aktualizuj interfejs
+            const statElement = document.querySelector(`[data-stat="${statName}"] .stat-current-value`);
+            if (statElement) {
+                statElement.textContent = newValue;
+            }
+            
+            document.getElementById('availablePoints').textContent = newAvailablePoints;
+            
+            // Aktualizuj stan przycisków
+            updateStatButtons();
+        }
+
+        function updateStatButtons() {
+            const availablePoints = parseInt(document.getElementById('availablePoints').textContent);
+            
+            // Aktualizuj wszystkie przyciski
+            document.querySelectorAll('.stat-controls button').forEach(function(button) {
+                const isIncrease = button.classList.contains('btn-increase');
+                const statElement = button.closest('[data-stat]');
+                const statName = statElement.getAttribute('data-stat');
+                const currentValue = window.currentPlayerCharacter[statName] || 0;
+                
+                if (isIncrease) {
+                    button.disabled = (availablePoints <= 0 || currentValue >= 100);
+                } else {
+                    button.disabled = (currentValue <= 0);
+                }
+            });
+        }
+
+        async function absorbReisen(maxAmount) {
+            const absorbAmount = parseInt(document.getElementById('absorbAmount').value) || 0;
+            
+            if (absorbAmount <= 0) {
+                showError('Wprowadź prawidłową ilość do absorpcji!');
+                return;
+            }
+            
+            if (absorbAmount > maxAmount) {
+                showError('Nie masz wystarczającej ilości Reisen in hand!');
+                return;
+            }
+            
+            if (!window.currentPlayerCharacter) {
+                showError('Błąd danych postaci!');
+                return;
+            }
+            
+            try {
+                const character = window.currentPlayerCharacter;
+                const newReisenInHand = (character.reisenInHand || 0) - absorbAmount;
+                const newReisenAbsorbed = (character.reisenAbsorbed || 0) + absorbAmount;
+                
+                // Oblicz nowy node progression
+                const nodeProgression = calculateNodeProgression(newReisenAbsorbed);
+                
+                // Aktualizuj dane postaci
+                character.reisenInHand = newReisenInHand;
+                character.reisenAbsorbed = newReisenAbsorbed;
+                character.totalNodesFromReisen = nodeProgression.totalNodesFromReisen;
+                character.nextNodeProgress = nodeProgression.nextNodeProgress;
+                
+                // Aktualizuj bazę danych
+                const characterRef = window.doc(window.db, 'characters', character.docId);
+                await window.updateDoc(characterRef, {
+                    reisenInHand: newReisenInHand,
+                    reisenAbsorbed: newReisenAbsorbed,
+                    totalNodesFromReisen: nodeProgression.totalNodesFromReisen,
+                    nextNodeProgress: nodeProgression.nextNodeProgress
+                });
+                
+                // Stwórz log
+                await createLog(
+                    'reisen_absorbed',
+                    character.id,
+                    `${character.firstName} ${character.lastName}`,
+                    {
+                        reisenInHand: formatChangeValue(character.reisenInHand + absorbAmount, newReisenInHand, 'reisenInHand'),
+                        reisenAbsorbed: formatChangeValue(character.reisenAbsorbed - absorbAmount, newReisenAbsorbed, 'reisenAbsorbed'),
+                        nextNodeProgress: formatChangeValue('poprzedni', nodeProgression.nextNodeProgress, 'nextNodeProgress')
+                    },
+                    `Gracz zaabsorbował ${absorbAmount} Reisen. Nowy progress: ${nodeProgression.nextNodeProgress}`
+                );
+                
+                showSuccess(`Pomyślnie zaabsorbowano ${absorbAmount} Reisen! Nowy progress: ${nodeProgression.nextNodeProgress}`);
+                
+                // Odśwież wyświetlanie
+                displayPlayerStatsManager(character);
+                
+            } catch (error) {
+                console.error('Błąd absorpcji Reisen:', error);
+                showError('Błąd podczas absorpcji Reisen: ' + error.message);
+            }
+        }
+
+        async function savePlayerStats(characterDocId) {
+            if (!window.currentPlayerCharacter) {
+                showError('Błąd danych postaci!');
+                return;
+            }
+            
+            try {
+                const character = window.currentPlayerCharacter;
+                
+                // Przygotuj dane do aktualizacji
+                const updateData = {
+                    strength: character.strength || 0,
+                    vitality: character.vitality || 0,
+                    speed: character.speed || 0,
+                    defense: character.defense || 0,
+                    reiatsu: character.reiatsu || 0,
+                    hakuda: character.hakuda || 0,
+                    weaponship: character.weaponship || 0,
+                    tamashi: character.tamashi || 0,
+                    magic: character.magic || 0,
+                    nazo: character.nazo || 0,
+                    pointsToDistribute: character.pointsToDistribute || 0,
+                    lastEditedAt: new Date().toISOString(),
+                    lastEditedBy: currentUser.login
+                };
+                
+                // Aktualizuj w Firebase
+                const characterRef = window.doc(window.db, 'characters', characterDocId);
+                await window.updateDoc(characterRef, updateData);
+                
+                // Stwórz log z wydanymi punktami
+                const statsChanges = {};
+                ['strength', 'vitality', 'speed', 'defense', 'reiatsu', 'hakuda', 'weaponship', 'tamashi', 'magic', 'nazo'].forEach(function(stat) {
+                    const originalValue = allCharacters.find(c => c.docId === characterDocId)?.[stat] || 0;
+                    const newValue = character[stat] || 0;
+                    if (originalValue !== newValue) {
+                        statsChanges[stat] = formatChangeValue(originalValue, newValue, stat);
+                    }
+                });
+                
+                if (Object.keys(statsChanges).length > 0) {
+                    await createLog(
+                        'stats_distributed',
+                        character.id,
+                        `${character.firstName} ${character.lastName}`,
+                        statsChanges,
+                        `Gracz wydał punkty statystyk. Pozostało punktów: ${character.pointsToDistribute || 0}`
+                    );
+                }
+                
+                showSuccess('Statystyki zostały zapisane!');
+                closePlayerStatsModal();
+                
+                // Odśwież cache postaci
+                if (currentUser.role === 'admin') {
+                    await loadAllCharacters();
+                }
+                
+            } catch (error) {
+                console.error('Błąd zapisywania statystyk:', error);
+                showError('Błąd podczas zapisywania statystyk: ' + error.message);
+            }
+        }
+
+        function closePlayerStatsModal() {
+            document.getElementById('playerStatsModal').style.display = 'none';
+            window.currentPlayerCharacter = null;
+        }
+
+        function logout() {
+            currentUser = null;
+            allCharacters = [];
+            allLogs = [];
+            window.currentPlayerCharacter = null;
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('dashboardScreen').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('characterModal').style.display = 'none';
+            document.getElementById('playerStatsModal').style.display = 'none';
+            document.getElementById('loginInput').value = '';
+            showSuccess('Zostałeś wylogowany!');
+        }
+
+        // Enter key support
+        document.getElementById('loginInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loginUser();
+            }
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const characterModal = document.getElementById('characterModal');
+            const editModal = document.getElementById('editCharacterModal');
+            const playerStatsModal = document.getElementById('playerStatsModal');
+            
+            if (event.target === characterModal) {
+                closeCharacterModal();
+            }
+            if (event.target === editModal) {
+                closeEditModal();
+            }
+            if (event.target === playerStatsModal) {
+                closePlayerStatsModal();
+            }
+        }
+
+        // Test Firebase connection
+        window.addEventListener('load', function() {
+            console.log('Strona załadowana, Firebase skonfigurowany');
+            
+            // Add event listeners for forms
+            const firstNameInput = document.getElementById('firstName');
+            const lastNameInput = document.getElementById('lastName');
+            const addCharacterForm = document.getElementById('addCharacterForm');
+            const editCharacterForm = document.getElementById('editCharacterForm');
+            
+            if (firstNameInput) {
+                firstNameInput.addEventListener('input', updateGeneratedLogin);
+            }
+            if (lastNameInput) {
+                lastNameInput.addEventListener('input', updateGeneratedLogin);
+            }
+            if (addCharacterForm) {
+                addCharacterForm.addEventListener('submit', handleAddCharacterSubmit);
+            }
+            if (editCharacterForm) {
+                editCharacterForm.addEventListener('submit', handleEditSubmit);
+            }
+        });
