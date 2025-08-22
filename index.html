@@ -33,8 +33,7 @@
         .header img {
             max-width: 100%;
             height: auto;
-            max-height: 300px;
-            border-radius: 10px;
+            max-height: 200px;
         }
 
         .login-container {
@@ -123,7 +122,7 @@
             color: #333333;
         }
 
-        .logout-btn, .btn-primary, .btn-secondary, .btn-success, .btn-danger {
+        .logout-btn, .btn-primary, .btn-secondary {
             padding: 10px 20px;
             border: none;
             border-radius: 6px;
@@ -157,24 +156,6 @@
 
         .btn-secondary:hover {
             background: #545b62;
-        }
-
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #218838;
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #c82333;
         }
 
         .menu-grid {
@@ -264,228 +245,48 @@
             display: none;
         }
 
-        /* Nowy design identyfikatora */
-        .character-id-card {
-            background: linear-gradient(45deg, #f8f9fa 0%, #e9ecef 100%);
-            border: 3px solid #333;
+        .character-card {
+            background: white;
+            border: 2px solid #333;
             border-radius: 15px;
             padding: 20px;
-            width: 450px;
+            max-width: 400px;
             margin: 20px auto;
             position: relative;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
         }
 
-        .id-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
-        }
-
-        .id-card-logo {
-            width: 60px;
-            height: 60px;
-        }
-
-        .id-card-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
+        .card-header {
             text-align: center;
-            flex: 1;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
         }
 
-        .id-card-rank {
-            background: #333;
-            color: white;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
-        }
-
-        .id-card-content {
-            display: flex;
-            gap: 20px;
-            align-items: flex-start;
-        }
-
-        .id-card-photo {
+        .card-photo {
             width: 120px;
             height: 150px;
             border: 2px solid #333;
+            margin: 0 auto 15px;
             background: #f0f0f0;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 12px;
             color: #666;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .id-card-photo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .id-card-info {
-            flex: 1;
-        }
-
-        .id-card-name {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .id-card-details {
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .id-card-details strong {
-            color: #333;
-        }
-
-        .id-card-footer {
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px solid #333;
-            font-size: 10px;
-            text-align: center;
-            color: #666;
-        }
-
-        .id-card-barcode {
-            margin-top: 10px;
-            text-align: center;
-        }
-
-        .barcode {
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            letter-spacing: 1px;
-            color: #333;
-        }
-
-        /* Wiki-style info box */
-        .character-info-box {
-            background: #f8f9fa;
-            border: 1px solid #a2a9b1;
-            border-radius: 8px;
-            width: 300px;
-            margin: 20px;
-            font-size: 14px;
-        }
-
-        .info-box-header {
-            background: #eaecf0;
-            border-bottom: 1px solid #a2a9b1;
-            padding: 12px;
-            text-align: center;
-            font-weight: bold;
-            color: #333;
-            border-radius: 8px 8px 0 0;
-        }
-
-        .info-box-image {
-            text-align: center;
-            padding: 15px;
-            border-bottom: 1px solid #eaecf0;
-        }
-
-        .info-box-image img {
-            max-width: 200px;
-            max-height: 250px;
-            border: 1px solid #a2a9b1;
-            border-radius: 4px;
-        }
-
-        .info-box-content {
-            padding: 0;
-        }
-
-        .info-box-section {
-            border-bottom: 1px solid #eaecf0;
-        }
-
-        .info-box-section:last-child {
-            border-bottom: none;
-        }
-
-        .info-box-section-header {
-            background: #eaecf0;
-            padding: 8px 12px;
-            font-weight: bold;
-            color: #333;
-            border-bottom: 1px solid #a2a9b1;
-        }
-
-        .info-box-row {
-            display: flex;
-            border-bottom: 1px solid #eaecf0;
-        }
-
-        .info-box-row:last-child {
-            border-bottom: none;
-        }
-
-        .info-box-label {
-            background: #f8f9fa;
-            padding: 8px 12px;
-            font-weight: bold;
-            color: #333;
-            width: 40%;
-            border-right: 1px solid #eaecf0;
-        }
-
-        .info-box-value {
-            padding: 8px 12px;
-            width: 60%;
         }
 
         .character-display {
             display: grid;
-            grid-template-columns: 450px 320px 1fr;
+            grid-template-columns: 400px 1fr;
             gap: 20px;
             align-items: start;
-            margin: 20px 0;
         }
 
-        .character-description {
-            grid-column: 1 / -1;
-            margin-top: 30px;
-        }
-
-        .description-section {
-            background: white;
-            border: 1px solid #a2a9b1;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .description-header {
-            background: #eaecf0;
-            padding: 12px 20px;
-            font-weight: bold;
-            color: #333;
-            border-bottom: 1px solid #a2a9b1;
-        }
-
-        .description-content {
+        .character-summary {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
             padding: 20px;
-            line-height: 1.6;
         }
 
         .stats-grid {
@@ -536,12 +337,12 @@
 
         .modal-content {
             background-color: white;
-            margin: 2% auto;
+            margin: 5% auto;
             padding: 20px;
             border-radius: 10px;
-            width: 95%;
-            max-width: 1400px;
-            max-height: 90vh;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 80vh;
             overflow-y: auto;
         }
 
@@ -598,130 +399,9 @@
             font-size: 0.9em;
         }
 
-        /* Style dla statystyk gracza */
-        .player-stat-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .player-stat-item:hover {
-            border-color: #333;
-        }
-
-        .stat-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .stat-controls button {
-            width: 30px;
-            height: 30px;
-            border: none;
-            border-radius: 50%;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .stat-controls .btn-decrease {
-            background: #dc3545;
-            color: white;
-        }
-
-        .stat-controls .btn-increase {
-            background: #28a745;
-            color: white;
-        }
-
-        .stat-controls button:hover {
-            transform: scale(1.1);
-        }
-
-        .stat-controls button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .player-resources {
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-
-        .resource-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-        }
-
-        .resource-item:last-child {
-            border-bottom: none;
-        }
-
-        .absorb-section {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .absorb-controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .absorb-input {
-            width: 80px;
-            padding: 8px;
-            border: 2px solid #333;
-            border-radius: 6px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        @media (max-width: 1200px) {
+        @media (max-width: 768px) {
             .character-display {
                 grid-template-columns: 1fr;
-                justify-items: center;
-            }
-            
-            .character-id-card {
-                width: 100%;
-                max-width: 450px;
-            }
-            
-            .character-info-box {
-                width: 100%;
-                max-width: 320px;
-                margin: 20px auto;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .id-card-content {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
             }
         }
     </style>
@@ -729,7 +409,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="https://cdn.discordapp.com/attachments/1408447648767414476/1408448992823742534/ca1e976cb52023489b7166821e03ef96.png?ex=68a9c7d7&is=68a87657&hm=039756c362d7bdd93b446bd18766930b8ee3a7c0aacc9b8eb9b195ba98aebfdc&" alt="Bleach Black Outpost Logo">
+            <!-- Tutaj wklej swoją grafikę serwera -->
+            <!-- <img src="sciezka_do_twojej_grafiki.png" alt="Logo Serwera"> -->
         </div>
 
         <!-- Login Screen -->
@@ -742,7 +423,7 @@
                 <div id="successMessage" class="success-message"></div>
 
                 <div class="form-group">
-                    <input type="text" id="loginInput" placeholder="Login (np. AiSo1234)">
+                    <input type="text" id="loginInput" placeholder="ex. AiSo123">
                 </div>
             </div>
         </div>
@@ -765,13 +446,8 @@
                     <p>Przeglądaj swoją kartę dostępu</p>
                 </div>
 
-                <div class="menu-card" onclick="openPlayerStatsManager()">
-                    <h3>📊 Zarządzaj Statystykami</h3>
-                    <p>Wydaj punkty i zarządzaj zasobami</p>
-                </div>
-
                 <div class="menu-card" onclick="viewPlayerStats()">
-                    <h3>👁️ Podgląd Statystyk</h3>
+                    <h3>📊 Statystyki</h3>
                     <p>Sprawdź swoje umiejętności i atrybuty</p>
                 </div>
 
@@ -880,17 +556,6 @@
             <div class="modal-content">
                 <span class="close" onclick="closeCharacterModal()">&times;</span>
                 <div id="characterDisplay"></div>
-            </div>
-        </div>
-
-        <!-- Player Stats Manager Modal -->
-        <div id="playerStatsModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closePlayerStatsModal()">&times;</span>
-                <div id="playerStatsContent">
-                    <h2>📊 Zarządzanie Statystykami</h2>
-                    <div id="playerStatsDisplay"></div>
-                </div>
             </div>
         </div>
 
@@ -1075,33 +740,34 @@
                             <div class="form-group">
                                 <label>Reisen (absorbed)</label>
                                 <input type="number" id="edit_reisenAbsorbed" min="0" max="9999">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Reisen (absorbed)</label>
+                                <input type="number" id="edit_reisenAbsorbed" min="0" max="9999">
                                 <small style="color: #666; display: block; margin-top: 5px;">
                                     Na podstawie tego obliczane są Total Nodes i Next Node Progress
                                 </small>
                             </div>
-                        </div>
-
-                        <div class="form-row">
                             <div class="form-group">
                                 <label>Yen (in hand)</label>
                                 <input type="number" id="edit_yenInHand" min="0" max="999999">
                             </div>
+                        </div>
+
+                        <div class="form-row">
                             <div class="form-group">
                                 <label>Loyalty Left</label>
                                 <input type="number" id="edit_loyaltyLeft" min="0" max="100">
                             </div>
-                        </div>
-
-                        <div class="form-row">
                             <div class="form-group">
                                 <label>Kolor Reiatsu</label>
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <input type="color" id="edit_riatsuColorHex" style="width: 50px; height: 40px; border: none; border-radius: 6px; cursor: pointer;">
                                     <input type="text" id="edit_riatsuColorName" placeholder="Nazwa koloru" style="flex: 1;">
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <!-- Puste miejsce -->
                             </div>
                         </div>
 
@@ -1360,19 +1026,16 @@
 
             try {
                 console.log('Próba logowania:', loginInput);
-                
-                // Sprawdź czy to login użytkownika
                 const userDoc = await window.getDoc(window.doc(window.db, 'users', loginInput));
                 
                 if (userDoc.exists()) {
-                    // Logowanie przez login
                     const userData = userDoc.data();
                     currentUser = {
                         login: loginInput,
                         ...userData
                     };
                     
-                    console.log('Zalogowano przez login:', currentUser);
+                    console.log('Zalogowano:', currentUser);
                     
                     if (userData.role === 'admin') {
                         showAdminPanel();
@@ -1490,7 +1153,7 @@
                         </div>
                         <div class="log-details">
                             <strong>${log.actorLogin}</strong> 
-                            ${log.action.includes('created') ? 'stworzył' : log.action.includes('stats_distributed') ? 'wydał punkty dla' : log.action.includes('reisen_absorbed') ? 'zaabsorbował reisen dla' : 'zmodyfikował'} 
+                            ${log.action.includes('created') ? 'stworzył' : 'zmodyfikował'} 
                             <strong>${log.targetName}</strong>
                             ${log.details ? ` - ${log.details}` : ''}
                         </div>
@@ -1538,7 +1201,6 @@
                 'character_created': '🆕 Utworzenie karty',
                 'character_updated': '✏️ Edycja karty',
                 'stats_distributed': '📊 Rozdanie punktów',
-                'reisen_absorbed': '💎 Absorpcja reisen',
                 'admin_grant': '👑 Nadanie przez admin',
                 'profile_updated': '🖼️ Zmiana profilu'
             };
@@ -1783,7 +1445,7 @@
                 reisenInHand: 0,
                 reisenAbsorbed: 0,
                 totalNodesFromReisen: 0,
-                nextNodeProgress: '0/4',
+                nextNodeProgress: '0/1',
                 yenInHand: 100,
                 loyaltyLeft: 100,
                 
@@ -1868,207 +1530,120 @@
                 'Quincy': 'Ginto Mastery',
                 'Fullbringer': 'Soul Manipulation'
             };
-
-            const createdDate = character.createdAt ? new Date(character.createdAt).toLocaleDateString('pl-PL') : '2015-4-16 AD.';
             
             const cardHtml = `
                 <div class="character-display">
-                    <!-- Identyfikator jak na obrazku -->
-                    <div class="character-id-card">
-                        <div class="id-card-header">
-                            <img src="https://cdn.discordapp.com/attachments/1408447648767414476/1408449604135030834/Logo_OLS.png?ex=68a9c869&is=68a876e9&hm=c7c23aca1cb6fb28efa92c5aa56869756382da1f44fffd6ce0e18a8929e705a5&" alt="OLS Logo" class="id-card-logo">
-                            <div class="id-card-title">BLACK OUTPOST</div>
-                            <div class="id-card-rank">${character.rank || 'I'}</div>
-                        </div>
-                        
-                        <div class="id-card-content">
-                            <div class="id-card-photo">
-                                ${character.photoUrl ? `<img src="${character.photoUrl}" alt="Zdjęcie ${character.firstName}">` : 'Brak zdjęcia'}
+                    <div class="character-card">
+                        <div class="card-header">
+                            <h2>BLACK OUTPOST</h2>
+                            <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                                <div>DID: ${character.id}</div>
+                                <div>[${character.position}]</div>
                             </div>
-                            
-                            <div class="id-card-info">
-                                <div class="id-card-name">${character.firstName} ${character.lastName}</div>
-                                <div class="id-card-details">
-                                    <strong>DID:</strong> ${character.id}<br>
-                                    <strong>SLV:</strong> ${character.slv || 'Main Delve Team'}<br>
-                                    <strong>Sc.A.:</strong> ${character.scA || 'I'}<br>
-                                    <strong>[${character.position || 'Delver'}]</strong>
-                                </div>
+                            <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                                <div>SLV: ${character.slv}</div>
+                                <div>Sc.A.: ${character.scA}</div>
                             </div>
                         </div>
                         
-                        <div class="id-card-footer">
-                            <div>${createdDate}</div>
-                            <div>All rights reserved under Central 46, Resolution XVI</div>
-                            <div class="id-card-barcode">
-                                <div class="barcode">||||| |||| | ||||| || | ||| |||||| || |||</div>
-                            </div>
+                        <div class="card-photo">
+                            ${character.photoUrl ? `<img src="${character.photoUrl}" style="width: 100%; height: 100%; object-fit: cover;" alt="Zdjęcie ${character.firstName}">` : 'Brak zdjęcia'}
+                        </div>
+                        
+                        <div style="text-align: center; margin: 15px 0;">
+                            <h3>${character.firstName} ${character.lastName}</h3>
+                            <p><strong>Ranga:</strong> ${character.rank}</p>
+                            <p><strong>Data wydania:</strong> ${character.createdAt ? new Date(character.createdAt).toLocaleDateString('pl-PL') : 'Nieznana'}</p>
+                        </div>
+                        
+                        <div style="text-align: center; font-size: 12px; margin-top: 20px;">
+                            All rights reserved under Central 46, Resolution XVI
                         </div>
                     </div>
                     
-                    <!-- Wiki-style info box -->
-                    <div class="character-info-box">
-                        <div class="info-box-header">${character.firstName} ${character.lastName}</div>
+                    <div class="character-summary">
+                        <h3>${character.firstName} ${character.lastName}</h3>
                         
-                        ${character.photoUrl ? `
-                        <div class="info-box-image">
-                            <img src="${character.photoUrl}" alt="${character.firstName} ${character.lastName}">
+                        <div style="margin: 20px 0;">
+                            <p><strong>Rasa:</strong> ${character.race}</p>
+                            <p><strong>Login:</strong> ${character.login}</p>
+                            <p><strong>Reiatsu Color:</strong> ${character.riatsuColor ? character.riatsuColor.name : 'Unknown'} 
+                               <span class="reiatsu-color" style="background-color: ${character.riatsuColor ? character.riatsuColor.hex : '#ccc'};"></span>
+                            </p>
+                            ${character.height ? `<p><strong>Wzrost:</strong> ${character.height} cm</p>` : ''}
+                            ${character.weight ? `<p><strong>Waga:</strong> ${character.weight} kg</p>` : ''}
+                        </div>
+                        
+                        ${character.appearance ? `<div style="margin: 15px 0;"><strong>Wygląd:</strong><br>${character.appearance}</div>` : ''}
+                        ${character.personality ? `<div style="margin: 15px 0;"><strong>Charakter:</strong><br>${character.personality}</div>` : ''}
+                        ${character.history ? `<div style="margin: 15px 0;"><strong>Historia:</strong><br>${character.history}</div>` : ''}
+                        
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Strength:</span>
+                                <span class="stat-value">${character.strength || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Vitality:</span>
+                                <span class="stat-value">${character.vitality || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Speed:</span>
+                                <span class="stat-value">${character.speed || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Defense:</span>
+                                <span class="stat-value">${character.defense || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Reiatsu:</span>
+                                <span class="stat-value">${character.reiatsu || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Hakuda:</span>
+                                <span class="stat-value">${character.hakuda || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${raceWeaponNames[character.race]}:</span>
+                                <span class="stat-value">${character.weaponship || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${raceTamashiNames[character.race]}:</span>
+                                <span class="stat-value">${character.tamashi || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${raceMagicNames[character.race]}:</span>
+                                <span class="stat-value">${character.magic || 0}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">${character.nazoName || '???'}:</span>
+                                <span class="stat-value">${character.nazo || 0}</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px;">
+                            <h4>Statystyki gracza:</h4>
+                            <p>Points to Distribute: ${character.pointsToDistribute || 0}</p>
+                            <p>Node Points: ${character.nodePointsToDistribute || 0}</p>
+                            <p>Reisen (in hand): ${character.reisenInHand || 0}</p>
+                            <p>Reisen (absorbed): ${character.reisenAbsorbed || 0}</p>
+                            <p>Next node progress: ${character.nextNodeProgress || '0/1'}</p>
+                            <p>Yen: ${character.yenInHand || 0}</p>
+                            <p>Loyalty left: ${character.loyaltyLeft || 0}</p>
+                        </div>
+
+                        ${currentUser && currentUser.role === 'admin' ? `
+                        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #dee2e6;">
+                            <h4>Panel Administratora:</h4>
+                            <button class="btn-secondary" onclick="changeNazoName('${character.docId}')" style="margin-right: 10px;">
+                                🔮 Zmień nazwę "${character.nazoName || '???'}"
+                            </button>
+                            <button class="btn-primary" onclick="editCharacter('${character.docId}')">
+                                ✏️ Edytuj postać
+                            </button>
                         </div>
                         ` : ''}
-                        
-                        <div class="info-box-content">
-                            <div class="info-box-section">
-                                <div class="info-box-section-header">Podstawowe Informacje</div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Rasa</div>
-                                    <div class="info-box-value">${character.race}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Ranga</div>
-                                    <div class="info-box-value">${character.rank || 'I'}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Pozycja</div>
-                                    <div class="info-box-value">${character.position || 'Delver'}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Reiatsu</div>
-                                    <div class="info-box-value">
-                                        ${character.riatsuColor ? character.riatsuColor.name : 'Unknown'} 
-                                        <span class="reiatsu-color" style="background-color: ${character.riatsuColor ? character.riatsuColor.hex : '#ccc'};"></span>
-                                    </div>
-                                </div>
-                                ${character.height ? `
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Wzrost</div>
-                                    <div class="info-box-value">${character.height} cm</div>
-                                </div>
-                                ` : ''}
-                                ${character.weight ? `
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Waga</div>
-                                    <div class="info-box-value">${character.weight} kg</div>
-                                </div>
-                                ` : ''}
-                            </div>
-                            
-                            <div class="info-box-section">
-                                <div class="info-box-section-header">Statystyki Bojowe</div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Strength</div>
-                                    <div class="info-box-value">${character.strength || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Vitality</div>
-                                    <div class="info-box-value">${character.vitality || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Speed</div>
-                                    <div class="info-box-value">${character.speed || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Defense</div>
-                                    <div class="info-box-value">${character.defense || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Reiatsu</div>
-                                    <div class="info-box-value">${character.reiatsu || 0}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="info-box-section">
-                                <div class="info-box-section-header">Umiejętności Specjalne</div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Hakuda</div>
-                                    <div class="info-box-value">${character.hakuda || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">${raceWeaponNames[character.race] || 'Weaponship'}</div>
-                                    <div class="info-box-value">${character.weaponship || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">${raceTamashiNames[character.race] || 'Tamashi'}</div>
-                                    <div class="info-box-value">${character.tamashi || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">${raceMagicNames[character.race] || 'Magic'}</div>
-                                    <div class="info-box-value">${character.magic || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">${character.nazoName || '???'}</div>
-                                    <div class="info-box-value">${character.nazo || 0}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="info-box-section">
-                                <div class="info-box-section-header">Zasoby</div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Points to Distribute</div>
-                                    <div class="info-box-value">${character.pointsToDistribute || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Node Points</div>
-                                    <div class="info-box-value">${character.nodePointsToDistribute || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Reisen (in hand)</div>
-                                    <div class="info-box-value">${character.reisenInHand || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Reisen (absorbed)</div>
-                                    <div class="info-box-value">${character.reisenAbsorbed || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Next Node Progress</div>
-                                    <div class="info-box-value">${character.nextNodeProgress || '0/4'}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Yen</div>
-                                    <div class="info-box-value">${character.yenInHand || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Loyalty Left</div>
-                                    <div class="info-box-value">${character.loyaltyLeft || 0}</div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
-                    
-                    ${currentUser && currentUser.role === 'admin' ? `
-                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border: 1px solid #dee2e6;">
-                        <h4>Panel Administratora</h4>
-                        <button class="btn-secondary" onclick="changeNazoName('${character.docId}')" style="margin-right: 10px; margin-bottom: 10px;">
-                            🔮 Zmień nazwę "${character.nazoName || '???'}"
-                        </button>
-                        <button class="btn-primary" onclick="editCharacter('${character.docId}')">
-                            ✏️ Edytuj postać
-                        </button>
-                    </div>
-                    ` : ''}
-                </div>
-                
-                <!-- Sekcje opisów jak na wiki -->
-                <div class="character-description">
-                    ${character.appearance ? `
-                    <div class="description-section">
-                        <div class="description-header">Wygląd</div>
-                        <div class="description-content">${character.appearance}</div>
-                    </div>
-                    ` : ''}
-                    
-                    ${character.personality ? `
-                    <div class="description-section">
-                        <div class="description-header">Charakter</div>
-                        <div class="description-content">${character.personality}</div>
-                    </div>
-                    ` : ''}
-                    
-                    ${character.history ? `
-                    <div class="description-section">
-                        <div class="description-header">Historia</div>
-                        <div class="description-content">${character.history}</div>
-                    </div>
-                    ` : ''}
                 </div>
             `;
             
@@ -2370,7 +1945,7 @@
                 Object.assign(originalCharacter, newData);
                 originalCharacter.docId = characterDocId; // Zachowaj docId
                 
-                showSuccess('Karta postaci została zaktualizowana! Zmieniono ' + Object.keys(changes).length + ' pól.');
+                showSuccess('Karta postaci została zaktualizowana! Zmieniono ' + Object.keys(changes).length + ' pól. Node progression: ' + nodeProgression.nextNodeProgress);
                 closeEditModal();
                 
                 // Odśwież listę i wyświetlanie
@@ -2429,11 +2004,13 @@
 
             try {
                 // Znajdź postać gracza po characterId
-                let playerCharacter = allCharacters.find(function(char) {
+                const playerCharacter = allCharacters.find(function(char) {
                     return char.id === currentUser.characterId;
                 });
 
-                if (!playerCharacter) {
+                if (playerCharacter) {
+                    displayCharacterCard(playerCharacter);
+                } else {
                     // Jeśli nie ma w cache, pobierz z Firebase
                     const charactersRef = window.collection(window.db, 'characters');
                     const q = window.query(charactersRef, window.where('id', '==', currentUser.characterId));
@@ -2441,15 +2018,12 @@
                     
                     if (!querySnapshot.empty) {
                         querySnapshot.forEach(function(doc) {
-                            playerCharacter = { docId: doc.id, ...doc.data() };
+                            const character = { docId: doc.id, ...doc.data() };
+                            displayCharacterCard(character);
                         });
+                    } else {
+                        showError('Nie znaleziono karty postaci!');
                     }
-                }
-
-                if (playerCharacter) {
-                    displayCharacterCard(playerCharacter);
-                } else {
-                    showError('Nie znaleziono karty postaci!');
                 }
             } catch (error) {
                 console.error('Błąd ładowania postaci gracza:', error);
@@ -2558,7 +2132,7 @@
                             <h4>Zasoby:</h4>
                             <p>Reisen (in hand): ${playerCharacter.reisenInHand || 0}</p>
                             <p>Reisen (absorbed): ${playerCharacter.reisenAbsorbed || 0}</p>
-                            <p>Next node progress: ${playerCharacter.nextNodeProgress || '0/4'}</p>
+                            <p>Next node progress: ${playerCharacter.nextNodeProgress || '0/1'}</p>
                             <p>Yen: ${playerCharacter.yenInHand || 0}</p>
                             <p>Loyalty left: ${playerCharacter.loyaltyLeft || 0}</p>
                         </div>
@@ -2575,364 +2149,14 @@
             }
         }
 
-        async function openPlayerStatsManager() {
-            if (!currentUser || !currentUser.characterId) {
-                showError('Nie znaleziono powiązanej postaci!');
-                return;
-            }
-
-            try {
-                // Znajdź postać gracza
-                let playerCharacter = allCharacters.find(function(char) {
-                    return char.id === currentUser.characterId;
-                });
-
-                if (!playerCharacter) {
-                    // Pobierz z Firebase jeśli nie ma w cache
-                    const charactersRef = window.collection(window.db, 'characters');
-                    const q = window.query(charactersRef, window.where('id', '==', currentUser.characterId));
-                    const querySnapshot = await window.getDocs(q);
-                    
-                    if (!querySnapshot.empty) {
-                        querySnapshot.forEach(function(doc) {
-                            playerCharacter = { docId: doc.id, ...doc.data() };
-                        });
-                    }
-                }
-
-                if (playerCharacter) {
-                    displayPlayerStatsManager(playerCharacter);
-                } else {
-                    showError('Nie znaleziono danych postaci!');
-                }
-            } catch (error) {
-                console.error('Błąd ładowania managera statystyk:', error);
-                showError('Błąd ładowania managera statystyk: ' + error.message);
-            }
-        }
-
-        function displayPlayerStatsManager(character) {
-            const raceWeaponNames = {
-                'Soul-Reaper': 'Zanjutsu',
-                'Arrancar': 'Zanjutsu', 
-                'Quincy': 'Ojigi',
-                'Fullbringer': 'Weapon Mastery'
-            };
-            
-            const raceTamashiNames = {
-                'Soul-Reaper': 'Zanpakuto Mastery',
-                'Arrancar': 'Zanpakuto Mastery',
-                'Quincy': 'Blood Legacy',
-                'Fullbringer': 'Fullbring Mastery'
-            };
-            
-            const raceMagicNames = {
-                'Soul-Reaper': 'Kido Mastery',
-                'Arrancar': 'Primal Reiryoku',
-                'Quincy': 'Ginto Mastery',
-                'Fullbringer': 'Soul Manipulation'
-            };
-
-            const managerHtml = `
-                <div class="player-resources">
-                    <h3>📊 Dostępne Punkty</h3>
-                    <div class="resource-item">
-                        <strong>Points to Distribute:</strong>
-                        <span id="availablePoints">${character.pointsToDistribute || 0}</span>
-                    </div>
-                    <div class="resource-item">
-                        <strong>Node Points to Distribute:</strong>
-                        <span id="availableNodePoints">${character.nodePointsToDistribute || 0}</span>
-                    </div>
-                </div>
-
-                <div style="background: white; border-radius: 10px; padding: 20px; margin: 20px 0;">
-                    <h3>⚔️ Statystyki Podstawowe</h3>
-                    <div id="basicStats">
-                        ${createStatControl('strength', 'Strength', character.strength || 0)}
-                        ${createStatControl('vitality', 'Vitality', character.vitality || 0)}
-                        ${createStatControl('speed', 'Speed', character.speed || 0)}
-                        ${createStatControl('defense', 'Defense', character.defense || 0)}
-                        ${createStatControl('reiatsu', 'Reiatsu', character.reiatsu || 0)}
-                    </div>
-                </div>
-
-                <div style="background: white; border-radius: 10px; padding: 20px; margin: 20px 0;">
-                    <h3>🎯 Umiejętności Specjalne</h3>
-                    <div id="skillStats">
-                        ${createStatControl('hakuda', 'Hakuda', character.hakuda || 0)}
-                        ${createStatControl('weaponship', raceWeaponNames[character.race] || 'Weaponship', character.weaponship || 0)}
-                        ${createStatControl('tamashi', raceTamashiNames[character.race] || 'Tamashi', character.tamashi || 0)}
-                        ${createStatControl('magic', raceMagicNames[character.race] || 'Magic', character.magic || 0)}
-                        ${createStatControl('nazo', character.nazoName || '???', character.nazo || 0)}
-                    </div>
-                </div>
-
-                <div class="absorb-section">
-                    <h3>💎 Absorpcja Reisen</h3>
-                    <p>Zamień Reisen in hand na Reisen absorbed</p>
-                    <p><strong>Reisen in hand:</strong> ${character.reisenInHand || 0}</p>
-                    <div class="absorb-controls">
-                        <label>Ilość do absorpcji:</label>
-                        <input type="number" id="absorbAmount" class="absorb-input" min="0" max="${character.reisenInHand || 0}" value="0">
-                        <button class="btn-success" onclick="absorbReisen(${character.reisenInHand || 0})">
-                            💎 Zaabsorbuj
-                        </button>
-                    </div>
-                    <p style="margin-top: 10px;"><strong>Reisen absorbed:</strong> ${character.reisenAbsorbed || 0}</p>
-                    <p><strong>Next node progress:</strong> ${character.nextNodeProgress || '0/4'}</p>
-                </div>
-
-                <div class="player-resources">
-                    <h3>💰 Inne Zasoby</h3>
-                    <div class="resource-item">
-                        <strong>Yen:</strong>
-                        <span>${character.yenInHand || 0}</span>
-                    </div>
-                    <div class="resource-item">
-                        <strong>Loyalty Left:</strong>
-                        <span>${character.loyaltyLeft || 0}</span>
-                    </div>
-                </div>
-
-                <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #e1e1e1;">
-                    <button class="btn-primary" onclick="savePlayerStats('${character.docId}')" style="margin-right: 15px;">
-                        💾 Zapisz Zmiany
-                    </button>
-                    <button class="btn-secondary" onclick="closePlayerStatsModal()">
-                        Anuluj
-                    </button>
-                </div>
-            `;
-            
-            document.getElementById('playerStatsDisplay').innerHTML = managerHtml;
-            document.getElementById('playerStatsModal').style.display = 'block';
-            
-            // Zapisz dane postaci dla dalszego użycia
-            window.currentPlayerCharacter = character;
-        }
-
-        function createStatControl(statName, statLabel, currentValue) {
-            return `
-                <div class="player-stat-item" data-stat="${statName}">
-                    <div>
-                        <strong>${statLabel}:</strong>
-                        <span class="stat-current-value">${currentValue}</span>
-                    </div>
-                    <div class="stat-controls">
-                        <button class="btn-decrease" onclick="adjustStat('${statName}', -1)">-</button>
-                        <button class="btn-increase" onclick="adjustStat('${statName}', 1)">+</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function adjustStat(statName, change) {
-            if (!window.currentPlayerCharacter) return;
-            
-            const availablePoints = parseInt(document.getElementById('availablePoints').textContent);
-            const currentValue = window.currentPlayerCharacter[statName] || 0;
-            
-            // Sprawdź czy można zwiększyć
-            if (change > 0 && availablePoints <= 0) {
-                showError('Brak dostępnych punktów!');
-                return;
-            }
-            
-            // Sprawdź czy można zmniejszyć
-            if (change < 0 && currentValue <= 0) {
-                showError('Statystyka nie może być mniejsza niż 0!');
-                return;
-            }
-            
-            // Sprawdź limit 100
-            if (change > 0 && currentValue >= 100) {
-                showError('Statystyka nie może być większa niż 100!');
-                return;
-            }
-            
-            // Wykonaj zmianę
-            const newValue = currentValue + change;
-            const newAvailablePoints = availablePoints - change;
-            
-            // Aktualizuj dane postaci
-            window.currentPlayerCharacter[statName] = newValue;
-            window.currentPlayerCharacter.pointsToDistribute = newAvailablePoints;
-            
-            // Aktualizuj interfejs
-            const statElement = document.querySelector(`[data-stat="${statName}"] .stat-current-value`);
-            if (statElement) {
-                statElement.textContent = newValue;
-            }
-            
-            document.getElementById('availablePoints').textContent = newAvailablePoints;
-            
-            // Aktualizuj stan przycisków
-            updateStatButtons();
-        }
-
-        function updateStatButtons() {
-            const availablePoints = parseInt(document.getElementById('availablePoints').textContent);
-            
-            // Aktualizuj wszystkie przyciski
-            document.querySelectorAll('.stat-controls button').forEach(function(button) {
-                const isIncrease = button.classList.contains('btn-increase');
-                const statElement = button.closest('[data-stat]');
-                const statName = statElement.getAttribute('data-stat');
-                const currentValue = window.currentPlayerCharacter[statName] || 0;
-                
-                if (isIncrease) {
-                    button.disabled = (availablePoints <= 0 || currentValue >= 100);
-                } else {
-                    button.disabled = (currentValue <= 0);
-                }
-            });
-        }
-
-        async function absorbReisen(maxAmount) {
-            const absorbAmount = parseInt(document.getElementById('absorbAmount').value) || 0;
-            
-            if (absorbAmount <= 0) {
-                showError('Wprowadź prawidłową ilość do absorpcji!');
-                return;
-            }
-            
-            if (absorbAmount > maxAmount) {
-                showError('Nie masz wystarczającej ilości Reisen in hand!');
-                return;
-            }
-            
-            if (!window.currentPlayerCharacter) {
-                showError('Błąd danych postaci!');
-                return;
-            }
-            
-            try {
-                const character = window.currentPlayerCharacter;
-                const newReisenInHand = (character.reisenInHand || 0) - absorbAmount;
-                const newReisenAbsorbed = (character.reisenAbsorbed || 0) + absorbAmount;
-                
-                // Oblicz nowy node progression
-                const nodeProgression = calculateNodeProgression(newReisenAbsorbed);
-                
-                // Aktualizuj dane postaci
-                character.reisenInHand = newReisenInHand;
-                character.reisenAbsorbed = newReisenAbsorbed;
-                character.totalNodesFromReisen = nodeProgression.totalNodesFromReisen;
-                character.nextNodeProgress = nodeProgression.nextNodeProgress;
-                
-                // Aktualizuj bazę danych
-                const characterRef = window.doc(window.db, 'characters', character.docId);
-                await window.updateDoc(characterRef, {
-                    reisenInHand: newReisenInHand,
-                    reisenAbsorbed: newReisenAbsorbed,
-                    totalNodesFromReisen: nodeProgression.totalNodesFromReisen,
-                    nextNodeProgress: nodeProgression.nextNodeProgress
-                });
-                
-                // Stwórz log
-                await createLog(
-                    'reisen_absorbed',
-                    character.id,
-                    `${character.firstName} ${character.lastName}`,
-                    {
-                        reisenInHand: formatChangeValue(character.reisenInHand + absorbAmount, newReisenInHand, 'reisenInHand'),
-                        reisenAbsorbed: formatChangeValue(character.reisenAbsorbed - absorbAmount, newReisenAbsorbed, 'reisenAbsorbed'),
-                        nextNodeProgress: formatChangeValue('poprzedni', nodeProgression.nextNodeProgress, 'nextNodeProgress')
-                    },
-                    `Gracz zaabsorbował ${absorbAmount} Reisen. Nowy progress: ${nodeProgression.nextNodeProgress}`
-                );
-                
-                showSuccess(`Pomyślnie zaabsorbowano ${absorbAmount} Reisen! Nowy progress: ${nodeProgression.nextNodeProgress}`);
-                
-                // Odśwież wyświetlanie
-                displayPlayerStatsManager(character);
-                
-            } catch (error) {
-                console.error('Błąd absorpcji Reisen:', error);
-                showError('Błąd podczas absorpcji Reisen: ' + error.message);
-            }
-        }
-
-        async function savePlayerStats(characterDocId) {
-            if (!window.currentPlayerCharacter) {
-                showError('Błąd danych postaci!');
-                return;
-            }
-            
-            try {
-                const character = window.currentPlayerCharacter;
-                
-                // Przygotuj dane do aktualizacji
-                const updateData = {
-                    strength: character.strength || 0,
-                    vitality: character.vitality || 0,
-                    speed: character.speed || 0,
-                    defense: character.defense || 0,
-                    reiatsu: character.reiatsu || 0,
-                    hakuda: character.hakuda || 0,
-                    weaponship: character.weaponship || 0,
-                    tamashi: character.tamashi || 0,
-                    magic: character.magic || 0,
-                    nazo: character.nazo || 0,
-                    pointsToDistribute: character.pointsToDistribute || 0,
-                    lastEditedAt: new Date().toISOString(),
-                    lastEditedBy: currentUser.login
-                };
-                
-                // Aktualizuj w Firebase
-                const characterRef = window.doc(window.db, 'characters', characterDocId);
-                await window.updateDoc(characterRef, updateData);
-                
-                // Stwórz log z wydanymi punktami
-                const statsChanges = {};
-                ['strength', 'vitality', 'speed', 'defense', 'reiatsu', 'hakuda', 'weaponship', 'tamashi', 'magic', 'nazo'].forEach(function(stat) {
-                    const originalValue = allCharacters.find(c => c.docId === characterDocId)?.[stat] || 0;
-                    const newValue = character[stat] || 0;
-                    if (originalValue !== newValue) {
-                        statsChanges[stat] = formatChangeValue(originalValue, newValue, stat);
-                    }
-                });
-                
-                if (Object.keys(statsChanges).length > 0) {
-                    await createLog(
-                        'stats_distributed',
-                        character.id,
-                        `${character.firstName} ${character.lastName}`,
-                        statsChanges,
-                        `Gracz wydał punkty statystyk. Pozostało punktów: ${character.pointsToDistribute || 0}`
-                    );
-                }
-                
-                showSuccess('Statystyki zostały zapisane!');
-                closePlayerStatsModal();
-                
-                // Odśwież cache postaci
-                if (currentUser.role === 'admin') {
-                    await loadAllCharacters();
-                }
-                
-            } catch (error) {
-                console.error('Błąd zapisywania statystyk:', error);
-                showError('Błąd podczas zapisywania statystyk: ' + error.message);
-            }
-        }
-
-        function closePlayerStatsModal() {
-            document.getElementById('playerStatsModal').style.display = 'none';
-            window.currentPlayerCharacter = null;
-        }
-
         function logout() {
             currentUser = null;
             allCharacters = [];
             allLogs = [];
-            window.currentPlayerCharacter = null;
             document.getElementById('loginScreen').style.display = 'block';
             document.getElementById('dashboardScreen').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('characterModal').style.display = 'none';
-            document.getElementById('playerStatsModal').style.display = 'none';
             document.getElementById('loginInput').value = '';
             showSuccess('Zostałeś wylogowany!');
         }
@@ -2948,16 +2172,12 @@
         window.onclick = function(event) {
             const characterModal = document.getElementById('characterModal');
             const editModal = document.getElementById('editCharacterModal');
-            const playerStatsModal = document.getElementById('playerStatsModal');
             
             if (event.target === characterModal) {
                 closeCharacterModal();
             }
             if (event.target === editModal) {
                 closeEditModal();
-            }
-            if (event.target === playerStatsModal) {
-                closePlayerStatsModal();
             }
         }
 
@@ -2984,3 +2204,6 @@
                 editCharacterForm.addEventListener('submit', handleEditSubmit);
             }
         });
+    </script>
+</body>
+</html>
