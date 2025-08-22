@@ -596,13 +596,7 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Ranga</label>
-                                <select id="edit_rank">
-                                    <option value="I">I</option>
-                                    <option value="II">II</option>
-                                    <option value="III">III</option>
-                                    <option value="IV">IV</option>
-                                    <option value="V">V</option>
-                                </select>
+                                <input type="text" id="edit_rank" placeholder="np. I, II, III, Captain, Lieutenant...">
                             </div>
                             <div class="form-group">
                                 <label>Pozycja</label>
@@ -751,8 +745,11 @@
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Next Node Progress</label>
-                                <input type="text" id="edit_nextNodeProgress" placeholder="np. 3/4">
+                                <label>Reisen (absorbed)</label>
+                                <input type="number" id="edit_reisenAbsorbed" min="0" max="9999">
+                                <small style="color: #666; display: block; margin-top: 5px;">
+                                    Na podstawie tego obliczane są Total Nodes i Next Node Progress
+                                </small>
                             </div>
                             <div class="form-group">
                                 <label>Yen (in hand)</label>
@@ -766,7 +763,11 @@
                                 <input type="number" id="edit_loyaltyLeft" min="0" max="100">
                             </div>
                             <div class="form-group">
-                                <!-- Puste miejsce -->
+                                <label>Kolor Reiatsu</label>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <input type="color" id="edit_riatsuColorHex" style="width: 50px; height: 40px; border: none; border-radius: 6px; cursor: pointer;">
+                                    <input type="text" id="edit_riatsuColorName" placeholder="Nazwa koloru" style="flex: 1;">
+                                </div>
                             </div>
                         </div>
 
@@ -854,6 +855,66 @@
                 if (g > r + 30) return 'Teal';
                 return 'Blue';
             }
+        }
+
+        // System obliczania node progression
+        function getNodeRequirements(maxNodes) {
+            const reqs = [];
+            
+            // 4 × 4 razy (4,4,4,4)
+            for (let i = 0; i < 4; i++) reqs.push(4);
+            
+            // 5,6,7 × 3 razy każdy (5,5,5, 6,6,6, 7,7,7)
+            for (let req = 5; req <= 7; req++) {
+                for (let i = 0; i < 3; i++) reqs.push(req);
+            }
+            
+            // 8+ × 2 razy każdy (8,8, 9,9, 10,10, 11,11, ...)
+            let req = 8;
+            while (reqs.length < maxNodes) {
+                for (let i = 0; i < 2 && reqs.length < maxNodes; i++) {
+                    reqs.push(req);
+                }
+                req++;
+            }
+            
+            return reqs;
+        }
+
+        function calculateNodeProgression(reisenAbsorbed) {
+            if (reisenAbsorbed < 0) reisenAbsorbed = 0;
+            
+            const requirements = getNodeRequirements(1000); // Wystarczająco dużo na bardzo wysokie poziomy
+            
+            let totalReisenUsed = 0;
+            let nodesReceived = 0;
+            
+            // Przejdź przez wszystkie wymagania i sprawdź ile node'ów gracz otrzymał
+            for (let i = 0; i < requirements.length; i++) {
+                const needed = requirements[i];
+                
+                if (totalReisenUsed + needed <= reisenAbsorbed) {
+                    // Gracz ma wystarczająco reisen na ten node
+                    totalReisenUsed += needed;
+                    nodesReceived++;
+                } else {
+                    // Gracz jest w środku tego node'a
+                    const progress = reisenAbsorbed - totalReisenUsed;
+                    return {
+                        totalNodesFromReisen: nodesReceived,
+                        nextNodeProgress: `${progress}/${needed}`,
+                        nodesReceived: nodesReceived
+                    };
+                }
+            }
+            
+            // Jeśli gracz dokładnie skończył wszystkie node'y (bardzo mało prawdopodobne)
+            const nextReq = requirements[nodesReceived] || (requirements[requirements.length - 1] + Math.floor(nodesReceived / 2));
+            return {
+                totalNodesFromReisen: nodesReceived,
+                nextNodeProgress: `0/${nextReq}`,
+                nodesReceived: nodesReceived
+            };
         }
 
         // System logowania
@@ -1486,7 +1547,7 @@
                         </div>
                         
                         <div class="card-photo">
-                            ${character.photoUrl ? `<img src="${character.photoUrl}" style="width: 100%; height: 100%; object-fit: cover;">` : 'Brak zdjęcia'}
+                            ${character.photoUrl ? `<img src="${character.photoUrl}" style="width: 100%; height: 100%; object-fit: cover;" alt="Zdjęcie ${character.firstName}">` : 'Brak zdjęcia'}
                         </div>
                         
                         <div style="text-align: center; margin: 15px 0;">
@@ -1509,7 +1570,13 @@
                             <p><strong>Reiatsu Color:</strong> ${character.riatsuColor ? character.riatsuColor.name : 'Unknown'} 
                                <span class="reiatsu-color" style="background-color: ${character.riatsuColor ? character.riatsuColor.hex : '#ccc'};"></span>
                             </p>
+                            ${character.height ? `<p><strong>Wzrost:</strong> ${character.height} cm</p>` : ''}
+                            ${character.weight ? `<p><strong>Waga:</strong> ${character.weight} kg</p>` : ''}
                         </div>
+                        
+                        ${character.appearance ? `<div style="margin: 15px 0;"><strong>Wygląd:</strong><br>${character.appearance}</div>` : ''}
+                        ${character.personality ? `<div style="margin: 15px 0;"><strong>Charakter:</strong><br>${character.personality}</div>` : ''}
+                        ${character.history ? `<div style="margin: 15px 0;"><strong>Historia:</strong><br>${character.history}</div>` : ''}
                         
                         <div class="stats-grid">
                             <div class="stat-item">
@@ -1690,15 +1757,61 @@
             document.getElementById('edit_nodePointsToDistribute').value = character.nodePointsToDistribute || 0;
             document.getElementById('edit_reisenInHand').value = character.reisenInHand || 0;
             document.getElementById('edit_reisenAbsorbed').value = character.reisenAbsorbed || 0;
-            document.getElementById('edit_nextNodeProgress').value = character.nextNodeProgress || '0/1';
             document.getElementById('edit_yenInHand').value = character.yenInHand || 0;
             document.getElementById('edit_loyaltyLeft').value = character.loyaltyLeft || 0;
+            
+            // Kolor Reiatsu
+            if (character.riatsuColor) {
+                document.getElementById('edit_riatsuColorHex').value = character.riatsuColor.hex || '#ff0000';
+                document.getElementById('edit_riatsuColorName').value = character.riatsuColor.name || '';
+            } else {
+                document.getElementById('edit_riatsuColorHex').value = '#ff0000';
+                document.getElementById('edit_riatsuColorName').value = '';
+            }
+            
+            // Oblicz i wyświetl node progression
+            updateNodeProgressionDisplay(character.reisenAbsorbed || 0);
+            
+            // Event listener dla zmiany reisen absorbed
+            document.getElementById('edit_reisenAbsorbed').addEventListener('input', function(e) {
+                const reisenAbsorbed = parseInt(e.target.value) || 0;
+                updateNodeProgressionDisplay(reisenAbsorbed);
+            });
+            
+            // Event listener dla color picker
+            document.getElementById('edit_riatsuColorHex').addEventListener('input', function(e) {
+                const newHex = e.target.value;
+                const newName = getColorName(newHex);
+                document.getElementById('edit_riatsuColorName').value = newName;
+            });
             
             // Ustaw aktualną nazwę Nazo w label
             document.getElementById('nazoLabel').textContent = `Nazo (${character.nazoName || '???'})`;
             
             // Zapisz docId dla późniejszego użycia
             document.getElementById('editCharacterForm').setAttribute('data-character-id', character.docId);
+        }
+
+        function updateNodeProgressionDisplay(reisenAbsorbed) {
+            const progression = calculateNodeProgression(reisenAbsorbed);
+            
+            // Znajdź lub stwórz element do wyświetlania informacji
+            let progressInfo = document.getElementById('nodeProgressInfo');
+            if (!progressInfo) {
+                progressInfo = document.createElement('div');
+                progressInfo.id = 'nodeProgressInfo';
+                progressInfo.style.cssText = 'background: #e3f2fd; padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 0.9em;';
+                
+                const reisenInput = document.getElementById('edit_reisenAbsorbed');
+                reisenInput.parentNode.appendChild(progressInfo);
+            }
+            
+            progressInfo.innerHTML = `
+                <strong>📊 Automatyczne obliczenia:</strong><br>
+                • Total Nodes from Reisen: <strong>${progression.totalNodesFromReisen}</strong><br>
+                • Next Node Progress: <strong>${progression.nextNodeProgress}</strong><br>
+                <small style="color: #666;">Obliczane automatycznie na podstawie Reisen (absorbed)</small>
+            `;
         }
 
         function closeEditModal() {
@@ -1718,13 +1831,21 @@
                 return;
             }
             
+            // Pobierz dane koloru Reiatsu
+            const riatsuColorHex = document.getElementById('edit_riatsuColorHex').value;
+            const riatsuColorName = document.getElementById('edit_riatsuColorName').value.trim() || getColorName(riatsuColorHex);
+            const reisenAbsorbed = parseInt(document.getElementById('edit_reisenAbsorbed').value) || 0;
+            
+            // Oblicz node progression na podstawie reisen absorbed
+            const nodeProgression = calculateNodeProgression(reisenAbsorbed);
+            
             // Pobierz nowe dane z formularza
             const newData = {
                 firstName: document.getElementById('edit_firstName').value.trim(),
                 lastName: document.getElementById('edit_lastName').value.trim(),
                 login: document.getElementById('edit_login').value.trim(),
                 race: document.getElementById('edit_race').value,
-                rank: document.getElementById('edit_rank').value,
+                rank: document.getElementById('edit_rank').value.trim(),
                 position: document.getElementById('edit_position').value.trim(),
                 slv: document.getElementById('edit_slv').value.trim(),
                 scA: document.getElementById('edit_scA').value.trim(),
@@ -1750,10 +1871,16 @@
                 pointsToDistribute: parseInt(document.getElementById('edit_pointsToDistribute').value) || 0,
                 nodePointsToDistribute: parseInt(document.getElementById('edit_nodePointsToDistribute').value) || 0,
                 reisenInHand: parseInt(document.getElementById('edit_reisenInHand').value) || 0,
-                reisenAbsorbed: parseInt(document.getElementById('edit_reisenAbsorbed').value) || 0,
-                nextNodeProgress: document.getElementById('edit_nextNodeProgress').value.trim() || '0/1',
+                reisenAbsorbed: reisenAbsorbed,
+                totalNodesFromReisen: nodeProgression.totalNodesFromReisen,
+                nextNodeProgress: nodeProgression.nextNodeProgress,
                 yenInHand: parseInt(document.getElementById('edit_yenInHand').value) || 0,
                 loyaltyLeft: parseInt(document.getElementById('edit_loyaltyLeft').value) || 0,
+                
+                riatsuColor: {
+                    hex: riatsuColorHex,
+                    name: riatsuColorName
+                },
                 
                 lastEditedAt: new Date().toISOString(),
                 lastEditedBy: currentUser.login
@@ -1811,14 +1938,14 @@
                     originalCharacter.id,
                     newData.firstName + ' ' + newData.lastName,
                     changes,
-                    `Administrator zaktualizował kartę postaci. Zmieniono ${Object.keys(changes).length} pól.`
+                    `Administrator zaktualizował kartę postaci. Zmieniono ${Object.keys(changes).length} pól. Node progression: ${nodeProgression.nextNodeProgress}`
                 );
                 
                 // Aktualizuj lokalnie
                 Object.assign(originalCharacter, newData);
                 originalCharacter.docId = characterDocId; // Zachowaj docId
                 
-                showSuccess('Karta postaci została zaktualizowana! Zmieniono ' + Object.keys(changes).length + ' pól.');
+                showSuccess('Karta postaci została zaktualizowana! Zmieniono ' + Object.keys(changes).length + ' pól. Node progression: ' + nodeProgression.nextNodeProgress);
                 closeEditModal();
                 
                 // Odśwież listę i wyświetlanie
@@ -1838,7 +1965,7 @@
                 'strength', 'vitality', 'speed', 'defense', 'reiatsu', 'hakuda', 
                 'weaponship', 'tamashi', 'magic', 'nazo', 'nazoName',
                 'pointsToDistribute', 'nodePointsToDistribute', 'reisenInHand', 
-                'reisenAbsorbed', 'nextNodeProgress', 'yenInHand', 'loyaltyLeft'
+                'reisenAbsorbed', 'totalNodesFromReisen', 'nextNodeProgress', 'yenInHand', 'loyaltyLeft'
             ];
             
             fieldsToCheck.forEach(function(field) {
@@ -1853,6 +1980,18 @@
                     changes[field] = formatChangeValue(oldValue, newValue, field);
                 }
             });
+            
+            // Sprawdź zmiany koloru Reiatsu
+            const oldColor = original.riatsuColor || { hex: '', name: '' };
+            const newColor = updated.riatsuColor || { hex: '', name: '' };
+            
+            if (oldColor.hex !== newColor.hex || oldColor.name !== newColor.name) {
+                changes['riatsuColor'] = formatChangeValue(
+                    `${oldColor.name} (${oldColor.hex})`,
+                    `${newColor.name} (${newColor.hex})`,
+                    'riatsuColor'
+                );
+            }
             
             return changes;
         }
