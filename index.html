@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Black Border System</title>
+    <title>Black Outpost System - Authentication</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,1105 +13,353 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background: #000000;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(20,20,30,0.9) 100%), 
+                        url('https://cdn.discordapp.com/attachments/1408447648767414476/1408592371725242478/image_1.png?ex=68aa4d5f&is=68a8fbdf&hm=3c8442351405014db57137c5664aada195f2e2573e8ffc25ecf22b5b97814cc7&');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             min-height: 100vh;
-            color: #333;
+            color: #e0e6ed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
+        .login-container {
+            background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,41,59,0.9) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #10b981, #3b82f6, #8b5cf6);
+            border-radius: 20px 20px 0 0;
         }
 
         .header {
             text-align: center;
             margin-bottom: 40px;
-            color: white;
         }
 
-        .header img {
-            max-width: 100%;
-            height: auto;
-            max-height: 300px;
-            border-radius: 10px;
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            overflow: hidden;
         }
 
-        .login-container {
-            background: white;
-            border-radius: 15px;
-            padding: 40px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            max-width: 400px;
-            margin: 0 auto;
+        .logo img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 12px;
         }
 
-        .login-form h2 {
-            text-align: center;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, #333333 0%, #000000 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 2em;
-            font-weight: bold;
+        .system-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            color: #f1f5f9;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
         }
 
-        .login-form .subtitle {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 0.8em;
-            color: #666;
+        .subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: #64748b;
+            letter-spacing: 0.5px;
             line-height: 1.4;
+            text-transform: uppercase;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 24px;
         }
 
-        .form-group input, .form-group select, .form-group textarea {
+        .form-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
             width: 100%;
-            padding: 15px;
-            border: 2px solid #e1e1e1;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 12px;
+            color: #f1f5f9;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
         }
 
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        .form-input::placeholder {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .form-input:focus {
             outline: none;
-            border-color: #333333;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(51,65,85,0.6) 100%);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.9) 0%, rgba(5, 150, 105, 0.9) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-button:hover {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 1) 0%, rgba(5, 150, 105, 1) 100%);
+            border-color: rgba(16, 185, 129, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .login-button:disabled {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.6) 0%, rgba(51, 65, 85, 0.7) 100%);
+            border-color: rgba(71, 85, 105, 0.4);
+            color: #64748b;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid transparent;
+            border-top: 2px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .security-notice {
+            margin-top: 30px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(71, 85, 105, 0.3);
+            text-align: center;
+        }
+
+        .notice-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: #475569;
+            line-height: 1.5;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .error-message, .success-message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            border: 1px solid;
+            backdrop-filter: blur(10px);
         }
 
         .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            display: none;
+            background: linear-gradient(135deg, rgba(153, 27, 27, 0.2) 0%, rgba(127, 29, 29, 0.1) 100%);
+            color: #fca5a5;
+            border-color: rgba(239, 68, 68, 0.3);
         }
 
         .success-message {
-            background: #d4edda;
-            color: #155724;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            display: none;
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.2) 0%, rgba(16, 185, 129, 0.1) 100%);
+            color: #86efac;
+            border-color: rgba(16, 185, 129, 0.3);
         }
 
-        .dashboard {
-            display: none;
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        }
-
-        .user-info {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .user-info h3 {
-            color: #333333;
-        }
-
-        .logout-btn, .btn-primary, .btn-secondary, .btn-success, .btn-danger {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .logout-btn {
-            background: #dc3545;
-            color: white;
-        }
-
-        .logout-btn:hover {
-            background: #c82333;
-        }
-
-        .btn-primary {
-            background: #333333;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #555555;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #545b62;
-        }
-
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #218838;
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #c82333;
-        }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .menu-card {
-            background: linear-gradient(135deg, #333333 0%, #000000 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .menu-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .menu-card h3 {
-            margin-bottom: 15px;
-            font-size: 1.5em;
-        }
-
-        .menu-card p {
-            opacity: 0.9;
-        }
-
-        .admin-nav {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .admin-nav button {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .admin-nav button.active {
-            background: #333333;
-            color: white;
-        }
-
-        .admin-nav button:not(.active) {
-            background: #e9ecef;
-            color: #333;
-        }
-
-        .admin-nav button:hover:not(.active) {
-            background: #dee2e6;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .form-row.full {
-            grid-template-columns: 1fr;
-        }
-
-        .form-group textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .character-form {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .admin-section {
-            display: none;
-        }
-
-        /* Nowy design identyfikatora */
-        .character-id-card {
-            background: linear-gradient(45deg, #f8f9fa 0%, #e9ecef 100%);
-            border: 3px solid #333;
-            border-radius: 15px;
-            padding: 20px;
-            width: 450px;
-            margin: 20px auto;
-            position: relative;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        }
-
-        .id-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
-        }
-
-        .id-card-logo {
-            width: 60px;
-            height: 60px;
-        }
-
-        .id-card-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-            text-align: center;
-            flex: 1;
-        }
-
-        .id-card-rank {
-            background: #333;
-            color: white;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
+        .status-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
-        }
-
-        .id-card-content {
-            display: flex;
-            gap: 20px;
-            align-items: flex-start;
-        }
-
-        .id-card-photo {
-            width: 120px;
-            height: 150px;
-            border: 2px solid #333;
-            background: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: #666;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .id-card-photo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .id-card-info {
-            flex: 1;
-        }
-
-        .id-card-name {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .id-card-details {
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .id-card-details strong {
-            color: #333;
-        }
-
-        .id-card-footer {
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px solid #333;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 10px;
-            text-align: center;
-            color: #666;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .id-card-barcode {
-            margin-top: 10px;
-            text-align: center;
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            animation: pulse 2s infinite;
         }
 
-        .barcode {
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            letter-spacing: 1px;
-            color: #333;
+        .status-dot.connected {
+            background: #10b981;
         }
 
-        /* Wiki-style info box */
-        .character-info-box {
-            background: #f8f9fa;
-            border: 1px solid #a2a9b1;
-            border-radius: 8px;
-            width: 300px;
-            margin: 20px;
-            font-size: 14px;
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
-        .info-box-header {
-            background: #eaecf0;
-            border-bottom: 1px solid #a2a9b1;
-            padding: 12px;
-            text-align: center;
-            font-weight: bold;
-            color: #333;
-            border-radius: 8px 8px 0 0;
+        .version-info {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .info-box-image {
-            text-align: center;
-            padding: 15px;
-            border-bottom: 1px solid #eaecf0;
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 24px;
+                margin: 0 16px;
+            }
+
+            .system-title {
+                font-size: 20px;
+            }
+
+            .form-input, .login-button {
+                padding: 14px 16px;
+            }
         }
 
-        .info-box-image img {
-            max-width: 200px;
-            max-height: 250px;
-            border: 1px solid #a2a9b1;
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(30,41,59,0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
             border-radius: 4px;
         }
 
-        .info-box-content {
-            padding: 0;
-        }
-
-        .info-box-section {
-            border-bottom: 1px solid #eaecf0;
-        }
-
-        .info-box-section:last-child {
-            border-bottom: none;
-        }
-
-        .info-box-section-header {
-            background: #eaecf0;
-            padding: 8px 12px;
-            font-weight: bold;
-            color: #333;
-            border-bottom: 1px solid #a2a9b1;
-        }
-
-        .info-box-row {
-            display: flex;
-            border-bottom: 1px solid #eaecf0;
-        }
-
-        .info-box-row:last-child {
-            border-bottom: none;
-        }
-
-        .info-box-label {
-            background: #f8f9fa;
-            padding: 8px 12px;
-            font-weight: bold;
-            color: #333;
-            width: 40%;
-            border-right: 1px solid #eaecf0;
-        }
-
-        .info-box-value {
-            padding: 8px 12px;
-            width: 60%;
-        }
-
-        .character-display {
-            display: grid;
-            grid-template-columns: 450px 320px 1fr;
-            gap: 20px;
-            align-items: start;
-            margin: 20px 0;
-        }
-
-        .character-description {
-            grid-column: 1 / -1;
-            margin-top: 30px;
-        }
-
-        .description-section {
-            background: white;
-            border: 1px solid #a2a9b1;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .description-header {
-            background: #eaecf0;
-            padding: 12px 20px;
-            font-weight: bold;
-            color: #333;
-            border-bottom: 1px solid #a2a9b1;
-        }
-
-        .description-content {
-            padding: 20px;
-            line-height: 1.6;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 12px;
-            background: #f8f9fa;
-            border-radius: 6px;
-        }
-
-        .stat-label {
-            font-weight: bold;
-            color: #333;
-        }
-
-        .stat-value {
-            color: #666;
-        }
-
-        .reiatsu-color {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 2px solid #333;
-            margin-left: 10px;
-            vertical-align: middle;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 2% auto;
-            padding: 20px;
-            border-radius: 10px;
-            width: 95%;
-            max-width: 1400px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close:hover {
-            color: black;
-        }
-
-        .log-entry {
-            border-bottom: 1px solid #e9ecef;
-            padding: 15px;
-            transition: background-color 0.2s;
-        }
-
-        .log-entry:hover {
-            background-color: #f8f9fa;
-        }
-
-        .log-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .log-action {
-            font-weight: bold;
-            color: #333;
-        }
-
-        .log-time {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .log-details {
-            color: #555;
-            margin-bottom: 5px;
-        }
-
-        .log-changes {
-            background: #f8f9fa;
-            border-left: 4px solid #007bff;
-            padding: 10px;
-            margin-top: 8px;
-            font-family: monospace;
-            font-size: 0.9em;
-        }
-
-        /* Style dla statystyk gracza */
-        .player-stat-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .player-stat-item:hover {
-            border-color: #333;
-        }
-
-        .stat-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .stat-controls button {
-            width: 30px;
-            height: 30px;
-            border: none;
-            border-radius: 50%;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .stat-controls .btn-decrease {
-            background: #dc3545;
-            color: white;
-        }
-
-        .stat-controls .btn-increase {
-            background: #28a745;
-            color: white;
-        }
-
-        .stat-controls button:hover {
-            transform: scale(1.1);
-        }
-
-        .stat-controls button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .player-resources {
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-
-        .resource-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-        }
-
-        .resource-item:last-child {
-            border-bottom: none;
-        }
-
-        .absorb-section {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .absorb-controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .absorb-input {
-            width: 80px;
-            padding: 8px;
-            border: 2px solid #333;
-            border-radius: 6px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        @media (max-width: 1200px) {
-            .character-display {
-                grid-template-columns: 1fr;
-                justify-items: center;
-            }
-            
-            .character-id-card {
-                width: 100%;
-                max-width: 450px;
-            }
-            
-            .character-info-box {
-                width: 100%;
-                max-width: 320px;
-                margin: 20px auto;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .id-card-content {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="status-indicator">
+        <span class="status-dot" id="connectionStatus"></span>
+        <span id="connectionText">CONNECTING</span>
+    </div>
+
+    <div class="version-info">
+        BLACK OUTPOST v2.1.0 | BUILD 20250123
+    </div>
+
+    <div class="login-container">
         <div class="header">
-            <img src="https://cdn.discordapp.com/attachments/1408447648767414476/1408448992823742534/ca1e976cb52023489b7166821e03ef96.png?ex=68a9c7d7&is=68a87657&hm=039756c362d7bdd93b446bd18766930b8ee3a7c0aacc9b8eb9b195ba98aebfdc&" alt="Bleach Black Outpost Logo">
+            <div class="logo">
+                <img src="https://cdn.discordapp.com/attachments/1408447648767414476/1408448992823742534/ca1e976cb52023489b7166821e03ef96.png?ex=68a9c7d7&is=68a87657&hm=039756c362d7bdd93b446bd18766930b8ee3a7c0aacc9b8eb9b195ba98aebfdc&" alt="Black Outpost Logo" onerror="this.style.display='none'">
+            </div>
+            <div class="system-title">Black Outpost System</div>
+            <div class="subtitle">
+                CLASSIFIED ACCESS PORTAL<br>
+                CENTRAL 46 - RESOLUTION XVI
+            </div>
         </div>
 
-        <!-- Login Screen -->
-        <div id="loginScreen" class="login-container">
-            <div class="login-form">
-                <h2>Black Border System</h2>
-                <p class="subtitle">Property of Organization of Liberty and Salvation, later known as OLS.<br>All rights reserved and regulated by Central 46, under Resolution XVI.</p>
-                
-                <div id="errorMessage" class="error-message"></div>
-                <div id="successMessage" class="success-message"></div>
-
+        <div class="form-section">
+            <div id="messageContainer"></div>
+            
+            <form id="loginForm">
                 <div class="form-group">
-                    <input type="text" id="loginInput" placeholder="Login (np. AiSo1234)">
+                    <label for="loginInput" class="form-label">Personnel Identifier</label>
+                    <input 
+                        type="text" 
+                        id="loginInput" 
+                        class="form-input" 
+                        placeholder="e.g. AiSo1234"
+                        autocomplete="username"
+                        required
+                    >
                 </div>
-            </div>
-        </div>
 
-        <!-- Player Dashboard -->
-        <div id="dashboardScreen" class="dashboard">
-            <div class="user-info">
-                <div>
-                    <h3 id="welcomeText">Witaj, Graczu!</h3>
-                    <p id="userRole">Rola: Gracz</p>
-                </div>
-                <button class="logout-btn" onclick="logout()">
-                    🚪 Wyloguj
+                <button type="submit" class="login-button" id="loginButton">
+                    <span class="loading-spinner" id="loadingSpinner"></span>
+                    <span id="buttonText">Access System</span>
                 </button>
-            </div>
-
-            <div class="menu-grid">
-                <div class="menu-card" onclick="viewPlayerCharacter()">
-                    <h3>📜 Karta Postaci</h3>
-                    <p>Przeglądaj swoją kartę dostępu</p>
-                </div>
-
-                <div class="menu-card" onclick="openPlayerStatsManager()">
-                    <h3>📊 Zarządzaj Statystykami</h3>
-                    <p>Wydaj punkty i zarządzaj zasobami</p>
-                </div>
-
-                <div class="menu-card" onclick="viewPlayerStats()">
-                    <h3>👁️ Podgląd Statystyk</h3>
-                    <p>Sprawdź swoje umiejętności i atrybuty</p>
-                </div>
-
-                <div class="menu-card" onclick="alert('🔧 Funkcja w budowie')">
-                    <h3>🎒 Ekwipunek</h3>
-                    <p>Zarządzaj przedmiotami</p>
-                </div>
-            </div>
+            </form>
         </div>
 
-        <!-- Admin Panel -->
-        <div id="adminPanel" class="dashboard">
-            <div class="user-info">
-                <div>
-                    <h3 id="adminWelcomeText">Panel Administratora</h3>
-                    <p id="adminUserRole">Dostęp: Administrator</p>
-                </div>
-                <button class="logout-btn" onclick="logout()">
-                    🚪 Wyloguj
-                </button>
-            </div>
-
-            <div class="admin-nav">
-                <button onclick="showAdminSection('characters')" class="active" id="btn-characters">📋 Wszystkie Karty</button>
-                <button onclick="showAdminSection('addCharacter')" id="btn-addCharacter">➕ Dodaj Kartę</button>
-                <button onclick="showAdminSection('logs')" id="btn-logs">📜 Logi Systemu</button>
-                <button onclick="showAdminSection('settings')" id="btn-settings">⚙️ Ustawienia</button>
-            </div>
-
-            <!-- Characters List Section -->
-            <div id="admin-characters" class="admin-section" style="display: block;">
-                <h2>📋 Lista Wszystkich Postaci</h2>
-                <div style="text-align: center; padding: 40px; color: #666;">
-                    <p>Ładowanie listy postaci...</p>
-                </div>
-            </div>
-
-            <!-- Add Character Section -->
-            <div id="admin-addCharacter" class="admin-section">
-                <h2>➕ Dodaj Nową Kartę Postaci</h2>
-                <p style="color: #666; margin-bottom: 20px;">
-                    <strong>Wymagane pola:</strong> Imię, Nazwisko, Rasa<br>
-                    <em>Pozostałe informacje można uzupełnić później podczas edycji karty.</em>
-                </p>
-                
-                <form class="character-form" id="addCharacterForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="firstName">Imię *</label>
-                            <input type="text" id="firstName" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="lastName">Nazwisko *</label>
-                            <input type="text" id="lastName" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="generatedLogin">Login</label>
-                            <div style="display: flex; gap: 10px;">
-                                <input type="text" id="generatedLogin" placeholder="Zostanie wygenerowany automatycznie" style="flex: 1;">
-                                <button type="button" class="btn-secondary" onclick="regenerateLogin()" style="padding: 10px 15px;">🎲 Przelosuj</button>
-                            </div>
-                            <small style="color: #666; margin-top: 5px; display: block;">Możesz wpisać własny login lub użyć przycisku do przelosowania</small>
-                        </div>
-                        <div class="form-group">
-                            <label for="race">Rasa *</label>
-                            <select id="race" required>
-                                <option value="">Wybierz rasę</option>
-                                <option value="Soul-Reaper">Soul-Reaper</option>
-                                <option value="Quincy">Quincy</option>
-                                <option value="Fullbringer">Fullbringer</option>
-                                <option value="Arrancar">Arrancar</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div style="text-align: center; margin-top: 30px;">
-                        <button type="button" class="btn-secondary" onclick="resetForm()">Wyczyść</button>
-                        <button type="submit" class="btn-primary">Stwórz Kartę</button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Logs Section -->
-            <div id="admin-logs" class="admin-section">
-                <h2>📜 Logi Systemu</h2>
-                <div style="text-align: center; padding: 40px; color: #666;">
-                    <p>Ładowanie logów...</p>
-                </div>
-            </div>
-
-            <!-- Settings Section -->
-            <div id="admin-settings" class="admin-section">
-                <h2>⚙️ Ustawienia Systemu</h2>
-                <div style="text-align: center; padding: 40px; color: #666;">
-                    <p>Ustawienia systemu będą tutaj...</p>
-                    <p>Funkcja w budowie</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Character View Modal -->
-        <div id="characterModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeCharacterModal()">&times;</span>
-                <div id="characterDisplay"></div>
-            </div>
-        </div>
-
-        <!-- Player Stats Manager Modal -->
-        <div id="playerStatsModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closePlayerStatsModal()">&times;</span>
-                <div id="playerStatsContent">
-                    <h2>📊 Zarządzanie Statystykami</h2>
-                    <div id="playerStatsDisplay"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Character Edit Modal -->
-        <div id="editCharacterModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeEditModal()">&times;</span>
-                <div id="editCharacterContent">
-                    <h2>✏️ Edycja Postaci</h2>
-                    <form id="editCharacterForm" class="character-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="edit_firstName">Imię *</label>
-                                <input type="text" id="edit_firstName" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_lastName">Nazwisko *</label>
-                                <input type="text" id="edit_lastName" required>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="edit_login">Login *</label>
-                                <input type="text" id="edit_login" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_race">Rasa *</label>
-                                <select id="edit_race" required>
-                                    <option value="Soul-Reaper">Soul-Reaper</option>
-                                    <option value="Quincy">Quincy</option>
-                                    <option value="Fullbringer">Fullbringer</option>
-                                    <option value="Arrancar">Arrancar</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="edit_rank">Ranga</label>
-                                <input type="text" id="edit_rank" placeholder="np. I, II, III, Captain, Lieutenant...">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_position">Pozycja</label>
-                                <input type="text" id="edit_position" placeholder="np. Delver">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="edit_slv">SLV</label>
-                                <input type="text" id="edit_slv" placeholder="np. Main Delve Team">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_scA">Sc.A.</label>
-                                <input type="text" id="edit_scA" placeholder="np. I">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="edit_height">Wzrost (cm)</label>
-                                <input type="number" id="edit_height" min="100" max="250">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_weight">Waga (kg)</label>
-                                <input type="number" id="edit_weight" min="30" max="200">
-                            </div>
-                        </div>
-
-                        <div class="form-row full">
-                            <div class="form-group">
-                                <label for="edit_photoUrl">URL zdjęcia karty</label>
-                                <input type="url" id="edit_photoUrl" placeholder="https://...">
-                            </div>
-                        </div>
-
-                        <div class="form-row full">
-                            <div class="form-group">
-                                <label for="edit_appearance">Opis Wyglądu</label>
-                                <textarea id="edit_appearance" placeholder="Opisz wygląd postaci..."></textarea>
-                            </div>
-                        </div>
-
-                        <div class="form-row full">
-                            <div class="form-group">
-                                <label for="edit_personality">Opis Charakteru</label>
-                                <textarea id="edit_personality" placeholder="Opisz charakter postaci..."></textarea>
-                            </div>
-                        </div>
-
-                        <div class="form-row full">
-                            <div class="form-group">
-                                <label for="edit_history">Historia</label>
-                                <textarea id="edit_history" placeholder="Historia postaci..."></textarea>
-                            </div>
-                        </div>
-
-                        <h3 style="margin: 30px 0 20px 0; border-top: 2px solid #e1e1e1; padding-top: 20px;">📊 Statystyki Podstawowe</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="edit_strength">Strength</label>
-                                <input type="number" id="edit_strength" min="0" max="100">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_vitality">Vitality</label>
-                                <input type="number" id="edit_vitality" min="0" max="100">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="edit_speed">Speed</label>
-                                <input type="number" id="edit_speed" min="0" max="100">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_defense">Defense</label>
-                                <input type="number" id="edit_defense" min="0" max="100">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="edit_reiatsu">Reiatsu</label>
-                                <input type="number" id="edit_reiatsu" min="0" max="100">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_hakuda">Hakuda</label>
-                                <input type="number" id="edit_hakuda" min="0" max="100">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="edit_weaponship">Weaponship</label>
-                                <input type="number" id="edit_weaponship" min="0" max="100">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_tamashi">Tamashi</label>
-                                <input type="number" id="edit_tamashi" min="0" max="100">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="edit_magic">Magic</label>
-                                <input type="number" id="edit_magic" min="0" max="100">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_nazo" id="nazoLabel">Nazo (???)</label>
-                                <input type="number" id="edit_nazo" min="0" max="100">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="edit_nazoName">Nazwa zdolności Nazo</label>
-                                <input type="text" id="edit_nazoName" placeholder="??? lub nazwa zdolności">
-                            </div>
-                            <div class="form-group">
-                                <!-- Puste miejsce -->
-                            </div>
-                        </div>
-
-                        <h3 style="margin: 30px 0 20px 0; border-top: 2px solid #e1e1e1; padding-top: 20px;">🎮 Statystyki Gracza</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="edit_pointsToDistribute">Points to Distribute</label>
-                                <input type="number" id="edit_pointsToDistribute" min="0" max="999">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_nodePointsToDistribute">Node Points to Distribute</label>
-                                <input type="number" id="edit_nodePointsToDistribute" min="0" max="999">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="edit_reisenInHand">Reisen (in hand)</label>
-                                <input type="number" id="edit_reisenInHand" min="0" max="9999">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_reisenAbsorbed">Reisen (absorbed)</label>
-                                <input type="number" id="edit_reisenAbsorbed" min="0" max="9999">
-                                <small style="color: #666; display: block; margin-top: 5px;">
-                                    Na podstawie tego obliczane są Total Nodes i Next Node Progress
-                                </small>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="edit_yenInHand">Yen (in hand)</label>
-                                <input type="number" id="edit_yenInHand" min="0" max="999999">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_loyaltyLeft">Loyalty Left</label>
-                                <input type="number" id="edit_loyaltyLeft" min="0" max="100">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="edit_riatsuColorHex">Kolor Reiatsu</label>
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <input type="color" id="edit_riatsuColorHex" style="width: 50px; height: 40px; border: none; border-radius: 6px; cursor: pointer;">
-                                    <input type="text" id="edit_riatsuColorName" placeholder="Nazwa koloru" style="flex: 1;">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <!-- Puste miejsce -->
-                            </div>
-                        </div>
-
-                        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #e1e1e1;">
-                            <button type="button" class="btn-secondary" onclick="closeEditModal()" style="margin-right: 15px;">Anuluj</button>
-                            <button type="submit" class="btn-primary">💾 Zapisz Zmiany</button>
-                        </div>
-                    </form>
-                </div>
+        <div class="security-notice">
+            <div class="notice-text">
+                Unauthorized access is prohibited and monitored.<br>
+                All activities are logged and reviewed.<br>
+                Property of Organization of Liberty and Salvation.
             </div>
         </div>
     </div>
@@ -1118,7 +367,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, collection, addDoc, setDoc, getDocs, query, orderBy, limit, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
@@ -1136,1869 +385,148 @@
         window.db = db;
         window.getDoc = getDoc;
         window.doc = doc;
-        window.collection = collection;
-        window.addDoc = addDoc;
-        window.setDoc = setDoc;
-        window.getDocs = getDocs;
-        window.query = query;
-        window.orderBy = orderBy;
-        window.limit = limit;
-        window.where = where;
-        window.updateDoc = updateDoc;
-        window.deleteDoc = deleteDoc;
     </script>
 
     <script>
-        let currentUser = null;
-        let allCharacters = [];
-        let allLogs = [];
-        let currentPlayerCharacter = null;
+        let isConnected = false;
+        let isLoading = false;
 
-        // System kolorów Reiatsu
-        function generateRiatsuColor() {
-            const hex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
-            const name = getColorName(hex);
-            return { hex: hex, name: name };
-        }
-
-        function getColorName(hex) {
-            const r = parseInt(hex.slice(1, 3), 16);
-            const g = parseInt(hex.slice(3, 5), 16);
-            const b = parseInt(hex.slice(5, 7), 16);
+        function showMessage(message, type = 'error') {
+            const container = document.getElementById('messageContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type === 'error' ? 'error-message' : 'success-message';
+            messageDiv.textContent = message;
             
-            // Określ dominujący kolor
-            const max = Math.max(r, g, b);
-            const min = Math.min(r, g, b);
-            const diff = max - min;
+            container.innerHTML = '';
+            container.appendChild(messageDiv);
             
-            if (diff < 30) {
-                if (max < 80) return 'Black';
-                if (max > 200) return 'White';
-                return 'Gray';
-            }
-            
-            if (r === max) {
-                if (g > b + 30) return 'Orange';
-                if (b > g + 30) return 'Magenta';
-                return 'Red';
-            } else if (g === max) {
-                if (r > b + 30) return 'Yellow';
-                if (b > r + 30) return 'Cyan';
-                return 'Green';
-            } else {
-                if (r > g + 30) return 'Violet';
-                if (g > r + 30) return 'Teal';
-                return 'Blue';
-            }
-        }
-
-        // System obliczania node progression
-        function getNodeRequirements(maxNodes) {
-            const reqs = [];
-            
-            // 4 × 4 razy (4,4,4,4)
-            for (let i = 0; i < 4; i++) reqs.push(4);
-            
-            // 5,6,7 × 3 razy każdy (5,5,5, 6,6,6, 7,7,7)
-            for (let req = 5; req <= 7; req++) {
-                for (let i = 0; i < 3; i++) reqs.push(req);
-            }
-            
-            // 8+ × 2 razy każdy (8,8, 9,9, 10,10, 11,11, ...)
-            let req = 8;
-            while (reqs.length < maxNodes) {
-                for (let i = 0; i < 2 && reqs.length < maxNodes; i++) {
-                    reqs.push(req);
-                }
-                req++;
-            }
-            
-            return reqs;
-        }
-
-        function calculateNodeProgression(reisenAbsorbed) {
-            if (reisenAbsorbed < 0) reisenAbsorbed = 0;
-            
-            const requirements = getNodeRequirements(1000); // Wystarczająco dużo na bardzo wysokie poziomy
-            
-            let totalReisenUsed = 0;
-            let nodesReceived = 0;
-            
-            // Przejdź przez wszystkie wymagania i sprawdź ile node'ów gracz otrzymał
-            for (let i = 0; i < requirements.length; i++) {
-                const needed = requirements[i];
-                
-                if (totalReisenUsed + needed <= reisenAbsorbed) {
-                    // Gracz ma wystarczająco reisen na ten node
-                    totalReisenUsed += needed;
-                    nodesReceived++;
-                } else {
-                    // Gracz jest w środku tego node'a
-                    const progress = reisenAbsorbed - totalReisenUsed;
-                    return {
-                        totalNodesFromReisen: nodesReceived,
-                        nextNodeProgress: `${progress}/${needed}`,
-                        nodesReceived: nodesReceived
-                    };
-                }
-            }
-            
-            // Jeśli gracz dokładnie skończył wszystkie node'y (bardzo mało prawdopodobne)
-            const nextReq = requirements[nodesReceived] || (requirements[requirements.length - 1] + Math.floor(nodesReceived / 2));
-            return {
-                totalNodesFromReisen: nodesReceived,
-                nextNodeProgress: `0/${nextReq}`,
-                nodesReceived: nodesReceived
-            };
-        }
-
-        // System logowania
-        async function createLog(action, targetId, targetName, changes, details = '') {
-            const logEntry = {
-                action: action,
-                actorLogin: currentUser ? getAnonymizedLogin(currentUser.login) : 'System',
-                actorRole: currentUser ? currentUser.role : 'system',
-                targetId: targetId,
-                targetName: targetName,
-                changes: changes || {},
-                details: details,
-                timestamp: new Date().toISOString()
-            };
-
-            try {
-                await window.addDoc(window.collection(window.db, 'logs'), logEntry);
-                console.log('Log created:', logEntry);
-            } catch (error) {
-                console.error('Error creating log:', error);
-            }
-        }
-
-        function getAnonymizedLogin(login) {
-            if (!currentUser || currentUser.role !== 'admin') return login;
-            return login.replace(/\d+/g, '');
-        }
-
-        function formatChangeValue(before, after, fieldName) {
-            if (typeof before === 'number' && typeof after === 'number') {
-                const diff = after - before;
-                const diffText = diff > 0 ? `+${diff}` : `${diff}`;
-                return {
-                    before: before,
-                    after: after,
-                    diff: diffText,
-                    type: 'numeric'
-                };
-            } else {
-                return {
-                    before: before || 'brak',
-                    after: after || 'brak',
-                    type: 'text'
-                };
-            }
-        }
-
-        function getFieldDisplayName(field) {
-            const fieldNames = {
-                'firstName': 'Imię',
-                'lastName': 'Nazwisko',
-                'race': 'Rasa',
-                'height': 'Wzrost',
-                'weight': 'Waga',
-                'appearance': 'Opis wyglądu',
-                'personality': 'Opis charakteru',
-                'history': 'Historia',
-                'photoUrl': 'URL zdjęcia',
-                'strength': 'Siła',
-                'vitality': 'Witalność',
-                'speed': 'Szybkość',
-                'defense': 'Obrona',
-                'reiatsu': 'Reiatsu',
-                'hakuda': 'Hakuda',
-                'weaponship': 'Broń',
-                'tamashi': 'Tamashi',
-                'magic': 'Magia',
-                'nazo': 'Nazo',
-                'nazoName': 'Nazwa zdolności Nazo',
-                'pointsToDistribute': 'Punkty do rozdania',
-                'nodePointsToDistribute': 'Punkty węzłów',
-                'reisenInHand': 'Reisen (w ręku)',
-                'reisenAbsorbed': 'Reisen (wchłonięty)',
-                'yenInHand': 'Yen',
-                'loyaltyLeft': 'Lojalność',
-                'rank': 'Ranga',
-                'position': 'Pozycja',
-                'riatsuColor': 'Kolor Reiatsu',
-                'login': 'Login'
-            };
-            return fieldNames[field] || field;
-        }
-
-        function showError(message) {
-            const errorDiv = document.getElementById('errorMessage');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-            setTimeout(function() {
-                errorDiv.style.display = 'none';
+            setTimeout(() => {
+                messageDiv.remove();
             }, 5000);
         }
 
-        function showSuccess(message) {
-            const successDiv = document.getElementById('successMessage');
-            successDiv.textContent = message;
-            successDiv.style.display = 'block';
-            setTimeout(function() {
-                successDiv.style.display = 'none';
-            }, 3000);
+        function updateConnectionStatus(connected) {
+            isConnected = connected;
+            const statusDot = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('connectionText');
+            
+            if (connected) {
+                statusDot.classList.add('connected');
+                statusText.textContent = 'ONLINE';
+            } else {
+                statusDot.classList.remove('connected');
+                statusText.textContent = 'OFFLINE';
+            }
         }
 
-        async function loginUser() {
+        function setLoadingState(loading) {
+            isLoading = loading;
+            const button = document.getElementById('loginButton');
+            const spinner = document.getElementById('loadingSpinner');
+            const buttonText = document.getElementById('buttonText');
+            const input = document.getElementById('loginInput');
+            
+            if (loading) {
+                button.disabled = true;
+                spinner.style.display = 'inline-block';
+                buttonText.textContent = 'AUTHENTICATING...';
+                input.disabled = true;
+            } else {
+                button.disabled = false;
+                spinner.style.display = 'none';
+                buttonText.textContent = 'ACCESS SYSTEM';
+                input.disabled = false;
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            if (isLoading || !isConnected) {
+                showMessage('System unavailable. Please try again.');
+                return;
+            }
+            
             const loginInput = document.getElementById('loginInput').value.trim();
             
             if (!loginInput) {
-                showError('Proszę wprowadzić login!');
+                showMessage('Personnel identifier required.');
                 return;
             }
+
+            setLoadingState(true);
 
             try {
                 const userDoc = await window.getDoc(window.doc(window.db, 'users', loginInput));
                 
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
-                    currentUser = {
-                        login: loginInput,
-                        ...userData
-                    };
                     
-                    if (userData.role === 'admin') {
-                        showAdminPanel();
-                        await loadAllCharacters();
-                    } else {
-                        showDashboard();
-                    }
+                    // Store user session
+                    localStorage.setItem('currentUser', loginInput);
                     
-                    showSuccess('Pomyślnie zalogowano jako ' + userData.name + '!');
+                    showMessage('Authentication successful. Redirecting...', 'success');
+                    
+                    // Redirect based on role
+                    setTimeout(() => {
+                        if (userData.role === 'admin') {
+                            window.location.href = `admin-panel.html?login=${loginInput}`;
+                        } else {
+                            window.location.href = `profile.html?login=${loginInput}`;
+                        }
+                    }, 1500);
+                    
                 } else {
-                    showError('Nieprawidłowy login! Skontaktuj się z administratorem.');
+                    showMessage('Invalid personnel identifier. Access denied.');
+                    setLoadingState(false);
                 }
+                
             } catch (error) {
-                showError('Błąd połączenia z bazą danych: ' + error.message);
+                console.error('Authentication error:', error);
+                showMessage('System error. Please contact administrator.');
+                setLoadingState(false);
             }
         }
 
-        function showDashboard() {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('dashboardScreen').style.display = 'block';
-            document.getElementById('adminPanel').style.display = 'none';
-            
-            document.getElementById('welcomeText').textContent = 'Witaj, ' + currentUser.name + '!';
-            document.getElementById('userRole').textContent = 'Rola: Gracz';
-            
-            // Załaduj dane postaci gracza
-            loadPlayerCharacterData();
-        }
-
-        function showAdminPanel() {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('dashboardScreen').style.display = 'none';
-            document.getElementById('adminPanel').style.display = 'block';
-            
-            document.getElementById('adminWelcomeText').textContent = 'Witaj, ' + currentUser.name + '!';
-            showAdminSection('characters');
-        }
-
-        async function loadPlayerCharacterData() {
-            if (!currentUser || !currentUser.characterId) {
-                console.log('Brak characterId dla gracza');
-                return;
-            }
-
+        // Check Firebase connection
+        async function checkConnection() {
             try {
-                console.log('Ładowanie danych postaci gracza:', currentUser.characterId);
-                const charactersRef = window.collection(window.db, 'characters');
-                const q = window.query(charactersRef, window.where('id', '==', currentUser.characterId));
-                const querySnapshot = await window.getDocs(q);
-                
-                if (!querySnapshot.empty) {
-                    querySnapshot.forEach(function(doc) {
-                        currentPlayerCharacter = { 
-                            docId: doc.id, 
-                            ...doc.data() 
-                        };
-                        console.log('Załadowano dane postaci gracza:', currentPlayerCharacter);
-                    });
-                } else {
-                    console.error('Nie znaleziono postaci o ID:', currentUser.characterId);
-                    showError('Nie znaleziono powiązanej postaci!');
-                }
+                // Try to read a test document
+                const testDoc = await window.getDoc(window.doc(window.db, 'system', 'status'));
+                updateConnectionStatus(true);
             } catch (error) {
-                console.error('Błąd ładowania danych postaci gracza:', error);
-                showError('Błąd ładowania danych postaci: ' + error.message);
+                console.warn('Firebase connection test failed:', error);
+                updateConnectionStatus(window.db !== undefined);
             }
         }
 
-        async function loadAllCharacters() {
-            try {
-                console.log('Ładowanie wszystkich postaci...');
-                const charactersRef = window.collection(window.db, 'characters');
-                const q = window.query(charactersRef, window.orderBy('createdAt', 'desc'));
-                const querySnapshot = await window.getDocs(q);
-                
-                allCharacters = [];
-                querySnapshot.forEach(function(doc) {
-                    allCharacters.push({ 
-                        docId: doc.id, 
-                        ...doc.data() 
-                    });
-                });
-                
-                console.log('Załadowano postaci:', allCharacters);
-                displayCharacters(allCharacters);
-            } catch (error) {
-                console.error('Błąd ładowania postaci:', error);
-                showError('Błąd ładowania listy postaci: ' + error.message);
-            }
-        }
-
-        async function loadLogs() {
-            try {
-                console.log('Ładowanie logów...');
-                const logsRef = window.collection(window.db, 'logs');
-                const q = window.query(logsRef, window.orderBy('timestamp', 'desc'), window.limit(100));
-                const querySnapshot = await window.getDocs(q);
-                
-                allLogs = [];
-                querySnapshot.forEach(function(doc) {
-                    allLogs.push({ 
-                        docId: doc.id, 
-                        ...doc.data() 
-                    });
-                });
-                
-                console.log('Załadowano logi:', allLogs);
-                displayLogs(allLogs);
-            } catch (error) {
-                console.error('Błąd ładowania logów:', error);
-                document.getElementById('admin-logs').innerHTML = `
-                    <h2>📜 Logi Systemu</h2>
-                    <div style="text-align: center; padding: 40px; color: #dc3545;">
-                        <p>Błąd ładowania logów: ${error.message}</p>
-                    </div>
-                `;
-            }
-        }
-
-        function displayLogs(logs) {
-            let container = document.getElementById('admin-logs');
-            
-            if (logs.length === 0) {
-                container.innerHTML = `
-                    <h2>📜 Logi Systemu</h2>
-                    <div style="text-align: center; padding: 40px; color: #666;">
-                        <p>Brak logów w systemie</p>
-                        <p>Logi pojawią się po wykonaniu akcji</p>
-                    </div>
-                `;
+        // Initialize
+        window.addEventListener('load', function() {
+            // Check if user is already logged in
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                showMessage('Existing session found. Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = `profile.html?login=${currentUser}`;
+                }, 1000);
                 return;
             }
 
-            let logsHtml = '<h2>📜 Logi Systemu (' + logs.length + ')</h2>';
-            logsHtml += '<div style="background: white; border-radius: 10px; margin-top: 20px;">';
-            
-            logs.forEach(function(log) {
-                const time = new Date(log.timestamp).toLocaleString('pl-PL');
-                const actionText = getActionText(log.action);
-                const changesHtml = formatChangesForDisplay(log.changes);
-                
-                logsHtml += `
-                    <div class="log-entry">
-                        <div class="log-header">
-                            <span class="log-action">${actionText}</span>
-                            <span class="log-time">${time}</span>
-                        </div>
-                        <div class="log-details">
-                            <strong>${log.actorLogin}</strong> 
-                            ${log.action.includes('created') ? 'stworzył' : log.action.includes('stats_distributed') ? 'wydał punkty dla' : log.action.includes('reisen_absorbed') ? 'zaabsorbował reisen dla' : 'zmodyfikował'} 
-                            <strong>${log.targetName}</strong>
-                            ${log.details ? ` - ${log.details}` : ''}
-                        </div>
-                        ${changesHtml ? `<div class="log-changes">${changesHtml}</div>` : ''}
-                    </div>
-                `;
-            });
-            
-            logsHtml += '</div>';
-            container.innerHTML = logsHtml;
-        }
-
-        function formatChangesForDisplay(changes) {
-            if (!changes || Object.keys(changes).length === 0) return '';
-            
-            let changeItems = [];
-            Object.entries(changes).forEach(function([field, change]) {
-                const fieldName = getFieldDisplayName(field);
-                
-                if (change.type === 'numeric') {
-                    changeItems.push(`
-                        <div style="margin: 3px 0;">
-                            <strong>${fieldName}:</strong> 
-                            <span style="color: #dc3545;">${change.before}</span> → 
-                            <span style="color: #28a745;">${change.after}</span> 
-                            <span style="color: #6f42c1; font-weight: bold;">(${change.diff})</span>
-                        </div>
-                    `);
-                } else {
-                    changeItems.push(`
-                        <div style="margin: 3px 0;">
-                            <strong>${fieldName}:</strong><br>
-                            <span style="color: #dc3545;">Przed: "${change.before}"</span><br>
-                            <span style="color: #28a745;">Po: "${change.after}"</span>
-                        </div>
-                    `);
-                }
-            });
-            
-            return changeItems.join('');
-        }
-
-        function getActionText(action) {
-            const actionTexts = {
-                'character_created': '🆕 Utworzenie karty',
-                'character_updated': '✏️ Edycja karty',
-                'stats_distributed': '📊 Rozdanie punktów',
-                'reisen_absorbed': '💎 Absorpcja reisen',
-                'admin_grant': '👑 Nadanie przez admin',
-                'profile_updated': '🖼️ Zmiana profilu'
-            };
-            return actionTexts[action] || action;
-        }
-
-        function displayCharacters(characters) {
-            const container = document.getElementById('admin-characters');
-            
-            if (characters.length === 0) {
-                container.innerHTML = `
-                    <h2>📋 Lista Wszystkich Postaci</h2>
-                    <div style="text-align: center; padding: 40px; color: #666;">
-                        <p>Brak postaci w systemie</p>
-                        <p>Stwórz pierwszą kartę w zakładce "➕ Dodaj Kartę"</p>
-                    </div>
-                `;
-                return;
-            }
-
-            let charactersHtml = '<h2>📋 Lista Wszystkich Postaci (' + characters.length + ')</h2>';
-            charactersHtml += '<div style="display: grid; gap: 15px; margin-top: 20px;">';
-            
-            characters.forEach(function(character) {
-                const riatsuDisplay = character.riatsuColor ? 
-                    `<span class="reiatsu-color" style="background-color: ${character.riatsuColor.hex};" title="${character.riatsuColor.name} Reiatsu"></span>` : 
-                    '';
-                
-                const nazoDisplay = character.nazoName && character.nazoName !== '???' ? 
-                    `<span style="background: #6c757d; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; margin-left: 5px;" title="Zdolność Nazo: ${character.nazoName}">🔮 ${character.nazoName}</span>` : 
-                    '';
-                
-                charactersHtml += `
-                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #333;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <h3 style="margin: 0 0 5px 0; color: #333;">
-                                    ${character.firstName} ${character.lastName} ${riatsuDisplay} ${nazoDisplay}
-                                </h3>
-                                <p style="margin: 0; color: #666;">
-                                    <strong>Login:</strong> ${character.login} | 
-                                    <strong>Rasa:</strong> ${character.race} | 
-                                    <strong>ID:</strong> ${character.id}
-                                </p>
-                                <p style="margin: 5px 0 0 0; color: #888; font-size: 0.9em;">
-                                    Utworzono: ${new Date(character.createdAt).toLocaleString('pl-PL')} przez ${character.createdBy}
-                                </p>
-                            </div>
-                            <div>
-                                <button class="btn-primary" style="margin-right: 10px; padding: 8px 15px;" onclick="viewCharacter('${character.docId}')">
-                                    👁️ Zobacz
-                                </button>
-                                <button class="btn-secondary" style="padding: 8px 15px;" onclick="editCharacter('${character.docId}')">
-                                    ✏️ Edytuj
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            charactersHtml += '</div>';
-            container.innerHTML = charactersHtml;
-        }
-
-        function showAdminSection(section) {
-            // Hide all sections
-            const sections = document.querySelectorAll('.admin-section');
-            sections.forEach(function(s) {
-                s.style.display = 'none';
-            });
-            
-            const buttons = document.querySelectorAll('.admin-nav button');
-            buttons.forEach(function(b) {
-                b.classList.remove('active');
-            });
-            
-            // Show selected section
-            document.getElementById('admin-' + section).style.display = 'block';
-            document.getElementById('btn-' + section).classList.add('active');
-            
-            // Load data if needed
-            if (section === 'characters' && allCharacters.length > 0) {
-                displayCharacters(allCharacters);
-            } else if (section === 'logs') {
-                loadLogs();
-            }
-        }
-
-        function getNextId() {
-            if (allCharacters.length === 0) {
-                return '030001';
-            }
-            
-            const maxId = Math.max(...allCharacters.map(function(c) {
-                return parseInt(c.id);
-            }));
-            
-            return String(maxId + 1).padStart(6, '0');
-        }
-
-        function generateLogin(firstName, lastName) {
-            const firstSyllables = extractSyllables(firstName);
-            const lastSyllables = extractSyllables(lastName);
-            
-            const randomFirst = firstSyllables[Math.floor(Math.random() * firstSyllables.length)];
-            const randomLast = lastSyllables[Math.floor(Math.random() * lastSyllables.length)];
-            const randomNumber = Math.floor(Math.random() * 9000) + 1000;
-            
-            const capitalizedFirst = randomFirst.charAt(0).toUpperCase() + randomFirst.slice(1).toLowerCase();
-            const capitalizedLast = randomLast.charAt(0).toUpperCase() + randomLast.slice(1).toLowerCase();
-            
-            return capitalizedFirst + capitalizedLast + randomNumber;
-        }
-
-        function extractSyllables(name) {
-            if (!name) return ['Xx'];
-            
-            const vowels = 'aeiouAEIOU';
-            const syllables = [];
-            let currentSyllable = '';
-            
-            for (let i = 0; i < name.length; i++) {
-                currentSyllable += name[i];
-                
-                if (vowels.includes(name[i])) {
-                    if (i + 1 < name.length && !vowels.includes(name[i + 1])) {
-                        currentSyllable += name[i + 1];
-                        i++;
-                    }
-                    
-                    if (currentSyllable.length >= 2) {
-                        syllables.push(currentSyllable);
-                    }
-                    currentSyllable = '';
-                }
-            }
-            
-            if (currentSyllable.length >= 2) {
-                syllables.push(currentSyllable);
-            }
-            
-            if (syllables.length === 0) {
-                if (name.length >= 3) {
-                    syllables.push(name.substring(0, 3));
-                } else if (name.length >= 2) {
-                    syllables.push(name.substring(0, 2));
-                } else {
-                    syllables.push(name + 'x');
-                }
-            }
-            
-            return syllables;
-        }
-
-        function regenerateLogin() {
-            const firstName = document.getElementById('firstName').value.trim();
-            const lastName = document.getElementById('lastName').value.trim();
-            
-            if (!firstName || !lastName) {
-                showError('Wprowadź najpierw imię i nazwisko, żeby wygenerować login!');
-                return;
-            }
-            
-            const newLogin = generateLogin(firstName, lastName);
-            document.getElementById('generatedLogin').value = newLogin;
-            showSuccess('Login został przelosowany!');
-        }
-
-        function updateGeneratedLogin() {
-            const firstName = document.getElementById('firstName').value.trim();
-            const lastName = document.getElementById('lastName').value.trim();
-            const currentLogin = document.getElementById('generatedLogin').value.trim();
-            
-            if (firstName && lastName && !currentLogin) {
-                const login = generateLogin(firstName, lastName);
-                document.getElementById('generatedLogin').value = login;
-            }
-        }
-
-        async function handleAddCharacterSubmit(e) {
-            e.preventDefault();
-            
-            const firstName = document.getElementById('firstName').value.trim();
-            const lastName = document.getElementById('lastName').value.trim();
-            const race = document.getElementById('race').value;
-            let login = document.getElementById('generatedLogin').value.trim();
-            
-            if (!firstName || !lastName || !race) {
-                showError('Imię, nazwisko i rasa są wymagane!');
-                return;
-            }
-            
-            if (!login) {
-                login = generateLogin(firstName, lastName);
-                document.getElementById('generatedLogin').value = login;
-            }
-            
-            // Sprawdź czy login już istnieje
-            try {
-                const existingUser = await window.getDoc(window.doc(window.db, 'users', login));
-                if (existingUser.exists()) {
-                    showError('Login "' + login + '" już istnieje! Wygeneruj nowy lub wprowadź inny.');
-                    return;
-                }
-            } catch (error) {
-                console.error('Błąd sprawdzania loginu:', error);
-            }
-            
-            const riatsuColor = generateRiatsuColor();
-            
-            const characterData = {
-                id: getNextId(),
-                login: login,
-                firstName: firstName,
-                lastName: lastName,
-                race: race,
-                rank: 'I',
-                position: 'Delver',
-                slv: 'Main Delve Team',
-                scA: 'I',
-                riatsuColor: riatsuColor,
-                
-                // Podstawowe statystyki
-                strength: 0,
-                vitality: 0,
-                speed: 0,
-                defense: 0,
-                reiatsu: 0,
-                
-                // Statystyki umiejętności
-                hakuda: 0,
-                weaponship: 0,
-                tamashi: 0,
-                magic: 0,
-                nazo: 0,
-                nazoName: '???', // Nazwa statystyki Nazo (zmieniana przez admina)
-                
-                // Statystyki gracza
-                pointsToDistribute: 10,
-                nodePointsToDistribute: 0,
-                reisenInHand: 0,
-                reisenAbsorbed: 0,
-                totalNodesFromReisen: 0,
-                nextNodeProgress: '0/4',
-                yenInHand: 100,
-                loyaltyLeft: 100,
-                
-                createdAt: new Date().toISOString(),
-                createdBy: currentUser.login
-            };
-            
-            try {
-                console.log('Tworzenie postaci:', characterData);
-                
-                // Dodaj postać do characters collection
-                await window.addDoc(window.collection(window.db, 'characters'), characterData);
-                
-                // Dodaj login do users collection z konkretnym ID (loginem)
-                await window.setDoc(window.doc(window.db, 'users', login), {
-                    role: 'player',
-                    name: firstName + ' ' + lastName,
-                    characterId: characterData.id
-                });
-                
-                // Stwórz log
-                await createLog(
-                    'character_created',
-                    characterData.id,
-                    firstName + ' ' + lastName,
-                    {
-                        login: formatChangeValue('', login, 'login'),
-                        race: formatChangeValue('', race, 'race'),
-                        riatsuColor: formatChangeValue('', riatsuColor.name, 'riatsuColor'),
-                        nazoName: formatChangeValue('', '???', 'nazoName')
-                    },
-                    `Nowa karta postaci została utworzona. ID: ${characterData.id}, Reiatsu: ${riatsuColor.name}, Nazo: ???`
-                );
-                
-                console.log('Postać utworzona pomyślnie!');
-                showSuccess('Karta postaci została utworzona! Login: ' + login + ', Reiatsu: ' + riatsuColor.name);
-                resetForm();
-                
-                // Odśwież listę postaci
-                await loadAllCharacters();
-                showAdminSection('characters');
-                
-            } catch (error) {
-                console.error('Błąd tworzenia postaci:', error);
-                showError('Błąd podczas tworzenia karty postaci: ' + error.message);
-            }
-        }
-
-        function resetForm() {
-            document.getElementById('addCharacterForm').reset();
-            document.getElementById('generatedLogin').value = '';
-        }
-
-        function viewCharacter(docId) {
-            const character = allCharacters.find(function(c) {
-                return c.docId === docId;
-            });
-            
-            if (character) {
-                displayCharacterCard(character);
-            }
-        }
-
-        function displayCharacterCard(character) {
-            const raceWeaponNames = {
-                'Soul-Reaper': 'Zanjutsu',
-                'Arrancar': 'Zanjutsu', 
-                'Quincy': 'Ojigi',
-                'Fullbringer': 'Weapon Mastery'
-            };
-            
-            const raceTamashiNames = {
-                'Soul-Reaper': 'Zanpakuto Mastery',
-                'Arrancar': 'Zanpakuto Mastery',
-                'Quincy': 'Blood Legacy',
-                'Fullbringer': 'Fullbring Mastery'
-            };
-            
-            const raceMagicNames = {
-                'Soul-Reaper': 'Kido Mastery',
-                'Arrancar': 'Primal Reiryoku',
-                'Quincy': 'Ginto Mastery',
-                'Fullbringer': 'Soul Manipulation'
-            };
-
-            const createdDate = character.createdAt ? new Date(character.createdAt).toLocaleDateString('pl-PL') : '2015-4-16 AD.';
-            
-            const cardHtml = `
-                <div class="character-display">
-                    <!-- Identyfikator jak na obrazku -->
-                    <div class="character-id-card">
-                        <div class="id-card-header">
-                            <img src="https://cdn.discordapp.com/attachments/1408447648767414476/1408449604135030834/Logo_OLS.png?ex=68a9c869&is=68a876e9&hm=c7c23aca1cb6fb28efa92c5aa56869756382da1f44fffd6ce0e18a8929e705a5&" alt="OLS Logo" class="id-card-logo">
-                            <div class="id-card-title">BLACK OUTPOST</div>
-                            <div class="id-card-rank">${character.rank || 'I'}</div>
-                        </div>
-                        
-                        <div class="id-card-content">
-                            <div class="id-card-photo">
-                                ${character.photoUrl ? `<img src="${character.photoUrl}" alt="Zdjęcie ${character.firstName}">` : 'Brak zdjęcia'}
-                            </div>
-                            
-                            <div class="id-card-info">
-                                <div class="id-card-name">${character.firstName} ${character.lastName}</div>
-                                <div class="id-card-details">
-                                    <strong>DID:</strong> ${character.id}<br>
-                                    <strong>SLV:</strong> ${character.slv || 'Main Delve Team'}<br>
-                                    <strong>Sc.A.:</strong> ${character.scA || 'I'}<br>
-                                    <strong>[${character.position || 'Delver'}]</strong>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="id-card-footer">
-                            <div>${createdDate}</div>
-                            <div>All rights reserved under Central 46, Resolution XVI</div>
-                            <div class="id-card-barcode">
-                                <div class="barcode">||||| |||| | ||||| || | ||| |||||| || |||</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Wiki-style info box -->
-                    <div class="character-info-box">
-                        <div class="info-box-header">${character.firstName} ${character.lastName}</div>
-                        
-                        ${character.photoUrl ? `
-                        <div class="info-box-image">
-                            <img src="${character.photoUrl}" alt="${character.firstName} ${character.lastName}">
-                        </div>
-                        ` : ''}
-                        
-                        <div class="info-box-content">
-                            <div class="info-box-section">
-                                <div class="info-box-section-header">Podstawowe Informacje</div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Rasa</div>
-                                    <div class="info-box-value">${character.race}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Ranga</div>
-                                    <div class="info-box-value">${character.rank || 'I'}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Pozycja</div>
-                                    <div class="info-box-value">${character.position || 'Delver'}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Reiatsu</div>
-                                    <div class="info-box-value">
-                                        ${character.riatsuColor ? character.riatsuColor.name : 'Unknown'} 
-                                        <span class="reiatsu-color" style="background-color: ${character.riatsuColor ? character.riatsuColor.hex : '#ccc'};"></span>
-                                    </div>
-                                </div>
-                                ${character.height ? `
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Wzrost</div>
-                                    <div class="info-box-value">${character.height} cm</div>
-                                </div>
-                                ` : ''}
-                                ${character.weight ? `
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Waga</div>
-                                    <div class="info-box-value">${character.weight} kg</div>
-                                </div>
-                                ` : ''}
-                            </div>
-                            
-                            <div class="info-box-section">
-                                <div class="info-box-section-header">Statystyki Bojowe</div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Strength</div>
-                                    <div class="info-box-value">${character.strength || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Vitality</div>
-                                    <div class="info-box-value">${character.vitality || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Speed</div>
-                                    <div class="info-box-value">${character.speed || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Defense</div>
-                                    <div class="info-box-value">${character.defense || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Reiatsu</div>
-                                    <div class="info-box-value">${character.reiatsu || 0}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="info-box-section">
-                                <div class="info-box-section-header">Umiejętności Specjalne</div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Hakuda</div>
-                                    <div class="info-box-value">${character.hakuda || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">${raceWeaponNames[character.race] || 'Weaponship'}</div>
-                                    <div class="info-box-value">${character.weaponship || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">${raceTamashiNames[character.race] || 'Tamashi'}</div>
-                                    <div class="info-box-value">${character.tamashi || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">${raceMagicNames[character.race] || 'Magic'}</div>
-                                    <div class="info-box-value">${character.magic || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">${character.nazoName || '???'}</div>
-                                    <div class="info-box-value">${character.nazo || 0}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="info-box-section">
-                                <div class="info-box-section-header">Zasoby</div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Points to Distribute</div>
-                                    <div class="info-box-value">${character.pointsToDistribute || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Node Points</div>
-                                    <div class="info-box-value">${character.nodePointsToDistribute || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Reisen (in hand)</div>
-                                    <div class="info-box-value">${character.reisenInHand || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Reisen (absorbed)</div>
-                                    <div class="info-box-value">${character.reisenAbsorbed || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Next Node Progress</div>
-                                    <div class="info-box-value">${character.nextNodeProgress || '0/4'}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Yen</div>
-                                    <div class="info-box-value">${character.yenInHand || 0}</div>
-                                </div>
-                                <div class="info-box-row">
-                                    <div class="info-box-label">Loyalty Left</div>
-                                    <div class="info-box-value">${character.loyaltyLeft || 0}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    ${currentUser && currentUser.role === 'admin' ? `
-                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border: 1px solid #dee2e6;">
-                        <h4>Panel Administratora</h4>
-                        <button class="btn-secondary" onclick="changeNazoName('${character.docId}')" style="margin-right: 10px; margin-bottom: 10px;">
-                            🔮 Zmień nazwę "${character.nazoName || '???'}"
-                        </button>
-                        <button class="btn-primary" onclick="editCharacter('${character.docId}')">
-                            ✏️ Edytuj postać
-                        </button>
-                    </div>
-                    ` : ''}
-                </div>
-                
-                <!-- Sekcje opisów jak na wiki -->
-                <div class="character-description">
-                    ${character.appearance ? `
-                    <div class="description-section">
-                        <div class="description-header">Wygląd</div>
-                        <div class="description-content">${character.appearance}</div>
-                    </div>
-                    ` : ''}
-                    
-                    ${character.personality ? `
-                    <div class="description-section">
-                        <div class="description-header">Charakter</div>
-                        <div class="description-content">${character.personality}</div>
-                    </div>
-                    ` : ''}
-                    
-                    ${character.history ? `
-                    <div class="description-section">
-                        <div class="description-header">Historia</div>
-                        <div class="description-content">${character.history}</div>
-                    </div>
-                    ` : ''}
-                </div>
-            `;
-            
-            document.getElementById('characterDisplay').innerHTML = cardHtml;
-            document.getElementById('characterModal').style.display = 'block';
-        }
-
-        function closeCharacterModal() {
-            document.getElementById('characterModal').style.display = 'none';
-        }
-
-        async function changeNazoName(docId) {
-            const character = allCharacters.find(function(c) {
-                return c.docId === docId;
-            });
-            
-            if (!character) {
-                showError('Nie znaleziono postaci!');
-                return;
-            }
-
-            const currentName = character.nazoName || '???';
-            const newName = prompt(`Zmień nazwę zdolności Nazo dla ${character.firstName} ${character.lastName}:\n\nAktualna nazwa: "${currentName}"\n\nWpisz nową nazwę (lub zostaw puste aby wrócić do "???"):`, currentName === '???' ? '' : currentName);
-            
-            if (newName === null) return; // Użytkownik anulował
-            
-            const finalName = newName.trim() || '???';
-            
-            try {
-                // Aktualizuj w Firebase
-                const characterRef = window.doc(window.db, 'characters', docId);
-                await window.updateDoc(characterRef, {
-                    nazoName: finalName
-                });
-                
-                // Stwórz log
-                await createLog(
-                    'character_updated',
-                    character.id,
-                    `${character.firstName} ${character.lastName}`,
-                    {
-                        nazoName: formatChangeValue(currentName, finalName, 'nazoName')
-                    },
-                    `Administrator zmienił nazwę zdolności Nazo z "${currentName}" na "${finalName}"`
-                );
-                
-                // Aktualizuj lokalnie
-                character.nazoName = finalName;
-                
-                // Odśwież wyświetlanie karty jeśli jest otwarta
-                if (document.getElementById('characterModal').style.display === 'block') {
-                    displayCharacterCard(character);
-                }
-                
-                // Odśwież listę postaci
-                await loadAllCharacters();
-                
-                showSuccess(`Nazwa zdolności została zmieniona na "${finalName}"`);
-                
-            } catch (error) {
-                console.error('Błąd zmiany nazwy Nazo:', error);
-                showError('Błąd podczas zmiany nazwy zdolności: ' + error.message);
-            }
-        }
-
-        function editCharacter(docId) {
-            const character = allCharacters.find(function(c) {
-                return c.docId === docId;
-            });
-            
-            if (character) {
-                populateEditForm(character);
-                document.getElementById('editCharacterModal').style.display = 'block';
-            } else {
-                showError('Nie znaleziono postaci do edycji!');
-            }
-        }
-
-        function populateEditForm(character) {
-            // Podstawowe dane
-            document.getElementById('edit_firstName').value = character.firstName || '';
-            document.getElementById('edit_lastName').value = character.lastName || '';
-            document.getElementById('edit_login').value = character.login || '';
-            document.getElementById('edit_race').value = character.race || '';
-            document.getElementById('edit_rank').value = character.rank || 'I';
-            document.getElementById('edit_position').value = character.position || '';
-            document.getElementById('edit_slv').value = character.slv || '';
-            document.getElementById('edit_scA').value = character.scA || '';
-            document.getElementById('edit_height').value = character.height || '';
-            document.getElementById('edit_weight').value = character.weight || '';
-            document.getElementById('edit_photoUrl').value = character.photoUrl || '';
-            document.getElementById('edit_appearance').value = character.appearance || '';
-            document.getElementById('edit_personality').value = character.personality || '';
-            document.getElementById('edit_history').value = character.history || '';
-            
-            // Statystyki podstawowe
-            document.getElementById('edit_strength').value = character.strength || 0;
-            document.getElementById('edit_vitality').value = character.vitality || 0;
-            document.getElementById('edit_speed').value = character.speed || 0;
-            document.getElementById('edit_defense').value = character.defense || 0;
-            document.getElementById('edit_reiatsu').value = character.reiatsu || 0;
-            document.getElementById('edit_hakuda').value = character.hakuda || 0;
-            document.getElementById('edit_weaponship').value = character.weaponship || 0;
-            document.getElementById('edit_tamashi').value = character.tamashi || 0;
-            document.getElementById('edit_magic').value = character.magic || 0;
-            document.getElementById('edit_nazo').value = character.nazo || 0;
-            document.getElementById('edit_nazoName').value = character.nazoName || '???';
-            
-            // Statystyki gracza
-            document.getElementById('edit_pointsToDistribute').value = character.pointsToDistribute || 0;
-            document.getElementById('edit_nodePointsToDistribute').value = character.nodePointsToDistribute || 0;
-            document.getElementById('edit_reisenInHand').value = character.reisenInHand || 0;
-            document.getElementById('edit_reisenAbsorbed').value = character.reisenAbsorbed || 0;
-            document.getElementById('edit_yenInHand').value = character.yenInHand || 0;
-            document.getElementById('edit_loyaltyLeft').value = character.loyaltyLeft || 0;
-            
-            // Kolor Reiatsu
-            if (character.riatsuColor) {
-                document.getElementById('edit_riatsuColorHex').value = character.riatsuColor.hex || '#ff0000';
-                document.getElementById('edit_riatsuColorName').value = character.riatsuColor.name || '';
-            } else {
-                document.getElementById('edit_riatsuColorHex').value = '#ff0000';
-                document.getElementById('edit_riatsuColorName').value = '';
-            }
-            
-            // Oblicz i wyświetl node progression
-            updateNodeProgressionDisplay(character.reisenAbsorbed || 0);
-            
-            // Event listener dla zmiany reisen absorbed
-            document.getElementById('edit_reisenAbsorbed').addEventListener('input', function(e) {
-                const reisenAbsorbed = parseInt(e.target.value) || 0;
-                updateNodeProgressionDisplay(reisenAbsorbed);
-            });
-            
-            // Event listener dla color picker
-            document.getElementById('edit_riatsuColorHex').addEventListener('input', function(e) {
-                const newHex = e.target.value;
-                const newName = getColorName(newHex);
-                document.getElementById('edit_riatsuColorName').value = newName;
-            });
-            
-            // Ustaw aktualną nazwę Nazo w label
-            document.getElementById('nazoLabel').textContent = `Nazo (${character.nazoName || '???'})`;
-            
-            // Zapisz docId dla późniejszego użycia
-            document.getElementById('editCharacterForm').setAttribute('data-character-id', character.docId);
-        }
-
-        function updateNodeProgressionDisplay(reisenAbsorbed) {
-            const progression = calculateNodeProgression(reisenAbsorbed);
-            
-            // Znajdź lub stwórz element do wyświetlania informacji
-            let progressInfo = document.getElementById('nodeProgressInfo');
-            if (!progressInfo) {
-                progressInfo = document.createElement('div');
-                progressInfo.id = 'nodeProgressInfo';
-                progressInfo.style.cssText = 'background: #e3f2fd; padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 0.9em;';
-                
-                const reisenInput = document.getElementById('edit_reisenAbsorbed');
-                reisenInput.parentNode.appendChild(progressInfo);
-            }
-            
-            progressInfo.innerHTML = `
-                <strong>📊 Automatyczne obliczenia:</strong><br>
-                • Total Nodes from Reisen: <strong>${progression.totalNodesFromReisen}</strong><br>
-                • Next Node Progress: <strong>${progression.nextNodeProgress}</strong><br>
-                <small style="color: #666;">Obliczane automatycznie na podstawie Reisen (absorbed)</small>
-            `;
-        }
-
-        function closeEditModal() {
-            document.getElementById('editCharacterModal').style.display = 'none';
-        }
-
-        async function handleEditSubmit(e) {
-            e.preventDefault();
-            
-            const characterDocId = e.target.getAttribute('data-character-id');
-            const originalCharacter = allCharacters.find(function(c) {
-                return c.docId === characterDocId;
-            });
-            
-            if (!originalCharacter) {
-                showError('Nie znaleziono oryginalnych danych postaci!');
-                return;
-            }
-            
-            // Pobierz dane koloru Reiatsu
-            const riatsuColorHex = document.getElementById('edit_riatsuColorHex').value;
-            const riatsuColorName = document.getElementById('edit_riatsuColorName').value.trim() || getColorName(riatsuColorHex);
-            const reisenAbsorbed = parseInt(document.getElementById('edit_reisenAbsorbed').value) || 0;
-            
-            // Oblicz node progression na podstawie reisen absorbed
-            const nodeProgression = calculateNodeProgression(reisenAbsorbed);
-            
-            // Pobierz nowe dane z formularza
-            const newData = {
-                firstName: document.getElementById('edit_firstName').value.trim(),
-                lastName: document.getElementById('edit_lastName').value.trim(),
-                login: document.getElementById('edit_login').value.trim(),
-                race: document.getElementById('edit_race').value,
-                rank: document.getElementById('edit_rank').value.trim(),
-                position: document.getElementById('edit_position').value.trim(),
-                slv: document.getElementById('edit_slv').value.trim(),
-                scA: document.getElementById('edit_scA').value.trim(),
-                height: parseInt(document.getElementById('edit_height').value) || null,
-                weight: parseInt(document.getElementById('edit_weight').value) || null,
-                photoUrl: document.getElementById('edit_photoUrl').value.trim(),
-                appearance: document.getElementById('edit_appearance').value.trim(),
-                personality: document.getElementById('edit_personality').value.trim(),
-                history: document.getElementById('edit_history').value.trim(),
-                
-                strength: parseInt(document.getElementById('edit_strength').value) || 0,
-                vitality: parseInt(document.getElementById('edit_vitality').value) || 0,
-                speed: parseInt(document.getElementById('edit_speed').value) || 0,
-                defense: parseInt(document.getElementById('edit_defense').value) || 0,
-                reiatsu: parseInt(document.getElementById('edit_reiatsu').value) || 0,
-                hakuda: parseInt(document.getElementById('edit_hakuda').value) || 0,
-                weaponship: parseInt(document.getElementById('edit_weaponship').value) || 0,
-                tamashi: parseInt(document.getElementById('edit_tamashi').value) || 0,
-                magic: parseInt(document.getElementById('edit_magic').value) || 0,
-                nazo: parseInt(document.getElementById('edit_nazo').value) || 0,
-                nazoName: document.getElementById('edit_nazoName').value.trim() || '???',
-                
-                pointsToDistribute: parseInt(document.getElementById('edit_pointsToDistribute').value) || 0,
-                nodePointsToDistribute: parseInt(document.getElementById('edit_nodePointsToDistribute').value) || 0,
-                reisenInHand: parseInt(document.getElementById('edit_reisenInHand').value) || 0,
-                reisenAbsorbed: reisenAbsorbed,
-                totalNodesFromReisen: nodeProgression.totalNodesFromReisen,
-                nextNodeProgress: nodeProgression.nextNodeProgress,
-                yenInHand: parseInt(document.getElementById('edit_yenInHand').value) || 0,
-                loyaltyLeft: parseInt(document.getElementById('edit_loyaltyLeft').value) || 0,
-                
-                riatsuColor: {
-                    hex: riatsuColorHex,
-                    name: riatsuColorName
-                },
-                
-                lastEditedAt: new Date().toISOString(),
-                lastEditedBy: currentUser.login
-            };
-            
-            // Walidacja podstawowych pól
-            if (!newData.firstName || !newData.lastName || !newData.login || !newData.race) {
-                showError('Imię, nazwisko, login i rasa są wymagane!');
-                return;
-            }
-            
-            // Sprawdź czy login się zmienił i czy nowy login już istnieje
-            if (newData.login !== originalCharacter.login) {
-                try {
-                    const existingUser = await window.getDoc(window.doc(window.db, 'users', newData.login));
-                    if (existingUser.exists()) {
-                        showError('Login "' + newData.login + '" już istnieje! Wybierz inny login.');
-                        return;
-                    }
-                } catch (error) {
-                    console.error('Błąd sprawdzania loginu:', error);
-                }
-            }
-            
-            try {
-                // Porównaj zmiany
-                const changes = compareCharacterData(originalCharacter, newData);
-                
-                if (Object.keys(changes).length === 0) {
-                    showSuccess('Brak zmian do zapisania.');
-                    closeEditModal();
-                    return;
-                }
-                
-                // Aktualizuj postać w Firebase
-                const characterRef = window.doc(window.db, 'characters', characterDocId);
-                await window.updateDoc(characterRef, newData);
-                
-                // Jeśli login się zmienił, zaktualizuj users collection
-                if (newData.login !== originalCharacter.login) {
-                    // Usuń stary login
-                    await window.deleteDoc(window.doc(window.db, 'users', originalCharacter.login));
-                    
-                    // Dodaj nowy login
-                    await window.setDoc(window.doc(window.db, 'users', newData.login), {
-                        role: 'player',
-                        name: newData.firstName + ' ' + newData.lastName,
-                        characterId: originalCharacter.id
-                    });
-                }
-                
-                // Stwórz szczegółowy log
-                await createLog(
-                    'character_updated',
-                    originalCharacter.id,
-                    newData.firstName + ' ' + newData.lastName,
-                    changes,
-                    `Administrator zaktualizował kartę postaci. Zmieniono ${Object.keys(changes).length} pól. Node progression: ${nodeProgression.nextNodeProgress}`
-                );
-                
-                // Aktualizuj lokalnie
-                Object.assign(originalCharacter, newData);
-                originalCharacter.docId = characterDocId; // Zachowaj docId
-                
-                showSuccess('Karta postaci została zaktualizowana! Zmieniono ' + Object.keys(changes).length + ' pól.');
-                closeEditModal();
-                
-                // Odśwież listę i wyświetlanie
-                await loadAllCharacters();
-                
-            } catch (error) {
-                console.error('Błąd aktualizacji postaci:', error);
-                showError('Błąd podczas aktualizacji karty postaci: ' + error.message);
-            }
-        }
-
-        function compareCharacterData(original, updated) {
-            const changes = {};
-            const fieldsToCheck = [
-                'firstName', 'lastName', 'login', 'race', 'rank', 'position', 'slv', 'scA',
-                'height', 'weight', 'photoUrl', 'appearance', 'personality', 'history',
-                'strength', 'vitality', 'speed', 'defense', 'reiatsu', 'hakuda', 
-                'weaponship', 'tamashi', 'magic', 'nazo', 'nazoName',
-                'pointsToDistribute', 'nodePointsToDistribute', 'reisenInHand', 
-                'reisenAbsorbed', 'totalNodesFromReisen', 'nextNodeProgress', 'yenInHand', 'loyaltyLeft'
-            ];
-            
-            fieldsToCheck.forEach(function(field) {
-                const oldValue = original[field];
-                const newValue = updated[field];
-                
-                // Porównaj wartości (uwzględniając null/undefined/empty)
-                const normalizedOld = oldValue === null || oldValue === undefined ? '' : String(oldValue);
-                const normalizedNew = newValue === null || newValue === undefined ? '' : String(newValue);
-                
-                if (normalizedOld !== normalizedNew) {
-                    changes[field] = formatChangeValue(oldValue, newValue, field);
-                }
-            });
-            
-            // Sprawdź zmiany koloru Reiatsu
-            const oldColor = original.riatsuColor || { hex: '', name: '' };
-            const newColor = updated.riatsuColor || { hex: '', name: '' };
-            
-            if (oldColor.hex !== newColor.hex || oldColor.name !== newColor.name) {
-                changes['riatsuColor'] = formatChangeValue(
-                    `${oldColor.name} (${oldColor.hex})`,
-                    `${newColor.name} (${newColor.hex})`,
-                    'riatsuColor'
-                );
-            }
-            
-            return changes;
-        }
-
-        async function viewPlayerCharacter() {
-            if (!currentUser || !currentUser.characterId) {
-                showError('Nie znaleziono powiązanej postaci!');
-                return;
-            }
-
-            try {
-                // Użyj załadowanych danych lub załaduj je ponownie
-                if (!currentPlayerCharacter) {
-                    await loadPlayerCharacterData();
-                }
-
-                if (currentPlayerCharacter) {
-                    displayCharacterCard(currentPlayerCharacter);
-                } else {
-                    showError('Nie znaleziono karty postaci!');
-                }
-            } catch (error) {
-                console.error('Błąd ładowania postaci gracza:', error);
-                showError('Błąd ładowania karty postaci: ' + error.message);
-            }
-        }
-
-        async function viewPlayerStats() {
-            if (!currentUser || !currentUser.characterId) {
-                showError('Nie znaleziono powiązanej postaci!');
-                return;
-            }
-
-            try {
-                // Użyj załadowanych danych lub załaduj je ponownie
-                if (!currentPlayerCharacter) {
-                    await loadPlayerCharacterData();
-                }
-
-                if (currentPlayerCharacter) {
-                    const raceWeaponNames = {
-                        'Soul-Reaper': 'Zanjutsu',
-                        'Arrancar': 'Zanjutsu', 
-                        'Quincy': 'Ojigi',
-                        'Fullbringer': 'Weapon Mastery'
-                    };
-                    
-                    const raceTamashiNames = {
-                        'Soul-Reaper': 'Zanpakuto Mastery',
-                        'Arrancar': 'Zanpakuto Mastery',
-                        'Quincy': 'Blood Legacy',
-                        'Fullbringer': 'Fullbring Mastery'
-                    };
-                    
-                    const raceMagicNames = {
-                        'Soul-Reaper': 'Kido Mastery',
-                        'Arrancar': 'Primal Reiryoku',
-                        'Quincy': 'Ginto Mastery',
-                        'Fullbringer': 'Soul Manipulation'
-                    };
-
-                    const statsHtml = `
-                        <h3>📊 Twoje Statystyki</h3>
-                        <div style="margin: 20px 0;">
-                            <p><strong>Points to Distribute:</strong> ${currentPlayerCharacter.pointsToDistribute || 0}</p>
-                            <p><strong>Node Points:</strong> ${currentPlayerCharacter.nodePointsToDistribute || 0}</p>
-                        </div>
-                        
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <span class="stat-label">Strength:</span>
-                                <span class="stat-value">${currentPlayerCharacter.strength || 0}</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Vitality:</span>
-                                <span class="stat-value">${currentPlayerCharacter.vitality || 0}</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Speed:</span>
-                                <span class="stat-value">${currentPlayerCharacter.speed || 0}</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Defense:</span>
-                                <span class="stat-value">${currentPlayerCharacter.defense || 0}</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Reiatsu:</span>
-                                <span class="stat-value">${currentPlayerCharacter.reiatsu || 0}</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Hakuda:</span>
-                                <span class="stat-value">${currentPlayerCharacter.hakuda || 0}</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">${raceWeaponNames[currentPlayerCharacter.race]}:</span>
-                                <span class="stat-value">${currentPlayerCharacter.weaponship || 0}</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">${raceTamashiNames[currentPlayerCharacter.race]}:</span>
-                                <span class="stat-value">${currentPlayerCharacter.tamashi || 0}</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">${raceMagicNames[currentPlayerCharacter.race]}:</span>
-                                <span class="stat-value">${currentPlayerCharacter.magic || 0}</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">${currentPlayerCharacter.nazoName || '???'}:</span>
-                                <span class="stat-value">${currentPlayerCharacter.nazo || 0}</span>
-                            </div>
-                        </div>
-                        
-                        <div style="margin-top: 20px;">
-                            <h4>Zasoby:</h4>
-                            <p>Reisen (in hand): ${currentPlayerCharacter.reisenInHand || 0}</p>
-                            <p>Reisen (absorbed): ${currentPlayerCharacter.reisenAbsorbed || 0}</p>
-                            <p>Next node progress: ${currentPlayerCharacter.nextNodeProgress || '0/4'}</p>
-                            <p>Yen: ${currentPlayerCharacter.yenInHand || 0}</p>
-                            <p>Loyalty left: ${currentPlayerCharacter.loyaltyLeft || 0}</p>
-                        </div>
-                    `;
-                    
-                    document.getElementById('characterDisplay').innerHTML = statsHtml;
-                    document.getElementById('characterModal').style.display = 'block';
-                } else {
-                    showError('Nie znaleziono danych postaci!');
-                }
-            } catch (error) {
-                console.error('Błąd ładowania statystyk:', error);
-                showError('Błąd ładowania statystyk: ' + error.message);
-            }
-        }
-
-        async function openPlayerStatsManager() {
-            if (!currentUser || !currentUser.characterId) {
-                showError('Nie znaleziono powiązanej postaci!');
-                return;
-            }
-
-            try {
-                // Użyj załadowanych danych lub załaduj je ponownie
-                if (!currentPlayerCharacter) {
-                    await loadPlayerCharacterData();
-                }
-
-                if (currentPlayerCharacter) {
-                    displayPlayerStatsManager(currentPlayerCharacter);
-                } else {
-                    showError('Nie znaleziono danych postaci!');
-                }
-            } catch (error) {
-                console.error('Błąd ładowania managera statystyk:', error);
-                showError('Błąd ładowania managera statystyk: ' + error.message);
-            }
-        }
-
-        function displayPlayerStatsManager(character) {
-            const raceWeaponNames = {
-                'Soul-Reaper': 'Zanjutsu',
-                'Arrancar': 'Zanjutsu', 
-                'Quincy': 'Ojigi',
-                'Fullbringer': 'Weapon Mastery'
-            };
-            
-            const raceTamashiNames = {
-                'Soul-Reaper': 'Zanpakuto Mastery',
-                'Arrancar': 'Zanpakuto Mastery',
-                'Quincy': 'Blood Legacy',
-                'Fullbringer': 'Fullbring Mastery'
-            };
-            
-            const raceMagicNames = {
-                'Soul-Reaper': 'Kido Mastery',
-                'Arrancar': 'Primal Reiryoku',
-                'Quincy': 'Ginto Mastery',
-                'Fullbringer': 'Soul Manipulation'
-            };
-
-            const managerHtml = `
-                <div class="player-resources">
-                    <h3>📊 Dostępne Punkty</h3>
-                    <div class="resource-item">
-                        <strong>Points to Distribute:</strong>
-                        <span id="availablePoints">${character.pointsToDistribute || 0}</span>
-                    </div>
-                    <div class="resource-item">
-                        <strong>Node Points to Distribute:</strong>
-                        <span id="availableNodePoints">${character.nodePointsToDistribute || 0}</span>
-                    </div>
-                </div>
-
-                <div style="background: white; border-radius: 10px; padding: 20px; margin: 20px 0;">
-                    <h3>⚔️ Statystyki Podstawowe</h3>
-                    <div id="basicStats">
-                        ${createStatControl('strength', 'Strength', character.strength || 0)}
-                        ${createStatControl('vitality', 'Vitality', character.vitality || 0)}
-                        ${createStatControl('speed', 'Speed', character.speed || 0)}
-                        ${createStatControl('defense', 'Defense', character.defense || 0)}
-                        ${createStatControl('reiatsu', 'Reiatsu', character.reiatsu || 0)}
-                    </div>
-                </div>
-
-                <div style="background: white; border-radius: 10px; padding: 20px; margin: 20px 0;">
-                    <h3>🎯 Umiejętności Specjalne</h3>
-                    <div id="skillStats">
-                        ${createStatControl('hakuda', 'Hakuda', character.hakuda || 0)}
-                        ${createStatControl('weaponship', raceWeaponNames[character.race] || 'Weaponship', character.weaponship || 0)}
-                        ${createStatControl('tamashi', raceTamashiNames[character.race] || 'Tamashi', character.tamashi || 0)}
-                        ${createStatControl('magic', raceMagicNames[character.race] || 'Magic', character.magic || 0)}
-                        ${createStatControl('nazo', character.nazoName || '???', character.nazo || 0)}
-                    </div>
-                </div>
-
-                <div class="absorb-section">
-                    <h3>💎 Absorpcja Reisen</h3>
-                    <p>Zamień Reisen in hand na Reisen absorbed</p>
-                    <p><strong>Reisen in hand:</strong> ${character.reisenInHand || 0}</p>
-                    <div class="absorb-controls">
-                        <label>Ilość do absorpcji:</label>
-                        <input type="number" id="absorbAmount" class="absorb-input" min="0" max="${character.reisenInHand || 0}" value="0">
-                        <button class="btn-success" onclick="absorbReisen(${character.reisenInHand || 0})">
-                            💎 Zaabsorbuj
-                        </button>
-                    </div>
-                    <p style="margin-top: 10px;"><strong>Reisen absorbed:</strong> ${character.reisenAbsorbed || 0}</p>
-                    <p><strong>Next node progress:</strong> ${character.nextNodeProgress || '0/4'}</p>
-                </div>
-
-                <div class="player-resources">
-                    <h3>💰 Inne Zasoby</h3>
-                    <div class="resource-item">
-                        <strong>Yen:</strong>
-                        <span>${character.yenInHand || 0}</span>
-                    </div>
-                    <div class="resource-item">
-                        <strong>Loyalty Left:</strong>
-                        <span>${character.loyaltyLeft || 0}</span>
-                    </div>
-                </div>
-
-                <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #e1e1e1;">
-                    <button class="btn-primary" onclick="savePlayerStats('${character.docId}')" style="margin-right: 15px;">
-                        💾 Zapisz Zmiany
-                    </button>
-                    <button class="btn-secondary" onclick="closePlayerStatsModal()">
-                        Anuluj
-                    </button>
-                </div>
-            `;
-            
-            document.getElementById('playerStatsDisplay').innerHTML = managerHtml;
-            document.getElementById('playerStatsModal').style.display = 'block';
-        }
-
-        function createStatControl(statName, statLabel, currentValue) {
-            return `
-                <div class="player-stat-item" data-stat="${statName}">
-                    <div>
-                        <strong>${statLabel}:</strong>
-                        <span class="stat-current-value">${currentValue}</span>
-                    </div>
-                    <div class="stat-controls">
-                        <button class="btn-decrease" onclick="adjustStat('${statName}', -1)">-</button>
-                        <button class="btn-increase" onclick="adjustStat('${statName}', 1)">+</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function adjustStat(statName, change) {
-            if (!currentPlayerCharacter) return;
-            
-            const availablePoints = parseInt(document.getElementById('availablePoints').textContent);
-            const currentValue = currentPlayerCharacter[statName] || 0;
-            
-            // Sprawdź czy można zwiększyć
-            if (change > 0 && availablePoints <= 0) {
-                showError('Brak dostępnych punktów!');
-                return;
-            }
-            
-            // Sprawdź czy można zmniejszyć
-            if (change < 0 && currentValue <= 0) {
-                showError('Statystyka nie może być mniejsza niż 0!');
-                return;
-            }
-            
-            // Sprawdź limit 100
-            if (change > 0 && currentValue >= 100) {
-                showError('Statystyka nie może być większa niż 100!');
-                return;
-            }
-            
-            // Wykonaj zmianę
-            const newValue = currentValue + change;
-            const newAvailablePoints = availablePoints - change;
-            
-            // Aktualizuj dane postaci
-            currentPlayerCharacter[statName] = newValue;
-            currentPlayerCharacter.pointsToDistribute = newAvailablePoints;
-            
-            // Aktualizuj interfejs
-            const statElement = document.querySelector(`[data-stat="${statName}"] .stat-current-value`);
-            if (statElement) {
-                statElement.textContent = newValue;
-            }
-            
-            document.getElementById('availablePoints').textContent = newAvailablePoints;
-            
-            // Aktualizuj stan przycisków
-            updateStatButtons();
-        }
-
-        function updateStatButtons() {
-            const availablePoints = parseInt(document.getElementById('availablePoints').textContent);
-            
-            // Aktualizuj wszystkie przyciski
-            document.querySelectorAll('.stat-controls button').forEach(function(button) {
-                const isIncrease = button.classList.contains('btn-increase');
-                const statElement = button.closest('[data-stat]');
-                const statName = statElement.getAttribute('data-stat');
-                const currentValue = currentPlayerCharacter[statName] || 0;
-                
-                if (isIncrease) {
-                    button.disabled = (availablePoints <= 0 || currentValue >= 100);
-                } else {
-                    button.disabled = (currentValue <= 0);
-                }
-            });
-        }
-
-        async function absorbReisen(maxAmount) {
-            const absorbAmount = parseInt(document.getElementById('absorbAmount').value) || 0;
-            
-            if (absorbAmount <= 0) {
-                showError('Wprowadź prawidłową ilość do absorpcji!');
-                return;
-            }
-            
-            if (absorbAmount > maxAmount) {
-                showError('Nie masz wystarczającej ilości Reisen in hand!');
-                return;
-            }
-            
-            if (!currentPlayerCharacter) {
-                showError('Błąd danych postaci!');
-                return;
-            }
-            
-            try {
-                const character = currentPlayerCharacter;
-                const newReisenInHand = (character.reisenInHand || 0) - absorbAmount;
-                const newReisenAbsorbed = (character.reisenAbsorbed || 0) + absorbAmount;
-                
-                // Oblicz nowy node progression
-                const nodeProgression = calculateNodeProgression(newReisenAbsorbed);
-                
-                // Aktualizuj bazę danych
-                const characterRef = window.doc(window.db, 'characters', character.docId);
-                await window.updateDoc(characterRef, {
-                    reisenInHand: newReisenInHand,
-                    reisenAbsorbed: newReisenAbsorbed,
-                    totalNodesFromReisen: nodeProgression.totalNodesFromReisen,
-                    nextNodeProgress: nodeProgression.nextNodeProgress
-                });
-                
-                // Aktualizuj lokalne dane postaci
-                character.reisenInHand = newReisenInHand;
-                character.reisenAbsorbed = newReisenAbsorbed;
-                character.totalNodesFromReisen = nodeProgression.totalNodesFromReisen;
-                character.nextNodeProgress = nodeProgression.nextNodeProgress;
-                
-                // Stwórz log
-                await createLog(
-                    'reisen_absorbed',
-                    character.id,
-                    `${character.firstName} ${character.lastName}`,
-                    {
-                        reisenInHand: formatChangeValue(character.reisenInHand + absorbAmount, newReisenInHand, 'reisenInHand'),
-                        reisenAbsorbed: formatChangeValue(character.reisenAbsorbed - absorbAmount, newReisenAbsorbed, 'reisenAbsorbed'),
-                        nextNodeProgress: formatChangeValue('poprzedni', nodeProgression.nextNodeProgress, 'nextNodeProgress')
-                    },
-                    `Gracz zaabsorbował ${absorbAmount} Reisen. Nowy progress: ${nodeProgression.nextNodeProgress}`
-                );
-                
-                showSuccess(`Pomyślnie zaabsorbowano ${absorbAmount} Reisen! Nowy progress: ${nodeProgression.nextNodeProgress}`);
-                
-                // Odśwież wyświetlanie
-                displayPlayerStatsManager(character);
-                
-            } catch (error) {
-                console.error('Błąd absorpcji Reisen:', error);
-                showError('Błąd podczas absorpcji Reisen: ' + error.message);
-            }
-        }
-
-        async function savePlayerStats(characterDocId) {
-            if (!currentPlayerCharacter) {
-                showError('Błąd danych postaci!');
-                return;
-            }
-            
-            try {
-                const character = currentPlayerCharacter;
-                
-                // Przygotuj dane do aktualizacji
-                const updateData = {
-                    strength: character.strength || 0,
-                    vitality: character.vitality || 0,
-                    speed: character.speed || 0,
-                    defense: character.defense || 0,
-                    reiatsu: character.reiatsu || 0,
-                    hakuda: character.hakuda || 0,
-                    weaponship: character.weaponship || 0,
-                    tamashi: character.tamashi || 0,
-                    magic: character.magic || 0,
-                    nazo: character.nazo || 0,
-                    pointsToDistribute: character.pointsToDistribute || 0,
-                    lastEditedAt: new Date().toISOString(),
-                    lastEditedBy: currentUser.login
-                };
-                
-                // Aktualizuj w Firebase
-                const characterRef = window.doc(window.db, 'characters', characterDocId);
-                await window.updateDoc(characterRef, updateData);
-                
-                // Stwórz log z wydanymi punktami
-                const statsChanges = {};
-                ['strength', 'vitality', 'speed', 'defense', 'reiatsu', 'hakuda', 'weaponship', 'tamashi', 'magic', 'nazo'].forEach(function(stat) {
-                    // Pobierz oryginalne wartości z bazy lub ustaw 0
-                    const originalValue = 0; // Dla uproszczenia - można by ładować oryginalne wartości
-                    const newValue = character[stat] || 0;
-                    if (originalValue !== newValue) {
-                        statsChanges[stat] = formatChangeValue(originalValue, newValue, stat);
-                    }
-                });
-                
-                if (Object.keys(statsChanges).length > 0) {
-                    await createLog(
-                        'stats_distributed',
-                        character.id,
-                        `${character.firstName} ${character.lastName}`,
-                        statsChanges,
-                        `Gracz wydał punkty statystyk. Pozostało punktów: ${character.pointsToDistribute || 0}`
-                    );
-                }
-                
-                showSuccess('Statystyki zostały zapisane!');
-                closePlayerStatsModal();
-                
-                // Załaduj ponownie dane postaci dla gracza
-                await loadPlayerCharacterData();
-                
-            } catch (error) {
-                console.error('Błąd zapisywania statystyk:', error);
-                showError('Błąd podczas zapisywania statystyk: ' + error.message);
-            }
-        }
-
-        function closePlayerStatsModal() {
-            document.getElementById('playerStatsModal').style.display = 'none';
-        }
-
-        function logout() {
-            currentUser = null;
-            allCharacters = [];
-            allLogs = [];
-            currentPlayerCharacter = null;
-            document.getElementById('loginScreen').style.display = 'block';
-            document.getElementById('dashboardScreen').style.display = 'none';
-            document.getElementById('adminPanel').style.display = 'none';
-            document.getElementById('characterModal').style.display = 'none';
-            document.getElementById('playerStatsModal').style.display = 'none';
-            document.getElementById('loginInput').value = '';
-            showSuccess('Zostałeś wylogowany!');
-        }
+            // Setup form
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            
+            // Focus on input
+            document.getElementById('loginInput').focus();
+            
+            // Check connection
+            setTimeout(checkConnection, 1000);
+        });
 
         // Enter key support
         document.getElementById('loginInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                loginUser();
+            if (e.key === 'Enter' && !isLoading) {
+                handleLogin(e);
             }
-        });
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const characterModal = document.getElementById('characterModal');
-            const editModal = document.getElementById('editCharacterModal');
-            const playerStatsModal = document.getElementById('playerStatsModal');
-            
-            if (event.target === characterModal) {
-                closeCharacterModal();
-            }
-            if (event.target === editModal) {
-                closeEditModal();
-            }
-            if (event.target === playerStatsModal) {
-                closePlayerStatsModal();
-            }
-        }
-
-        // Test Firebase connection
-        window.addEventListener('load', function() {
-            console.log('=== ŁADOWANIE STRONY ===');
-            
-            // Test Firebase
-            setTimeout(function() {
-                console.log('Firebase DB:', window.db ? 'DOSTĘPNE' : 'NIEDOSTĘPNE');
-                console.log('Firebase getDoc:', window.getDoc ? 'DOSTĘPNE' : 'NIEDOSTĘPNE');
-                
-                if (window.db) {
-                    console.log('✅ Firebase zainicjalizowane poprawnie');
-                } else {
-                    console.error('❌ Firebase nie zainicjalizowane!');
-                }
-            }, 1000);
-            
-            // Test przycisku Enter
-            const loginInput = document.getElementById('loginInput');
-            if (loginInput) {
-                console.log('✅ Input logowania znaleziony');
-                loginInput.addEventListener('keypress', function(e) {
-                    console.log('Wciśnięto klawisz:', e.key);
-                    if (e.key === 'Enter') {
-                        console.log('🔐 Wywołuję loginUser()');
-                        loginUser();
-                    }
-                });
-            } else {
-                console.error('❌ Nie znaleziono input logowania!');
-            }
-            
-            // Add event listeners for forms
-            const firstNameInput = document.getElementById('firstName');
-            const lastNameInput = document.getElementById('lastName');
-            const addCharacterForm = document.getElementById('addCharacterForm');
-            const editCharacterForm = document.getElementById('editCharacterForm');
-            
-            if (firstNameInput) {
-                firstNameInput.addEventListener('input', updateGeneratedLogin);
-            }
-            if (lastNameInput) {
-                lastNameInput.addEventListener('input', updateGeneratedLogin);
-            }
-            if (addCharacterForm) {
-                addCharacterForm.addEventListener('submit', handleAddCharacterSubmit);
-            }
-            if (editCharacterForm) {
-                editCharacterForm.addEventListener('submit', handleEditSubmit);
-            }
-            
-            console.log('=== KONIEC ŁADOWANIA ===');
-            
-            // Dodaj funkcję do testowania z konsoli
-            window.testLogin = loginUser;
-            console.log('💡 Możesz testować logowanie wpisując: testLogin()');
         });
     </script>
 </body>

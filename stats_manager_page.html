@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics Manager - Black Outpost System</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(20,20,30,0.9) 100%), 
+                        url('https://cdn.discordapp.com/attachments/1408447648767414476/1408592371725242478/image_1.png?ex=68aa4d5f&is=68a8fbdf&hm=3c8442351405014db57137c5664aada195f2e2573e8ffc25ecf22b5b97814cc7&');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e0e6ed;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-bar {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-title::before {
+            content: "⚙";
+            color: #3b82f6;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+            border-color: rgba(148, 163, 184, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(37, 99, 235, 0.9) 100%);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 1) 0%, rgba(37, 99, 235, 1) 100%);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.8) 0%, rgba(5, 150, 105, 0.9) 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 1) 0%, rgba(5, 150, 105, 1) 100%);
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+
+        .resources-panel {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .resources-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 16px 16px 0 0;
+        }
+
+        .resources-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .resource-item {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .resource-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .resource-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .stats-section {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(51,65,85,0.8) 100%);
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+        }
+
+        .section-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            color: #f1f5f9;
+            letter-spacing: 0.5px;
+        }
+
+        .stats-grid {
+            padding: 24px;
+            display: grid;
+            gap: 16px;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            border-color: rgba(148, 163, 184, 0.4);
+            background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(51,65,85,0.6) 100%);
+        }
+
+        .stat-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .stat-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            color: #cbd5e1;
+            min-width: 120px;
+        }
+
+        .stat-current {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: #f1f5f9;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .stat-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stat-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-btn-decrease {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.9) 100%);
+            color: white;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .stat-btn-increase {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.8) 0%, rgba(5, 150, 105, 0.9) 100%);
+            color: white;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .stat-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .reisen-section {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+        }
+
+        .reisen-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+            border-radius: 16px 16px 0 0;
+        }
+
+        .reisen-content {
+            padding: 24px;
+            text-align: center;
+        }
+
+        .reisen-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .reisen-stat {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .reisen-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .reisen-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .absorb-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .absorb-input {
+            width: 100px;
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .absorb-input:focus {
+            outline: none;
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+        }
+
+        .save-panel {
+            text-align: center;
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .error-message, .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 1001;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, rgba(153, 27, 27, 0.9) 0%, rgba(127, 29, 29, 0.8) 100%);
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.9) 0%, rgba(16, 185, 129, 0.8) 100%);
+            color: #a7f3d0;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .nav-bar {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .resources-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stat-item {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .stat-controls {
+                flex-direction: row;
+            }
+
+            .absorb-controls {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(30,41,59,0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav-bar">
+            <div class="nav-title">
+                STATISTICS MANAGEMENT
+            </div>
+            <div class="nav-actions">
+                <a href="#" class="btn" onclick="goToProfile()">BACK TO PROFILE</a>
+                <a href="#" class="btn" onclick="viewFullStats()">VIEW STATS</a>
+                <a href="login.html" class="btn" onclick="logout()">LOGOUT</a>
+            </div>
+        </nav>
+
+        <div class="resources-panel">
+            <div class="resources-title">AVAILABLE RESOURCES</div>
+            <div class="resources-grid">
+                <div class="resource-item">
+                    <div class="resource-label">Points to Distribute</div>
+                    <div class="resource-value" id="availablePoints">0</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-label">Node Points</div>
+                    <div class="resource-value" id="nodePoints">0</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-label">Current Yen</div>
+                    <div class="resource-value" id="currentYen">0</div>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-label">Loyalty Left</div>
+                    <div class="resource-value" id="loyaltyLeft">100</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="section-header">
+                <div class="section-title">BASIC COMBAT STATISTICS</div>
+            </div>
+            <div class="stats-grid" id="basicStatsGrid">
+                <!-- Basic stats will be loaded here -->
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="section-header">
+                <div class="section-title">SPECIALIZED SKILLS</div>
+            </div>
+            <div class="stats-grid" id="skillStatsGrid">
+                <!-- Skill stats will be loaded here -->
+            </div>
+        </div>
+
+        <div class="reisen-section">
+            <div class="section-header">
+                <div class="section-title">REISEN ABSORPTION</div>
+            </div>
+            <div class="reisen-content">
+                <div class="reisen-info">
+                    <div class="reisen-stat">
+                        <div class="reisen-label">In Hand</div>
+                        <div class="reisen-value" id="reisenInHand">0</div>
+                    </div>
+                    <div class="reisen-stat">
+                        <div class="reisen-label">Absorbed</div>
+                        <div class="reisen-value" id="reisenAbsorbed">0</div>
+                    </div>
+                    <div class="reisen-stat">
+                        <div class="reisen-label">Node Progress</div>
+                        <div class="reisen-value" id="nodeProgress">0/4</div>
+                    </div>
+                </div>
+                
+                <div class="absorb-controls">
+                    <label for="absorbAmount" style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #94a3b8;">Amount:</label>
+                    <input type="number" id="absorbAmount" class="absorb-input" min="0" value="0">
+                    <button class="btn btn-success" onclick="absorbReisen()">ABSORB REISEN</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="save-panel">
+            <button class="btn btn-primary" onclick="saveAllChanges()" style="padding: 16px 32px; font-size: 16px;">
+                SAVE ALL CHANGES
+            </button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
+            authDomain: "bleach-black-outpost.firebaseapp.com",
+            projectId: "bleach-black-outpost",
+            storageBucket: "bleach-black-outpost.firebasestorage.app",
+            messagingSenderId: "201204368777",
+            appId: "1:201204368777:web:c2a34d61acb46e7b494d58",
+            measurementId: "G-SBD3766NQ6"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        window.db = db;
+        window.getDoc = getDoc;
+        window.doc = doc;
+        window.collection = collection;
+        window.query = query;
+        window.where = where;
+        window.getDocs = getDocs;
+        window.updateDoc = updateDoc;
+        window.addDoc = addDoc;
+    </script>
+
+    <script>
+        let currentUser = null;
+        let currentCharacter = null;
+        let statsChanged = false;
+
+        // Race-specific skill names
+        const raceSkillNames = {
+            'Soul-Reaper': {
+                weapon: 'ZANJUTSU',
+                tamashi: 'ZANPAKUTO MASTERY',
+                magic: 'KIDO MASTERY'
+            },
+            'Arrancar': {
+                weapon: 'ZANJUTSU',
+                tamashi: 'ZANPAKUTO MASTERY',
+                magic: 'PRIMAL REIRYOKU'
+            },
+            'Quincy': {
+                weapon: 'OJIGI',
+                tamashi: 'BLOOD LEGACY',
+                magic: 'GINTO MASTERY'
+            },
+            'Fullbringer': {
+                weapon: 'WEAPON MASTERY',
+                tamashi: 'FULLBRING MASTERY',
+                magic: 'SOUL MANIPULATION'
+            }
+        };
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
+
+        function calculateNodeProgression(reisenAbsorbed) {
+            if (reisenAbsorbed < 0) reisenAbsorbed = 0;
+            
+            // Node requirements: 4x4, then 5x3, 6x3, 7x3, then 8x2, 9x2, 10x2, etc.
+            const requirements = [];
+            
+            // 4 × 4 times
+            for (let i = 0; i < 4; i++) requirements.push(4);
+            
+            // 5,6,7 × 3 times each
+            for (let req = 5; req <= 7; req++) {
+                for (let i = 0; i < 3; i++) requirements.push(req);
+            }
+            
+            // 8+ × 2 times each
+            let req = 8;
+            while (requirements.length < 1000) {
+                for (let i = 0; i < 2 && requirements.length < 1000; i++) {
+                    requirements.push(req);
+                }
+                req++;
+            }
+            
+            let totalUsed = 0;
+            let nodesReceived = 0;
+            
+            for (let i = 0; i < requirements.length; i++) {
+                const needed = requirements[i];
+                
+                if (totalUsed + needed <= reisenAbsorbed) {
+                    totalUsed += needed;
+                    nodesReceived++;
+                } else {
+                    const progress = reisenAbsorbed - totalUsed;
+                    return {
+                        totalNodes: nodesReceived,
+                        nextProgress: `${progress}/${needed}`,
+                        nodesReceived: nodesReceived
+                    };
+                }
+            }
+            
+            const nextReq = requirements[nodesReceived] || (requirements[requirements.length - 1] + Math.floor(nodesReceived / 2));
+            return {
+                totalNodes: nodesReceived,
+                nextProgress: `0/${nextReq}`,
+                nodesReceived: nodesReceived
+            };
+        }
+
+        async function loadUserData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const login = urlParams.get('login') || localStorage.getItem('currentUser');
+            
+            if (!login) {
+                showError('NO USER SESSION FOUND');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+                return;
+            }
+
+            try {
+                const userDoc = await window.getDoc(window.doc(window.db, 'users', login));
+                if (!userDoc.exists()) {
+                    showError('USER DATA NOT FOUND');
+                    return;
+                }
+
+                currentUser = { login, ...userDoc.data() };
+
+                if (currentUser.characterId) {
+                    const charactersRef = window.collection(window.db, 'characters');
+                    const q = window.query(charactersRef, window.where('id', '==', currentUser.characterId));
+                    const querySnapshot = await window.getDocs(q);
+                    
+                    if (!querySnapshot.empty) {
+                        querySnapshot.forEach(doc => {
+                            currentCharacter = { docId: doc.id, ...doc.data() };
+                        });
+                        
+                        displayCharacterData();
+                        setupStatControls();
+                    } else {
+                        showError('CHARACTER DATA NOT FOUND');
+                    }
+                } else {
+                    showError('NO CHARACTER ASSIGNED');
+                }
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('DATABASE CONNECTION ERROR');
+            }
+        }
+
+        function displayCharacterData() {
+            if (!currentCharacter) return;
+
+            const char = currentCharacter;
+            
+            // Update resources
+            document.getElementById('availablePoints').textContent = char.pointsToDistribute || 0;
+            document.getElementById('nodePoints').textContent = char.nodePointsToDistribute || 0;
+            document.getElementById('currentYen').textContent = char.yenInHand || 0;
+            document.getElementById('loyaltyLeft').textContent = char.loyaltyLeft || 100;
+
+            // Update reisen info
+            document.getElementById('reisenInHand').textContent = char.reisenInHand || 0;
+            document.getElementById('reisenAbsorbed').textContent = char.reisenAbsorbed || 0;
+            document.getElementById('nodeProgress').textContent = char.nextNodeProgress || '0/4';
+            
+            // Update absorb input max
+            document.getElementById('absorbAmount').max = char.reisenInHand || 0;
+        }
+
+        function setupStatControls() {
+            if (!currentCharacter) return;
+
+            const basicStats = [
+                { key: 'strength', name: 'STRENGTH' },
+                { key: 'vitality', name: 'VITALITY' },
+                { key: 'speed', name: 'SPEED' },
+                { key: 'defense', name: 'DEFENSE' },
+                { key: 'reiatsu', name: 'REIATSU' }
+            ];
+
+            const skillNames = raceSkillNames[currentCharacter.race] || raceSkillNames['Soul-Reaper'];
+            const skillStats = [
+                { key: 'hakuda', name: 'HAKUDA' },
+                { key: 'weaponship', name: skillNames.weapon },
+                { key: 'tamashi', name: skillNames.tamashi },
+                { key: 'magic', name: skillNames.magic },
+                { key: 'nazo', name: currentCharacter.nazoName || '???' }
+            ];
+
+            renderStatGrid('basicStatsGrid', basicStats);
+            renderStatGrid('skillStatsGrid', skillStats);
+        }
+
+        function renderStatGrid(containerId, stats) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            stats.forEach(stat => {
+                const currentValue = currentCharacter[stat.key] || 0;
+                
+                const statElement = document.createElement('div');
+                statElement.className = 'stat-item';
+                statElement.setAttribute('data-stat', stat.key);
+                
+                statElement.innerHTML = `
+                    <div class="stat-info">
+                        <div class="stat-label">${stat.name}</div>
+                        <div class="stat-current">${currentValue}</div>
+                    </div>
+                    <div class="stat-controls">
+                        <button class="stat-btn stat-btn-decrease" onclick="adjustStat('${stat.key}', -1)">-</button>
+                        <button class="stat-btn stat-btn-increase" onclick="adjustStat('${stat.key}', 1)">+</button>
+                    </div>
+                `;
+                
+                container.appendChild(statElement);
+            });
+
+            updateStatButtons();
+        }
+
+        function adjustStat(statKey, change) {
+            if (!currentCharacter) return;
+
+            const availablePoints = currentCharacter.pointsToDistribute || 0;
+            const currentValue = currentCharacter[statKey] || 0;
+
+            // Check if can increase
+            if (change > 0 && availablePoints <= 0) {
+                showError('NO POINTS AVAILABLE');
+                return;
+            }
+
+            // Check if can decrease
+            if (change < 0 && currentValue <= 0) {
+                showError('CANNOT GO BELOW 0');
+                return;
+            }
+
+            // Check max limit
+            if (change > 0 && currentValue >= 100) {
+                showError('MAXIMUM STAT IS 100');
+                return;
+            }
+
+            // Apply change
+            currentCharacter[statKey] = currentValue + change;
+            currentCharacter.pointsToDistribute = availablePoints - change;
+
+            // Update display
+            const statElement = document.querySelector(`[data-stat="${statKey}"] .stat-current`);
+            if (statElement) {
+                statElement.textContent = currentCharacter[statKey];
+            }
+
+            document.getElementById('availablePoints').textContent = currentCharacter.pointsToDistribute;
+            
+            updateStatButtons();
+            statsChanged = true;
+        }
+
+        function updateStatButtons() {
+            const availablePoints = currentCharacter.pointsToDistribute || 0;
+
+            document.querySelectorAll('.stat-item').forEach(item => {
+                const statKey = item.getAttribute('data-stat');
+                const currentValue = currentCharacter[statKey] || 0;
+                
+                const decreaseBtn = item.querySelector('.stat-btn-decrease');
+                const increaseBtn = item.querySelector('.stat-btn-increase');
+
+                decreaseBtn.disabled = currentValue <= 0;
+                increaseBtn.disabled = availablePoints <= 0 || currentValue >= 100;
+            });
+        }
+
+        async function absorbReisen() {
+            const amount = parseInt(document.getElementById('absorbAmount').value) || 0;
+            const maxAmount = currentCharacter.reisenInHand || 0;
+
+            if (amount <= 0) {
+                showError('INVALID AMOUNT');
+                return;
+            }
+
+            if (amount > maxAmount) {
+                showError('INSUFFICIENT REISEN IN HAND');
+                return;
+            }
+
+            const newInHand = maxAmount - amount;
+            const newAbsorbed = (currentCharacter.reisenAbsorbed || 0) + amount;
+            
+            // Calculate new node progression
+            const nodeProgression = calculateNodeProgression(newAbsorbed);
+            
+            // Update character data
+            currentCharacter.reisenInHand = newInHand;
+            currentCharacter.reisenAbsorbed = newAbsorbed;
+            currentCharacter.totalNodesFromReisen = nodeProgression.totalNodes;
+            currentCharacter.nextNodeProgress = nodeProgression.nextProgress;
+
+            // Update display
+            document.getElementById('reisenInHand').textContent = newInHand;
+            document.getElementById('reisenAbsorbed').textContent = newAbsorbed;
+            document.getElementById('nodeProgress').textContent = nodeProgression.nextProgress;
+            document.getElementById('absorbAmount').max = newInHand;
+            document.getElementById('absorbAmount').value = 0;
+
+            statsChanged = true;
+            showSuccess(`ABSORBED ${amount} REISEN`);
+        }
+
+        async function saveAllChanges() {
+            if (!statsChanged) {
+                showError('NO CHANGES TO SAVE');
+                return;
+            }
+
+            if (!currentCharacter) {
+                showError('NO CHARACTER DATA');
+                return;
+            }
+
+            try {
+                const updateData = {
+                    strength: currentCharacter.strength || 0,
+                    vitality: currentCharacter.vitality || 0,
+                    speed: currentCharacter.speed || 0,
+                    defense: currentCharacter.defense || 0,
+                    reiatsu: currentCharacter.reiatsu || 0,
+                    hakuda: currentCharacter.hakuda || 0,
+                    weaponship: currentCharacter.weaponship || 0,
+                    tamashi: currentCharacter.tamashi || 0,
+                    magic: currentCharacter.magic || 0,
+                    nazo: currentCharacter.nazo || 0,
+                    pointsToDistribute: currentCharacter.pointsToDistribute || 0,
+                    reisenInHand: currentCharacter.reisenInHand || 0,
+                    reisenAbsorbed: currentCharacter.reisenAbsorbed || 0,
+                    totalNodesFromReisen: currentCharacter.totalNodesFromReisen || 0,
+                    nextNodeProgress: currentCharacter.nextNodeProgress || '0/4',
+                    lastEditedAt: new Date().toISOString(),
+                    lastEditedBy: currentUser.login
+                };
+
+                await window.updateDoc(window.doc(window.db, 'characters', currentCharacter.docId), updateData);
+                
+                // Create log
+                await window.addDoc(window.collection(window.db, 'logs'), {
+                    action: 'stats_distributed',
+                    actorLogin: currentUser.login,
+                    actorRole: 'player',
+                    targetId: currentCharacter.id,
+                    targetName: `${currentCharacter.firstName} ${currentCharacter.lastName}`,
+                    details: `Player updated statistics`,
+                    timestamp: new Date().toISOString()
+                });
+
+                statsChanged = false;
+                showSuccess('CHANGES SAVED SUCCESSFULLY');
+
+            } catch (error) {
+                console.error('Error saving:', error);
+                showError('SAVE FAILED');
+            }
+        }
+
+        function goToProfile() {
+            window.location.href = `profile.html?login=${currentUser.login}`;
+        }
+
+        function viewFullStats() {
+            window.location.href = `stats-view.html?login=${currentUser.login}`;
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+
+        // Auto-update inputs
+        document.getElementById('firstName')?.addEventListener('input', updateGeneratedLogin);
+        document.getElementById('lastName')?.addEventListener('input', updateGeneratedLogin);
+
+        // Initialize page
+        window.addEventListener('load', function() {
+            loadUserData();
+        });
+
+        // Warn about unsaved changes
+        window.addEventListener('beforeunload', function(e) {
+            if (statsChanged) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+</html>
