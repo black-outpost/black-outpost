@@ -1162,14 +1162,9 @@
     </script>
 
     <script>
-        // PODSTAWOWY TEST - czy JavaScript działa
-        console.log('🚀 JAVASCRIPT ZAŁADOWANY!');
-        console.log('🔥 Czy widzisz ten komunikat?');
-        
         let currentUser = null;
         let allCharacters = [];
         let allLogs = [];
-        let currentPlayerCharacter = null; // Dodane dla gracza
 
         // System kolorów Reiatsu
         function generateRiatsuColor() {
@@ -1369,60 +1364,37 @@
         }
 
         async function loginUser() {
-            console.log('=== ROZPOCZYNANIE LOGOWANIA ===');
             const loginInput = document.getElementById('loginInput').value.trim();
-            console.log('Wprowadzony login:', loginInput);
             
             if (!loginInput) {
-                console.log('❌ Pusty login');
                 showError('Proszę wprowadzić login!');
                 return;
             }
 
             try {
-                console.log('🔍 Sprawdzanie w Firebase...');
-                
-                if (!window.db) {
-                    console.error('❌ Brak połączenia z Firebase');
-                    showError('Błąd połączenia z bazą danych');
-                    return;
-                }
-                
-                console.log('📡 Wysyłanie zapytania do users/' + loginInput);
                 const userDoc = await window.getDoc(window.doc(window.db, 'users', loginInput));
-                console.log('📨 Odpowiedź otrzymana. Istnieje?', userDoc.exists());
                 
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
-                    console.log('👤 Dane użytkownika:', userData);
-                    
                     currentUser = {
                         login: loginInput,
                         ...userData
                     };
                     
-                    console.log('✅ Użytkownik zalogowany:', currentUser);
-                    
                     if (userData.role === 'admin') {
-                        console.log('🔑 Pokazuję panel admina');
                         showAdminPanel();
                         await loadAllCharacters();
                     } else {
-                        console.log('👤 Pokazuję dashboard gracza');
                         showDashboard();
                     }
                     
                     showSuccess('Pomyślnie zalogowano jako ' + userData.name + '!');
                 } else {
-                    console.log('❌ Użytkownik nie istnieje');
                     showError('Nieprawidłowy login! Skontaktuj się z administratorem.');
                 }
             } catch (error) {
-                console.error('💥 BŁĄD LOGOWANIA:', error);
                 showError('Błąd połączenia z bazą danych: ' + error.message);
             }
-            
-            console.log('=== KONIEC LOGOWANIA ===');
         }
 
         function showDashboard() {
