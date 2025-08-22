@@ -820,18 +820,18 @@
                 <form class="character-form" id="addCharacterForm">
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Imię *</label>
+                            <label for="firstName">Imię *</label>
                             <input type="text" id="firstName" required>
                         </div>
                         <div class="form-group">
-                            <label>Nazwisko *</label>
+                            <label for="lastName">Nazwisko *</label>
                             <input type="text" id="lastName" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Login</label>
+                            <label for="generatedLogin">Login</label>
                             <div style="display: flex; gap: 10px;">
                                 <input type="text" id="generatedLogin" placeholder="Zostanie wygenerowany automatycznie" style="flex: 1;">
                                 <button type="button" class="btn-secondary" onclick="regenerateLogin()" style="padding: 10px 15px;">🎲 Przelosuj</button>
@@ -839,7 +839,7 @@
                             <small style="color: #666; margin-top: 5px; display: block;">Możesz wpisać własny login lub użyć przycisku do przelosowania</small>
                         </div>
                         <div class="form-group">
-                            <label>Rasa *</label>
+                            <label for="race">Rasa *</label>
                             <select id="race" required>
                                 <option value="">Wybierz rasę</option>
                                 <option value="Soul-Reaper">Soul-Reaper</option>
@@ -903,22 +903,22 @@
                     <form id="editCharacterForm" class="character-form">
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Imię *</label>
+                                <label for="edit_firstName">Imię *</label>
                                 <input type="text" id="edit_firstName" required>
                             </div>
                             <div class="form-group">
-                                <label>Nazwisko *</label>
+                                <label for="edit_lastName">Nazwisko *</label>
                                 <input type="text" id="edit_lastName" required>
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Login *</label>
+                                <label for="edit_login">Login *</label>
                                 <input type="text" id="edit_login" required>
                             </div>
                             <div class="form-group">
-                                <label>Rasa *</label>
+                                <label for="edit_race">Rasa *</label>
                                 <select id="edit_race" required>
                                     <option value="Soul-Reaper">Soul-Reaper</option>
                                     <option value="Quincy">Quincy</option>
@@ -930,61 +930,61 @@
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Ranga</label>
+                                <label for="edit_rank">Ranga</label>
                                 <input type="text" id="edit_rank" placeholder="np. I, II, III, Captain, Lieutenant...">
                             </div>
                             <div class="form-group">
-                                <label>Pozycja</label>
+                                <label for="edit_position">Pozycja</label>
                                 <input type="text" id="edit_position" placeholder="np. Delver">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>SLV</label>
+                                <label for="edit_slv">SLV</label>
                                 <input type="text" id="edit_slv" placeholder="np. Main Delve Team">
                             </div>
                             <div class="form-group">
-                                <label>Sc.A.</label>
+                                <label for="edit_scA">Sc.A.</label>
                                 <input type="text" id="edit_scA" placeholder="np. I">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Wzrost (cm)</label>
+                                <label for="edit_height">Wzrost (cm)</label>
                                 <input type="number" id="edit_height" min="100" max="250">
                             </div>
                             <div class="form-group">
-                                <label>Waga (kg)</label>
+                                <label for="edit_weight">Waga (kg)</label>
                                 <input type="number" id="edit_weight" min="30" max="200">
                             </div>
                         </div>
 
                         <div class="form-row full">
                             <div class="form-group">
-                                <label>URL zdjęcia karty</label>
+                                <label for="edit_photoUrl">URL zdjęcia karty</label>
                                 <input type="url" id="edit_photoUrl" placeholder="https://...">
                             </div>
                         </div>
 
                         <div class="form-row full">
                             <div class="form-group">
-                                <label>Opis Wyglądu</label>
+                                <label for="edit_appearance">Opis Wyglądu</label>
                                 <textarea id="edit_appearance" placeholder="Opisz wygląd postaci..."></textarea>
                             </div>
                         </div>
 
                         <div class="form-row full">
                             <div class="form-group">
-                                <label>Opis Charakteru</label>
+                                <label for="edit_personality">Opis Charakteru</label>
                                 <textarea id="edit_personality" placeholder="Opisz charakter postaci..."></textarea>
                             </div>
                         </div>
 
                         <div class="form-row full">
                             <div class="form-group">
-                                <label>Historia</label>
+                                <label for="edit_history">Historia</label>
                                 <textarea id="edit_history" placeholder="Historia postaci..."></textarea>
                             </div>
                         </div>
@@ -992,62 +992,62 @@
                         <h3 style="margin: 30px 0 20px 0; border-top: 2px solid #e1e1e1; padding-top: 20px;">📊 Statystyki Podstawowe</h3>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Strength</label>
+                                <label for="edit_strength">Strength</label>
                                 <input type="number" id="edit_strength" min="0" max="100">
                             </div>
                             <div class="form-group">
-                                <label>Vitality</label>
+                                <label for="edit_vitality">Vitality</label>
                                 <input type="number" id="edit_vitality" min="0" max="100">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Speed</label>
+                                <label for="edit_speed">Speed</label>
                                 <input type="number" id="edit_speed" min="0" max="100">
                             </div>
                             <div class="form-group">
-                                <label>Defense</label>
+                                <label for="edit_defense">Defense</label>
                                 <input type="number" id="edit_defense" min="0" max="100">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Reiatsu</label>
+                                <label for="edit_reiatsu">Reiatsu</label>
                                 <input type="number" id="edit_reiatsu" min="0" max="100">
                             </div>
                             <div class="form-group">
-                                <label>Hakuda</label>
+                                <label for="edit_hakuda">Hakuda</label>
                                 <input type="number" id="edit_hakuda" min="0" max="100">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Weaponship</label>
+                                <label for="edit_weaponship">Weaponship</label>
                                 <input type="number" id="edit_weaponship" min="0" max="100">
                             </div>
                             <div class="form-group">
-                                <label>Tamashi</label>
+                                <label for="edit_tamashi">Tamashi</label>
                                 <input type="number" id="edit_tamashi" min="0" max="100">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Magic</label>
+                                <label for="edit_magic">Magic</label>
                                 <input type="number" id="edit_magic" min="0" max="100">
                             </div>
                             <div class="form-group">
-                                <label id="nazoLabel">Nazo (???)</label>
+                                <label for="edit_nazo" id="nazoLabel">Nazo (???)</label>
                                 <input type="number" id="edit_nazo" min="0" max="100">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Nazwa zdolności Nazo</label>
+                                <label for="edit_nazoName">Nazwa zdolności Nazo</label>
                                 <input type="text" id="edit_nazoName" placeholder="??? lub nazwa zdolności">
                             </div>
                             <div class="form-group">
@@ -1058,22 +1058,22 @@
                         <h3 style="margin: 30px 0 20px 0; border-top: 2px solid #e1e1e1; padding-top: 20px;">🎮 Statystyki Gracza</h3>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Points to Distribute</label>
+                                <label for="edit_pointsToDistribute">Points to Distribute</label>
                                 <input type="number" id="edit_pointsToDistribute" min="0" max="999">
                             </div>
                             <div class="form-group">
-                                <label>Node Points to Distribute</label>
+                                <label for="edit_nodePointsToDistribute">Node Points to Distribute</label>
                                 <input type="number" id="edit_nodePointsToDistribute" min="0" max="999">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Reisen (in hand)</label>
+                                <label for="edit_reisenInHand">Reisen (in hand)</label>
                                 <input type="number" id="edit_reisenInHand" min="0" max="9999">
                             </div>
                             <div class="form-group">
-                                <label>Reisen (absorbed)</label>
+                                <label for="edit_reisenAbsorbed">Reisen (absorbed)</label>
                                 <input type="number" id="edit_reisenAbsorbed" min="0" max="9999">
                                 <small style="color: #666; display: block; margin-top: 5px;">
                                     Na podstawie tego obliczane są Total Nodes i Next Node Progress
@@ -1083,31 +1083,18 @@
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Yen (in hand)</label>
+                                <label for="edit_yenInHand">Yen (in hand)</label>
                                 <input type="number" id="edit_yenInHand" min="0" max="999999">
                             </div>
                             <div class="form-group">
-                                <label>Loyalty Left</label>
+                                <label for="edit_loyaltyLeft">Loyalty Left</label>
                                 <input type="number" id="edit_loyaltyLeft" min="0" max="100">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Kolor Reiatsu</label>
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <input type="color" id="edit_riatsuColorHex" style="width: 50px; height: 40px; border: none; border-radius: 6px; cursor: pointer;">
-                                    <input type="text" id="edit_riatsuColorName" placeholder="Nazwa koloru" style="flex: 1;">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <!-- Puste miejsce -->
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Kolor Reiatsu</label>
+                                <label for="edit_riatsuColorHex">Kolor Reiatsu</label>
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <input type="color" id="edit_riatsuColorHex" style="width: 50px; height: 40px; border: none; border-radius: 6px; cursor: pointer;">
                                     <input type="text" id="edit_riatsuColorName" placeholder="Nazwa koloru" style="flex: 1;">
@@ -1165,6 +1152,7 @@
         let currentUser = null;
         let allCharacters = [];
         let allLogs = [];
+        let currentPlayerCharacter = null;
 
         // System kolorów Reiatsu
         function generateRiatsuColor() {
@@ -2979,7 +2967,7 @@
                 loginInput.addEventListener('keypress', function(e) {
                     console.log('Wciśnięto klawisz:', e.key);
                     if (e.key === 'Enter') {
-                        console.log('🔑 Wywołuję loginUser()');
+                        console.log('🔐 Wywołuję loginUser()');
                         loginUser();
                     }
                 });
@@ -3012,3 +3000,6 @@
             window.testLogin = loginUser;
             console.log('💡 Możesz testować logowanie wpisując: testLogin()');
         });
+    </script>
+</body>
+</html>
