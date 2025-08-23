@@ -459,7 +459,7 @@
             <div class="nav-actions">
                 <a href="#" class="btn" onclick="goToProfile()">BACK TO PROFILE</a>
                 <a href="#" class="btn" onclick="viewFullStats()">VIEW STATS</a>
-                <a href="login.html" class="btn" onclick="logout()">LOGOUT</a>
+                <a href="index.html" class="btn" onclick="logout()">LOGOUT</a>
             </div>
         </nav>
 
@@ -675,7 +675,7 @@
             if (!login) {
                 showError('NO USER SESSION FOUND');
                 setTimeout(() => {
-                    window.location.href = 'login.html';
+                    window.location.href = 'index.html';
                 }, 2000);
                 return;
             }
@@ -942,12 +942,8 @@
 
         function logout() {
             localStorage.removeItem('currentUser');
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         }
-
-        // Auto-update inputs
-        document.getElementById('firstName')?.addEventListener('input', updateGeneratedLogin);
-        document.getElementById('lastName')?.addEventListener('input', updateGeneratedLogin);
 
         // Initialize page
         window.addEventListener('load', function() {

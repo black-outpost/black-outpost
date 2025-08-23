@@ -475,7 +475,7 @@
                 ADMINISTRATIVE CONTROL
             </div>
             <div class="nav-actions">
-                <a href="login.html" class="btn btn-danger" onclick="logout()">LOGOUT</a>
+                <a href="index.html" class="btn btn-danger" onclick="logout()">LOGOUT</a>
             </div>
         </nav>
 
@@ -776,7 +776,7 @@
             if (!login) {
                 showError('NO USER SESSION FOUND');
                 setTimeout(() => {
-                    window.location.href = 'login.html';
+                    window.location.href = 'index.html';
                 }, 2000);
                 return;
             }
@@ -793,7 +793,7 @@
                 if (currentUser.role !== 'admin') {
                     showError('INSUFFICIENT PRIVILEGES');
                     setTimeout(() => {
-                        window.location.href = 'login.html';
+                        window.location.href = 'index.html';
                     }, 2000);
                     return;
                 }
@@ -1132,17 +1132,17 @@
 
         function logout() {
             localStorage.removeItem('currentUser');
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         }
 
         // Auto-update generated login
-        document.getElementById('firstName').addEventListener('input', () => {
+        document.getElementById('firstName')?.addEventListener('input', () => {
             if (!document.getElementById('generatedLogin').value) {
                 regenerateLogin();
             }
         });
 
-        document.getElementById('lastName').addEventListener('input', () => {
+        document.getElementById('lastName')?.addEventListener('input', () => {
             if (!document.getElementById('generatedLogin').value) {
                 regenerateLogin();
             }

@@ -538,7 +538,7 @@
             <div class="nav-actions">
                 <a href="#" class="btn" onclick="openStatsManager()">MANAGE STATS</a>
                 <a href="#" class="btn" onclick="viewFullStats()">VIEW STATS</a>
-                <a href="login.html" class="btn btn-danger" onclick="logout()">LOGOUT</a>
+                <a href="index.html" class="btn btn-danger" onclick="logout()">LOGOUT</a>
             </div>
         </nav>
 
@@ -803,7 +803,7 @@
             if (!login) {
                 showError('NO USER SESSION FOUND');
                 setTimeout(() => {
-                    window.location.href = 'login.html';
+                    window.location.href = 'index.html';
                 }, 2000);
                 return;
             }
@@ -966,7 +966,7 @@
             localStorage.removeItem('currentUser');
             showSuccess('LOGGED OUT SUCCESSFULLY');
             setTimeout(() => {
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
             }, 1000);
         }
 
