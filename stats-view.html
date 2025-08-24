@@ -529,7 +529,7 @@
                 </div>
                 <div class="total-item">
                     <div class="total-label">Loyalty Left</div>
-                    <div class="total-value" id="loyaltyLeft">100</div>
+                    <div class="total-value" id="loyaltyLeft">0</div>
                 </div>
                 <div class="total-item">
                     <div class="total-label">Total Nodes</div>
@@ -655,12 +655,12 @@
             document.getElementById('characterRace').textContent = char.race || '-';
             document.getElementById('characterRank').textContent = char.rank || 'I';
 
-            // Update resources
+            // Update resources - FIXED: Default node progress to 0/4 and loyalty to 0
             document.getElementById('pointsLeft').textContent = char.pointsToDistribute || 0;
             document.getElementById('nodePoints').textContent = char.nodePointsToDistribute || 0;
             document.getElementById('reisenInHand').textContent = char.reisenInHand || 0;
             document.getElementById('reisenAbsorbed').textContent = char.reisenAbsorbed || 0;
-            document.getElementById('nodeProgress').textContent = char.nextNodeProgress || '0/4';
+            document.getElementById('nodeProgress').textContent = char.nextNodeProgress || '0/4'; // FIXED: Default to 0/4
             document.getElementById('yenAmount').textContent = char.yenInHand || 0;
 
             // Update basic stats
@@ -747,7 +747,7 @@
             document.getElementById('skillsTotal').textContent = skillsTotal;
             document.getElementById('overallTotal').textContent = overallTotal;
             document.getElementById('pointsSpent').textContent = pointsSpent;
-            document.getElementById('loyaltyLeft').textContent = currentCharacter.loyaltyLeft || 100;
+            document.getElementById('loyaltyLeft').textContent = currentCharacter.loyaltyLeft || 0; // FIXED: Default to 0
             document.getElementById('totalNodes').textContent = currentCharacter.totalNodesFromReisen || 0;
         }
 

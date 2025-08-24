@@ -480,7 +480,7 @@
                 </div>
                 <div class="resource-item">
                     <div class="resource-label">Loyalty Left</div>
-                    <div class="resource-value" id="loyaltyLeft">100</div>
+                    <div class="resource-value" id="loyaltyLeft">0</div>
                 </div>
             </div>
         </div>
@@ -719,16 +719,16 @@
 
             const char = currentCharacter;
             
-            // Update resources
+            // Update resources - FIXED: Default loyalty to 0
             document.getElementById('availablePoints').textContent = char.pointsToDistribute || 0;
             document.getElementById('nodePoints').textContent = char.nodePointsToDistribute || 0;
             document.getElementById('currentYen').textContent = char.yenInHand || 0;
-            document.getElementById('loyaltyLeft').textContent = char.loyaltyLeft || 100;
+            document.getElementById('loyaltyLeft').textContent = char.loyaltyLeft || 0; // FIXED: Default to 0
 
-            // Update reisen info
+            // Update reisen info - FIXED: Default node progress to 0/4
             document.getElementById('reisenInHand').textContent = char.reisenInHand || 0;
             document.getElementById('reisenAbsorbed').textContent = char.reisenAbsorbed || 0;
-            document.getElementById('nodeProgress').textContent = char.nextNodeProgress || '0/4';
+            document.getElementById('nodeProgress').textContent = char.nextNodeProgress || '0/4'; // FIXED: Default to 0/4
             
             // Update absorb input max
             document.getElementById('absorbAmount').max = char.reisenInHand || 0;

@@ -705,7 +705,7 @@
                             </div>
                             <div class="info-row">
                                 <div class="info-label">LOYALTY</div>
-                                <div class="info-value" id="loyaltyLeft">100</div>
+                                <div class="info-value" id="loyaltyLeft">0</div>
                             </div>
                         </div>
                     </div>
@@ -901,14 +901,14 @@
             document.getElementById('statMagic').textContent = char.magic || 0;
             document.getElementById('statNazo').textContent = char.nazo || 0;
 
-            // Update resources
+            // Update resources - FIXED: Handle loyalty properly
             document.getElementById('pointsLeft').textContent = char.pointsToDistribute || 0;
             document.getElementById('nodePoints').textContent = char.nodePointsToDistribute || 0;
             document.getElementById('reisenInHand').textContent = char.reisenInHand || 0;
             document.getElementById('reisenAbsorbed').textContent = char.reisenAbsorbed || 0;
-            document.getElementById('nodeProgress').textContent = char.nextNodeProgress || '0/4';
+            document.getElementById('nodeProgress').textContent = char.nextNodeProgress || '0/4'; // FIXED: Default to 0/4
             document.getElementById('yenAmount').textContent = char.yenInHand || 0;
-            document.getElementById('loyaltyLeft').textContent = char.loyaltyLeft || 100;
+            document.getElementById('loyaltyLeft').textContent = char.loyaltyLeft || 0; // FIXED: Default to 0
 
             // Update descriptions
             displayDescriptions();
