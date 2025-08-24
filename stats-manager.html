@@ -804,11 +804,11 @@
                 return;
             }
 
-            // Check max limit
-            if (change > 0 && currentValue >= 100) {
-                showError('MAXIMUM STAT IS 100');
-                return;
-            }
+            // Check max limit - REMOVED: No upper limit for stats
+            // if (change > 0 && currentValue >= 100) {
+            //     showError('MAXIMUM STAT IS 100');
+            //     return;
+            // }
 
             // Apply change
             currentCharacter[statKey] = currentValue + change;
@@ -837,7 +837,7 @@
                 const increaseBtn = item.querySelector('.stat-btn-increase');
 
                 decreaseBtn.disabled = currentValue <= 0;
-                increaseBtn.disabled = availablePoints <= 0 || currentValue >= 100;
+                increaseBtn.disabled = availablePoints <= 0; // REMOVED: || currentValue >= 100
             });
         }
 

@@ -663,12 +663,31 @@
             document.getElementById('nodeProgress').textContent = char.nextNodeProgress || '0/4'; // FIXED: Default to 0/4
             document.getElementById('yenAmount').textContent = char.yenInHand || 0;
 
-            // Update basic stats
-            updateStatDisplay('strength', char.strength || 0);
-            updateStatDisplay('vitality', char.vitality || 0);
-            updateStatDisplay('speed', char.speed || 0);
-            updateStatDisplay('defense', char.defense || 0);
-            updateStatDisplay('reiatsu', char.reiatsu || 0);
+            // Calculate total points spent for proportional bars
+            const basicStats = [
+                char.strength || 0,
+                char.vitality || 0,
+                char.speed || 0,
+                char.defense || 0,
+                char.reiatsu || 0
+            ];
+
+            const skillStats = [
+                char.hakuda || 0,
+                char.weaponship || 0,
+                char.tamashi || 0,
+                char.magic || 0,
+                char.nazo || 0
+            ];
+
+            const totalPointsSpent = [...basicStats, ...skillStats].reduce((sum, stat) => sum + stat, 0);
+
+            // Update basic stats with proportional bars
+            updateStatDisplay('strength', char.strength || 0, totalPointsSpent);
+            updateStatDisplay('vitality', char.vitality || 0, totalPointsSpent);
+            updateStatDisplay('speed', char.speed || 0, totalPointsSpent);
+            updateStatDisplay('defense', char.defense || 0, totalPointsSpent);
+            updateStatDisplay('reiatsu', char.reiatsu || 0, totalPointsSpent);
 
             // Update reiatsu color
             if (char.riatsuColor) {
@@ -676,19 +695,20 @@
             }
 
             // Update specialized skills
-            displaySpecializedSkills();
+            displaySpecializedSkills(totalPointsSpent);
 
             // Update totals
             updateTotals();
         }
 
-        function updateStatDisplay(statName, value) {
+        function updateStatDisplay(statName, value, totalPoints) {
             document.getElementById(`stat${statName.charAt(0).toUpperCase() + statName.slice(1)}`).textContent = value;
-            const percentage = Math.min((value / 100) * 100, 100);
+            // Calculate percentage based on total points spent, not out of 100
+            const percentage = totalPoints > 0 ? Math.min((value / totalPoints) * 100, 100) : 0;
             document.getElementById(`bar${statName.charAt(0).toUpperCase() + statName.slice(1)}`).style.width = `${percentage}%`;
         }
 
-        function displaySpecializedSkills() {
+        function displaySpecializedSkills(totalPointsSpent) {
             const skillNames = raceSkillNames[currentCharacter.race] || raceSkillNames['Soul-Reaper'];
             const skillsPanel = document.getElementById('skillStatsPanel');
             
@@ -703,7 +723,8 @@
             skillsPanel.innerHTML = '';
             
             skills.forEach(skill => {
-                const percentage = Math.min((skill.value / 100) * 100, 100);
+                // Calculate percentage based on total points spent, not out of 100
+                const percentage = totalPointsSpent > 0 ? Math.min((skill.value / totalPointsSpent) * 100, 100) : 0;
                 
                 const skillRow = document.createElement('div');
                 skillRow.className = 'stat-row';

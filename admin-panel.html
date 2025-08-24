@@ -523,10 +523,6 @@
 
         /* Character ID Card styles */
         .character-display {
-            display: grid;
-            grid-template-columns: 450px 320px 1fr;
-            gap: 20px;
-            align-items: start;
             margin: 20px 0;
         }
 
@@ -798,19 +794,22 @@
         /* Responsive */
         @media (max-width: 1200px) {
             .character-display {
-                grid-template-columns: 1fr;
-                justify-items: center;
+                display: block !important;
+            }
+            
+            .character-display > div {
+                margin: 20px auto;
+                max-width: 600px;
             }
             
             .character-id-card {
-                width: 100%;
-                max-width: 450px;
+                width: 100% !important;
+                max-width: 450px !important;
             }
             
             .character-info-box {
-                width: 100%;
-                max-width: 320px;
-                margin: 20px auto;
+                width: 100% !important;
+                max-width: 400px !important;
             }
         }
 
@@ -1001,9 +1000,16 @@
 
                     <div class="form-row">
                         <div class="form-group">
+                            <label for="edit_id" class="form-label">Character ID *</label>
+                            <input type="text" id="edit_id" class="form-input" required placeholder="e.g. 030001">
+                        </div>
+                        <div class="form-group">
                             <label for="edit_login" class="form-label">Login *</label>
                             <input type="text" id="edit_login" class="form-input" required>
                         </div>
+                    </div>
+
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="edit_race" class="form-label">Classification *</label>
                             <select id="edit_race" class="form-select" required>
@@ -1013,18 +1019,6 @@
                                 <option value="Arrancar">Arrancar</option>
                             </select>
                         </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="edit_rank" class="form-label">Rank</label>
-                            <input type="text" id="edit_rank" class="form-input" placeholder="e.g. I, II, III, Captain...">
-                        </div>
-                        <div class="form-group">
-                            <label for="edit_position" class="form-label">Position</label>
-                            <input type="text" id="edit_position" class="form-input" placeholder="e.g. Delver">
-                        </div>
-                    </div>
 
                     <div class="form-row">
                         <div class="form-group">
@@ -1138,9 +1132,16 @@
                             <input type="text" id="edit_nazoName" class="form-input" placeholder="??? or ability name">
                         </div>
                         <div class="form-group">
-                            <!-- Empty -->
+                            <label for="edit_rank" class="form-label">Rank</label>
+                            <input type="text" id="edit_rank" class="form-input" placeholder="e.g. I, II, III, Captain...">
                         </div>
                     </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_position" class="form-label">Position</label>
+                            <input type="text" id="edit_position" class="form-input" placeholder="e.g. Delver">
+                        </div>
 
                     <h3 style="margin: 30px 0 20px 0; border-top: 2px solid rgba(71, 85, 105, 0.3); padding-top: 20px; color: #f1f5f9; font-family: 'JetBrains Mono', monospace;">PLAYER RESOURCES</h3>
                     <div class="form-row">
@@ -1517,6 +1518,7 @@
                             <div class="character-actions">
                                 <button class="btn btn-small" onclick="viewCharacter('${char.docId}')">VIEW</button>
                                 <button class="btn btn-small" onclick="editCharacter('${char.docId}')">EDIT</button>
+                                <button class="btn btn-small btn-danger" onclick="deleteCharacter('${char.docId}', '${char.firstName} ${char.lastName}')">DELETE</button>
                             </div>
                         </div>
                     </div>
@@ -1770,7 +1772,7 @@
             const createdDate = character.createdAt ? new Date(character.createdAt).toLocaleDateString('en-GB').replace(/\//g, '-') + ' AD.' : '2015-4-16 AD.';
             
             const cardHtml = `
-                <div class="character-display">
+                <div class="character-display" style="display: grid; grid-template-columns: 450px 1fr; gap: 20px; align-items: start; margin: 20px 0;">
                     <!-- ID Card -->
                     <div class="character-id-card">
                         <div class="id-card-header">
@@ -2023,6 +2025,7 @@
 
         function populateEditForm(character) {
             // Basic data
+            document.getElementById('edit_id').value = character.id || '';
             document.getElementById('edit_firstName').value = character.firstName || '';
             document.getElementById('edit_lastName').value = character.lastName || '';
             document.getElementById('edit_login').value = character.login || '';
@@ -2185,6 +2188,7 @@
                 
                 // Get new data from form with proper validation
                 const newData = {
+                    id: document.getElementById('edit_id').value.trim() || '',
                     firstName: document.getElementById('edit_firstName').value.trim() || '',
                     lastName: document.getElementById('edit_lastName').value.trim() || '',
                     login: document.getElementById('edit_login').value.trim() || '',
@@ -2200,17 +2204,17 @@
                     personality: document.getElementById('edit_personality').value.trim() || '',
                     history: document.getElementById('edit_history').value.trim() || '',
                     
-                    // Stats with proper validation
-                    strength: Math.max(0, Math.min(100, parseInt(document.getElementById('edit_strength').value) || 0)),
-                    vitality: Math.max(0, Math.min(100, parseInt(document.getElementById('edit_vitality').value) || 0)),
-                    speed: Math.max(0, Math.min(100, parseInt(document.getElementById('edit_speed').value) || 0)),
-                    defense: Math.max(0, Math.min(100, parseInt(document.getElementById('edit_defense').value) || 0)),
-                    reiatsu: Math.max(0, Math.min(100, parseInt(document.getElementById('edit_reiatsu').value) || 0)),
-                    hakuda: Math.max(0, Math.min(100, parseInt(document.getElementById('edit_hakuda').value) || 0)),
-                    weaponship: Math.max(0, Math.min(100, parseInt(document.getElementById('edit_weaponship').value) || 0)),
-                    tamashi: Math.max(0, Math.min(100, parseInt(document.getElementById('edit_tamashi').value) || 0)),
-                    magic: Math.max(0, Math.min(100, parseInt(document.getElementById('edit_magic').value) || 0)),
-                    nazo: Math.max(0, Math.min(100, parseInt(document.getElementById('edit_nazo').value) || 0)),
+                    // Stats with proper validation - NO UPPER LIMIT
+                    strength: Math.max(0, parseInt(document.getElementById('edit_strength').value) || 0),
+                    vitality: Math.max(0, parseInt(document.getElementById('edit_vitality').value) || 0),
+                    speed: Math.max(0, parseInt(document.getElementById('edit_speed').value) || 0),
+                    defense: Math.max(0, parseInt(document.getElementById('edit_defense').value) || 0),
+                    reiatsu: Math.max(0, parseInt(document.getElementById('edit_reiatsu').value) || 0),
+                    hakuda: Math.max(0, parseInt(document.getElementById('edit_hakuda').value) || 0),
+                    weaponship: Math.max(0, parseInt(document.getElementById('edit_weaponship').value) || 0),
+                    tamashi: Math.max(0, parseInt(document.getElementById('edit_tamashi').value) || 0),
+                    magic: Math.max(0, parseInt(document.getElementById('edit_magic').value) || 0),
+                    nazo: Math.max(0, parseInt(document.getElementById('edit_nazo').value) || 0),
                     nazoName: document.getElementById('edit_nazoName').value.trim() || '???',
                     
                     // Resources with proper validation
@@ -2233,9 +2237,18 @@
                 };
                 
                 // Validate required fields
-                if (!newData.firstName || !newData.lastName || !newData.login || !newData.race) {
-                    showError('FIRST NAME, LAST NAME, LOGIN AND RACE ARE REQUIRED');
+                if (!newData.id || !newData.firstName || !newData.lastName || !newData.login || !newData.race) {
+                    showError('ID, FIRST NAME, LAST NAME, LOGIN AND RACE ARE REQUIRED');
                     return;
+                }
+
+                // Check if ID changed and if new ID already exists
+                if (newData.id !== originalCharacter.id) {
+                    const existingCharacterWithId = allCharacters.find(c => c.id === newData.id && c.docId !== characterDocId);
+                    if (existingCharacterWithId) {
+                        showError(`CHARACTER ID "${newData.id}" ALREADY EXISTS`);
+                        return;
+                    }
                 }
                 
                 // Check if login changed and if new login already exists
@@ -2313,7 +2326,7 @@
         function compareCharacterData(original, updated) {
             const changes = {};
             const fieldsToCheck = [
-                'firstName', 'lastName', 'login', 'race', 'rank', 'position', 'slv', 'scA',
+                'id', 'firstName', 'lastName', 'login', 'race', 'rank', 'position', 'slv', 'scA',
                 'height', 'weight', 'photoUrl', 'appearance', 'personality', 'history',
                 'strength', 'vitality', 'speed', 'defense', 'reiatsu', 'hakuda', 
                 'weaponship', 'tamashi', 'magic', 'nazo', 'nazoName',
@@ -2351,6 +2364,48 @@
             }
             
             return changes;
+        }
+
+        async function deleteCharacter(docId, characterName) {
+            if (!confirm(`Are you sure you want to DELETE character "${characterName}"?\n\nThis action CANNOT be undone!\n\nThis will also delete their login and all associated data.`)) {
+                return;
+            }
+
+            const character = allCharacters.find(c => c.docId === docId);
+            if (!character) {
+                showError('CHARACTER NOT FOUND');
+                return;
+            }
+
+            try {
+                // Delete character document
+                await window.deleteDoc(window.doc(window.db, 'characters', docId));
+                
+                // Delete user login
+                if (character.login) {
+                    await window.deleteDoc(window.doc(window.db, 'users', character.login));
+                }
+                
+                // Create log
+                await window.addDoc(window.collection(window.db, 'logs'), {
+                    action: 'character_deleted',
+                    actorLogin: currentUser.login,
+                    actorRole: 'admin',
+                    targetId: character.id,
+                    targetName: characterName,
+                    details: `Administrator permanently deleted character and login: ${character.login}`,
+                    timestamp: new Date().toISOString()
+                });
+                
+                showSuccess(`CHARACTER "${characterName}" DELETED PERMANENTLY`);
+                
+                // Refresh data
+                await loadAllData();
+                
+            } catch (error) {
+                console.error('Error deleting character:', error);
+                showError(`FAILED TO DELETE CHARACTER: ${error.message}`);
+            }
         }
 
         function logout() {
