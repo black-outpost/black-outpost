@@ -2295,17 +2295,32 @@
                     await window.deleteDoc(window.doc(window.db, 'users', originalCharacter.login));
                 }
                 
-                // Create detailed log
-                await window.addDoc(window.collection(window.db, 'logs'), {
+                // Create detailed log - ensure no undefined values
+                const logData = {
                     action: 'character_updated',
                     actorLogin: currentUser.login,
                     actorRole: 'admin',
                     targetId: originalCharacter.id,
                     targetName: newData.firstName + ' ' + newData.lastName,
                     details: `Administrator updated personnel record. Changed ${Object.keys(changes).length} fields. Node progression: ${nodeProgression.nextProgress}`,
-                    changes: changes,
                     timestamp: new Date().toISOString()
-                });
+                };
+
+                // Only add changes if there are any (and clean them of undefined values)
+                if (Object.keys(changes).length > 0) {
+                    // Clean changes object of any undefined values
+                    const cleanedChanges = {};
+                    Object.entries(changes).forEach(([key, value]) => {
+                        cleanedChanges[key] = {
+                            before: value.before === undefined ? '' : value.before,
+                            after: value.after === undefined ? '' : value.after,
+                            type: value.type || 'text'
+                        };
+                    });
+                    logData.changes = cleanedChanges;
+                }
+
+                await window.addDoc(window.collection(window.db, 'logs'), logData);
                 
                 // Update locally
                 Object.assign(originalCharacter, newData);
@@ -2338,14 +2353,18 @@
                 const oldValue = original[field];
                 const newValue = updated[field];
                 
-                // Compare values (considering null/undefined/empty)
-                const normalizedOld = oldValue === null || oldValue === undefined ? '' : String(oldValue);
-                const normalizedNew = newValue === null || newValue === undefined ? '' : String(newValue);
+                // Normalize values - Firebase doesn't accept undefined
+                const normalizedOld = oldValue === null || oldValue === undefined ? '' : oldValue;
+                const normalizedNew = newValue === null || newValue === undefined ? '' : newValue;
                 
-                if (normalizedOld !== normalizedNew) {
+                // Compare normalized values as strings for consistency
+                const oldStr = String(normalizedOld);
+                const newStr = String(normalizedNew);
+                
+                if (oldStr !== newStr) {
                     changes[field] = {
-                        before: oldValue,
-                        after: newValue,
+                        before: normalizedOld, // Use normalized value, not original
+                        after: normalizedNew,  // Use normalized value, not original
                         type: typeof newValue === 'number' ? 'numeric' : 'text'
                     };
                 }
@@ -2357,8 +2376,8 @@
             
             if (oldColor.hex !== newColor.hex || oldColor.name !== newColor.name) {
                 changes['riatsuColor'] = {
-                    before: `${oldColor.name} (${oldColor.hex})`,
-                    after: `${newColor.name} (${newColor.hex})`,
+                    before: `${oldColor.name || ''} (${oldColor.hex || ''})`,
+                    after: `${newColor.name || ''} (${newColor.hex || ''})`,
                     type: 'text'
                 };
             }
