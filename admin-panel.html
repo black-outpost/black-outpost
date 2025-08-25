@@ -2211,10 +2211,30 @@
         }
 
         function addNewTechnique() {
+            console.log('addNewTechnique called'); // Debug
             currentTechniqueEditId = null;
+            
+            // Check if modal exists
+            const modal = document.getElementById('techniqueModal');
+            console.log('Modal found:', modal); // Debug
+            
+            if (!modal) {
+                showError('TECHNIQUE MODAL NOT FOUND');
+                return;
+            }
+            
             document.getElementById('techniqueModalTitle').textContent = 'ADD NEW TECHNIQUE';
-            resetTechniqueForm();
-            document.getElementById('techniqueModal').style.display = 'block';
+            
+            try {
+                resetTechniqueForm();
+            } catch (error) {
+                console.error('Error in resetTechniqueForm:', error);
+                showError('ERROR INITIALIZING FORM');
+                return;
+            }
+            
+            modal.style.display = 'block';
+            console.log('Modal should be visible now'); // Debug
         }
 
         function editTechnique(docId) {
@@ -2233,7 +2253,9 @@
             document.getElementById('additionalSectionsContainer').innerHTML = '';
             
             // Add one default technical detail
-            addTechnicalDetail();
+            setTimeout(() => {
+                addTechnicalDetail();
+            }, 100);
         }
 
         function populateTechniqueForm(technique) {
@@ -2265,7 +2287,14 @@
         }
 
         function addTechnicalDetail(existingDetail = null) {
+            console.log('addTechnicalDetail called with:', existingDetail); // Debug
+            
             const container = document.getElementById('technicalDetailsContainer');
+            if (!container) {
+                console.error('technicalDetailsContainer not found');
+                return;
+            }
+            
             const detailId = 'detail_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             
             const detailDiv = document.createElement('div');
@@ -2287,12 +2316,12 @@
                         <div class="form-row">
                             <div class="form-group" style="width: 30%;">
                                 <input type="text" class="form-input detail-label" placeholder="Label (e.g., Range)" 
-                                       value="${existingDetail ? existingDetail.label || '' : ''}">
+                                       value="${existingDetail ? (existingDetail.label || '') : ''}">
                             </div>
                             <div class="form-group" style="width: 70%;">
                                 <div style="display: flex; gap: 8px; align-items: center;">
                                     <input type="text" class="form-input detail-value" placeholder="Value" 
-                                           value="${existingDetail ? existingDetail.content || '' : ''}">
+                                           value="${existingDetail ? (existingDetail.content || '') : ''}">
                                     <button type="button" class="btn btn-small" onclick="openStatCalcForField('${detailId}')">+ CALC</button>
                                 </div>
                             </div>
@@ -2300,7 +2329,7 @@
                     ` : `
                         <div class="form-group">
                             <div style="display: flex; gap: 8px; align-items: center;">
-                                <textarea class="form-input detail-text" placeholder="Text content">${existingDetail ? existingDetail.content || '' : ''}</textarea>
+                                <textarea class="form-input detail-text" placeholder="Text content">${existingDetail ? (existingDetail.content || '') : ''}</textarea>
                                 <button type="button" class="btn btn-small" onclick="openStatCalcForField('${detailId}')">+ CALC</button>
                             </div>
                         </div>
@@ -2309,6 +2338,7 @@
             `;
 
             container.appendChild(detailDiv);
+            console.log('Technical detail added successfully'); // Debug
         }
 
         function addAdditionalSection(existingSection = null) {
