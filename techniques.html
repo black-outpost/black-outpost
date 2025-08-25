@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Techniques - Black Outpost System</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(20,20,30,0.9) 100%), 
+                        url('https://cdn.discordapp.com/attachments/1408447648767414476/1408592371725242478/image_1.png?ex=68aa4d5f&is=68a8fbdf&hm=3c8442351405014db57137c5664aada195f2e2573e8ffc25ecf22b5b97814cc7&');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e0e6ed;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-bar {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-title::before {
+            content: "⚡";
+            color: #8b5cf6;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+            border-color: rgba(148, 163, 184, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .techniques-header {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .header-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .header-subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .filters-section {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .filters-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        .filters-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: #64748b;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
+
+        .filter-categories {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-category {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #cbd5e1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .filter-category:hover {
+            border-color: rgba(139, 92, 246, 0.5);
+            background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(51,65,85,0.6) 100%);
+        }
+
+        .filter-category.active {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
+            border-color: rgba(139, 92, 246, 0.4);
+            color: #ffffff;
+        }
+
+        .techniques-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .technique-card {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .technique-card:hover {
+            border-color: rgba(139, 92, 246, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+        }
+
+        .technique-header {
+            background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(51,65,85,0.8) 100%);
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+            position: relative;
+        }
+
+        .technique-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .technique-threat-level {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .technique-categories {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .technique-category {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.6) 0%, rgba(51, 65, 85, 0.7) 100%);
+            color: #cbd5e1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .technique-content {
+            padding: 24px;
+        }
+
+        .technique-description {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+        }
+
+        .technique-section {
+            margin-bottom: 20px;
+        }
+
+        .technique-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .section-content {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #94a3b8;
+        }
+
+        .technical-details {
+            background: linear-gradient(135deg, rgba(30,41,59,0.4) 0%, rgba(51,65,85,0.3) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .detail-item {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .detail-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #e2e8f0;
+            min-width: 120px;
+            margin-right: 12px;
+        }
+
+        .detail-value {
+            flex: 1;
+            color: #cbd5e1;
+        }
+
+        .stat-calculation {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(124, 58, 237, 0.1) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #c4b5fd;
+            cursor: help;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .stat-calculation:hover {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(124, 58, 237, 0.2) 100%);
+            border-color: rgba(139, 92, 246, 0.5);
+        }
+
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 11px;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 4px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-calculation:hover .tooltip {
+            opacity: 1;
+        }
+
+        .special-notes {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.05) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .special-notes-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fbbf24;
+            margin-bottom: 8px;
+        }
+
+        .special-notes-content {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: #fcd34d;
+        }
+
+        .no-techniques {
+            text-align: center;
+            padding: 60px 40px;
+            color: #64748b;
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            backdrop-filter: blur(15px);
+        }
+
+        .no-techniques h3 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #94a3b8;
+        }
+
+        .loading-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.98) 0%, rgba(15,23,42,0.95) 100%);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(71, 85, 105, 0.3);
+            border-top: 3px solid #8b5cf6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .error-message, .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 1001;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, rgba(153, 27, 27, 0.9) 0%, rgba(127, 29, 29, 0.8) 100%);
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.9) 0%, rgba(16, 185, 129, 0.8) 100%);
+            color: #a7f3d0;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .nav-bar {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .filters-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                min-width: auto;
+            }
+
+            .filter-categories {
+                justify-content: center;
+            }
+
+            .technique-header {
+                padding: 16px 20px;
+            }
+
+            .technique-title {
+                font-size: 18px;
+                margin-right: 60px;
+            }
+
+            .technique-content {
+                padding: 20px;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(30,41,59,0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">LOADING TECHNIQUES DATA...</div>
+    </div>
+
+    <div class="container">
+        <nav class="nav-bar">
+            <div class="nav-title">
+                COMBAT TECHNIQUES ARCHIVE
+            </div>
+            <div class="nav-actions">
+                <a href="#" class="btn" onclick="goToProfile()">BACK TO PROFILE</a>
+                <a href="index.html" class="btn" onclick="logout()">LOGOUT</a>
+            </div>
+        </nav>
+
+        <div class="techniques-header">
+            <div class="header-title" id="characterName">LOADING...</div>
+            <div class="header-subtitle">CLASSIFIED COMBAT TECHNIQUES REPOSITORY</div>
+        </div>
+
+        <div class="filters-section">
+            <div class="filters-title">TECHNIQUE FILTERS</div>
+            <div class="filters-row">
+                <div class="search-box">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search techniques...">
+                </div>
+                <div class="filter-categories" id="filterCategories">
+                    <div class="filter-category active" data-category="all">ALL (<span id="countAll">0</span>)</div>
+                    <div class="filter-category" data-category="strength">STRENGTH (<span id="countStrength">0</span>)</div>
+                    <div class="filter-category" data-category="vitality">VITALITY (<span id="countVitality">0</span>)</div>
+                    <div class="filter-category" data-category="speed">SPEED (<span id="countSpeed">0</span>)</div>
+                    <div class="filter-category" data-category="defense">DEFENSE (<span id="countDefense">0</span>)</div>
+                    <div class="filter-category" data-category="reiatsu">REIATSU (<span id="countReiatsu">0</span>)</div>
+                    <div class="filter-category" data-category="hakuda">HAKUDA (<span id="countHakuda">0</span>)</div>
+                    <div class="filter-category" data-category="weapon" id="weaponCategory">WEAPONSHIP (<span id="countWeapon">0</span>)</div>
+                    <div class="filter-category" data-category="tamashi" id="tamashiCategory">TAMASHI (<span id="countTamashi">0</span>)</div>
+                    <div class="filter-category" data-category="magic" id="magicCategory">MAGIC (<span id="countMagic">0</span>)</div>
+                    <div class="filter-category" data-category="nazo" id="nazoCategory">??? (<span id="countNazo">0</span>)</div>
+                    <div class="filter-category" data-category="other">OTHER (<span id="countOther">0</span>)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="techniques-grid" id="techniquesGrid">
+            <div class="no-techniques">
+                <h3>NO TECHNIQUES FOUND</h3>
+                <p>Contact your administrator to learn new combat techniques.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
+            authDomain: "bleach-black-outpost.firebaseapp.com",
+            projectId: "bleach-black-outpost",
+            storageBucket: "bleach-black-outpost.firebasestorage.app",
+            messagingSenderId: "201204368777",
+            appId: "1:201204368777:web:c2a34d61acb46e7b494d58",
+            measurementId: "G-SBD3766NQ6"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        window.db = db;
+        window.getDoc = getDoc;
+        window.doc = doc;
+        window.collection = collection;
+        window.query = query;
+        window.where = where;
+        window.getDocs = getDocs;
+    </script>
+
+    <script>
+        let currentUser = null;
+        let currentCharacter = null;
+        let allTechniques = [];
+        let filteredTechniques = [];
+        let currentFilter = 'all';
+        let searchTerm = '';
+
+        // Race-specific skill names
+        const raceSkillNames = {
+            'Soul-Reaper': {
+                weapon: 'ZANJUTSU',
+                tamashi: 'ZANPAKUTO MASTERY',
+                magic: 'KIDO MASTERY'
+            },
+            'Arrancar': {
+                weapon: 'ZANJUTSU',
+                tamashi: 'ZANPAKUTO MASTERY',
+                magic: 'PRIMAL REIRYOKU'
+            },
+            'Quincy': {
+                weapon: 'OJIGI',
+                tamashi: 'BLOOD LEGACY',
+                magic: 'GINTO MASTERY'
+            },
+            'Fullbringer': {
+                weapon: 'WEAPONSHIP',
+                tamashi: 'FULLBRING MASTERY',
+                magic: 'SOUL MANIPULATION'
+            }
+        };
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
+
+        async function loadUserData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const login = urlParams.get('login') || localStorage.getItem('currentUser');
+            
+            if (!login) {
+                showError('NO USER SESSION FOUND');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+
+            try {
+                const userDoc = await window.getDoc(window.doc(window.db, 'users', login));
+                if (!userDoc.exists()) {
+                    showError('USER DATA NOT FOUND');
+                    return;
+                }
+
+                currentUser = { login, ...userDoc.data() };
+
+                if (currentUser.characterId) {
+                    const charactersRef = window.collection(window.db, 'characters');
+                    const q = window.query(charactersRef, window.where('id', '==', currentUser.characterId));
+                    const querySnapshot = await window.getDocs(q);
+                    
+                    if (!querySnapshot.empty) {
+                        querySnapshot.forEach(doc => {
+                            currentCharacter = { docId: doc.id, ...doc.data() };
+                        });
+                        
+                        await loadTechniques();
+                        setupInterface();
+                    } else {
+                        showError('CHARACTER DATA NOT FOUND');
+                    }
+                } else {
+                    showError('NO CHARACTER ASSIGNED');
+                }
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('DATABASE CONNECTION ERROR');
+            }
+        }
+
+        async function loadTechniques() {
+            try {
+                const techniquesRef = window.collection(window.db, 'techniques');
+                const q = window.query(techniquesRef, window.where('characterId', '==', currentCharacter.id));
+                const querySnapshot = await window.getDocs(q);
+                
+                allTechniques = [];
+                querySnapshot.forEach(doc => {
+                    allTechniques.push({ 
+                        docId: doc.id, 
+                        ...doc.data() 
+                    });
+                });
+                
+                filteredTechniques = [...allTechniques];
+                updateTechniquesDisplay();
+                updateFilterCounts();
+
+            } catch (error) {
+                console.error('Error loading techniques:', error);
+                showError('FAILED TO LOAD TECHNIQUES');
+            }
+        }
+
+        function setupInterface() {
+            if (!currentCharacter) return;
+
+            // Update character name
+            document.getElementById('characterName').textContent = `${currentCharacter.firstName || ''} ${currentCharacter.lastName || ''}`.trim().toUpperCase();
+
+            // Update skill names based on race
+            const skillNames = raceSkillNames[currentCharacter.race] || raceSkillNames['Soul-Reaper'];
+            document.getElementById('weaponCategory').innerHTML = `${skillNames.weapon} (<span id="countWeapon">0</span>)`;
+            document.getElementById('tamashiCategory').innerHTML = `${skillNames.tamashi} (<span id="countTamashi">0</span>)`;
+            document.getElementById('magicCategory').innerHTML = `${skillNames.magic} (<span id="countMagic">0</span>)`;
+            
+            // Update Nazo category
+            const nazoName = currentCharacter.nazoName || '???';
+            document.getElementById('nazoCategory').innerHTML = `${nazoName} (<span id="countNazo">0</span>)`;
+
+            // Setup event listeners
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            
+            document.querySelectorAll('.filter-category').forEach(category => {
+                category.addEventListener('click', handleCategoryFilter);
+            });
+        }
+
+        function handleSearch(e) {
+            searchTerm = e.target.value.toLowerCase();
+            applyFilters();
+        }
+
+        function handleCategoryFilter(e) {
+            const category = e.currentTarget.getAttribute('data-category');
+            
+            // Update active state
+            document.querySelectorAll('.filter-category').forEach(cat => {
+                cat.classList.remove('active');
+            });
+            e.currentTarget.classList.add('active');
+            
+            currentFilter = category;
+            applyFilters();
+        }
+
+        function applyFilters() {
+            filteredTechniques = allTechniques.filter(technique => {
+                // Apply search filter
+                const matchesSearch = !searchTerm || 
+                    technique.name.toLowerCase().includes(searchTerm) ||
+                    technique.description.toLowerCase().includes(searchTerm) ||
+                    (technique.specialNotes && technique.specialNotes.toLowerCase().includes(searchTerm));
+                
+                // Apply category filter
+                const matchesCategory = currentFilter === 'all' || 
+                    technique.primaryStatCategory === currentFilter;
+                
+                return matchesSearch && matchesCategory;
+            });
+            
+            updateTechniquesDisplay();
+        }
+
+        function updateTechniquesDisplay() {
+            const grid = document.getElementById('techniquesGrid');
+            
+            if (filteredTechniques.length === 0) {
+                grid.innerHTML = `
+                    <div class="no-techniques">
+                        <h3>NO TECHNIQUES FOUND</h3>
+                        <p>${allTechniques.length === 0 ? 
+                            'Contact your administrator to learn new combat techniques.' : 
+                            'Try adjusting your filters or search terms.'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filteredTechniques.forEach(technique => {
+                html += generateTechniqueCard(technique);
+            });
+            
+            grid.innerHTML = html;
+        }
+
+        function generateTechniqueCard(technique) {
+            const categories = getTechniqueCategories(technique);
+            const categoriesHtml = categories.map(cat => `<span class="technique-category">${cat}</span>`).join('');
+            
+            let technicalDetailsHtml = '';
+            if (technique.technicalDetails && technique.technicalDetails.length > 0) {
+                technicalDetailsHtml = `
+                    <div class="technique-section">
+                        <div class="section-title">TECHNICAL DETAILS</div>
+                        <div class="technical-details">
+                            ${technique.technicalDetails.map(detail => generateDetailItem(detail)).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            let additionalSectionsHtml = '';
+            if (technique.additionalSections && technique.additionalSections.length > 0) {
+                additionalSectionsHtml = technique.additionalSections.map(section => `
+                    <div class="technique-section">
+                        <div class="section-title">${section.title.toUpperCase()}</div>
+                        <div class="section-content">${processContentWithCalculations(section.content)}</div>
+                    </div>
+                `).join('');
+            }
+
+            let specialNotesHtml = '';
+            if (technique.specialNotes) {
+                specialNotesHtml = `
+                    <div class="special-notes">
+                        <div class="special-notes-title">SPECIAL NOTES</div>
+                        <div class="special-notes-content">${technique.specialNotes}</div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="technique-card">
+                    <div class="technique-header">
+                        <div class="technique-title">${technique.name}</div>
+                        <div class="technique-threat-level">THREAT: ${technique.threatLevel || 'I'}</div>
+                        <div class="technique-categories">${categoriesHtml}</div>
+                    </div>
+                    <div class="technique-content">
+                        <div class="technique-description">${processContentWithCalculations(technique.description)}</div>
+                        
+                        ${technicalDetailsHtml}
+                        ${additionalSectionsHtml}
+                        ${specialNotesHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateDetailItem(detail) {
+            if (detail.type === 'text') {
+                return `<div class="detail-item">${processContentWithCalculations(detail.content)}</div>`;
+            } else if (detail.type === 'field') {
+                return `
+                    <div class="detail-item">
+                        <div class="detail-label">${detail.label}:</div>
+                        <div class="detail-value">${processContentWithCalculations(detail.content)}</div>
+                    </div>
+                `;
+            }
+            return '';
+        }
+
+        function processContentWithCalculations(content) {
+            if (!content) return '';
+            
+            // Replace stat calculations with interactive elements
+            return content.replace(/(\d+(?:\.\d+)?)\s*x\s*\[([^\]]+)\]/g, (match, multiplier, statName) => {
+                const calculation = calculateStatValue(parseFloat(multiplier), statName);
+                const formula = `${multiplier}×[${statName}]`;
+                
+                if (calculation.calculable) {
+                    return `<span class="stat-calculation" title="${formula} = ${calculation.value}">
+                        ${calculation.value}
+                        <div class="tooltip">${formula} = ${calculation.value}</div>
+                    </span>`;
+                } else {
+                    return `<span class="stat-calculation" title="${formula}">
+                        "${formula}"
+                        <div class="tooltip">Not calculable: ${calculation.reason}</div>
+                    </span>`;
+                }
+            });
+        }
+
+        function calculateStatValue(multiplier, statName) {
+            if (!currentCharacter) {
+                return { calculable: false, reason: 'No character data' };
+            }
+
+            // Map stat names to character properties
+            const statMapping = {
+                'Strength': 'strength',
+                'Vitality': 'vitality',
+                'Speed': 'speed',
+                'Defense': 'defense',
+                'Reiatsu': 'reiatsu',
+                'Hakuda': 'hakuda',
+                'Zanjutsu': 'weaponship',
+                'Ojigi': 'weaponship',
+                'Weaponship': 'weaponship',
+                'Zanpakuto Mastery': 'tamashi',
+                'Blood Legacy': 'tamashi',
+                'Fullbring Mastery': 'tamashi',
+                'Kido Mastery': 'magic',
+                'Primal Reiryoku': 'magic',
+                'Ginto Mastery': 'magic',
+                'Soul Manipulation': 'magic'
+            };
+
+            // Check if it's the unique Nazo stat
+            if (statName === currentCharacter.nazoName) {
+                const value = Math.round((currentCharacter.nazo || 0) * multiplier);
+                return { calculable: true, value: value };
+            }
+
+            // Check mapped stats
+            const statKey = statMapping[statName];
+            if (statKey && currentCharacter[statKey] !== undefined) {
+                const value = Math.round((currentCharacter[statKey] || 0) * multiplier);
+                return { calculable: true, value: value };
+            }
+
+            // Handle special cases that can't be calculated
+            const nonCalculableStats = ['Wydane Reiatsu', 'Current HP', 'Remaining Actions'];
+            if (nonCalculableStats.some(special => statName.includes(special))) {
+                return { calculable: false, reason: 'Depends on current game state' };
+            }
+
+            return { calculable: false, reason: 'Unknown stat: ' + statName };
+        }
+
+        function getTechniqueCategories(technique) {
+            const categories = [];
+            
+            // Add primary stat category
+            if (technique.primaryStatCategory && technique.primaryStatCategory !== 'other') {
+                categories.push(technique.primaryStatCategory.toUpperCase());
+            }
+            
+            // Add threat level
+            if (technique.threatLevel) {
+                categories.push(`CLASS ${technique.threatLevel}`);
+            }
+            
+            return categories;
+        }
+
+        function updateFilterCounts() {
+            const counts = {
+                all: allTechniques.length,
+                strength: 0,
+                vitality: 0,
+                speed: 0,
+                defense: 0,
+                reiatsu: 0,
+                hakuda: 0,
+                weapon: 0,
+                tamashi: 0,
+                magic: 0,
+                nazo: 0,
+                other: 0
+            };
+
+            allTechniques.forEach(technique => {
+                const category = technique.primaryStatCategory || 'other';
+                if (counts.hasOwnProperty(category)) {
+                    counts[category]++;
+                }
+            });
+
+            // Update count displays
+            Object.keys(counts).forEach(category => {
+                const element = document.getElementById(`count${category.charAt(0).toUpperCase() + category.slice(1)}`);
+                if (element) {
+                    element.textContent = counts[category];
+                }
+            });
+        }
+
+        function goToProfile() {
+            window.location.href = `profile.html?login=${currentUser.login}`;
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Initialize page
+        window.addEventListener('load', async function() {
+            await loadUserData();
+            
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.display = 'none';
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

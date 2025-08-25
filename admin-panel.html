@@ -408,6 +408,150 @@
             border-color: rgba(16, 185, 129, 0.3);
         }
 
+        /* Techniques System Styles */
+        .techniques-step {
+            display: none;
+        }
+        
+        .techniques-step.active {
+            display: block;
+        }
+
+        .character-selection-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .character-select-card {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .character-select-card:hover {
+            border-color: rgba(139, 92, 246, 0.4);
+            background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(51,65,85,0.6) 100%);
+            transform: translateY(-2px);
+        }
+
+        .technique-item {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .technique-item:hover {
+            border-color: rgba(148, 163, 184, 0.4);
+            background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(51,65,85,0.6) 100%);
+        }
+
+        .technique-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .technique-info h4 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+        }
+
+        .technique-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .technique-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .rich-text-editor {
+            position: relative;
+        }
+
+        .editor-toolbar {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            padding: 8px 12px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .editor-toolbar + textarea {
+            border-radius: 0 0 8px 8px !important;
+            border-top: none !important;
+        }
+
+        .detail-item, .section-item {
+            background: linear-gradient(135deg, rgba(30,41,59,0.4) 0%, rgba(51,65,85,0.3) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .detail-item .remove-btn, .section-item .remove-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(239, 68, 68, 0.8);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .detail-type-selector {
+            margin-bottom: 12px;
+        }
+
+        .detail-type-btn {
+            background: rgba(71, 85, 105, 0.6);
+            color: #cbd5e1;
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+
+        .detail-type-btn.active {
+            background: rgba(139, 92, 246, 0.8);
+            color: white;
+            border-color: rgba(139, 92, 246, 0.4);
+        }
+
+        .no-techniques-message {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, rgba(30,41,59,0.4) 0%, rgba(51,65,85,0.3) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.2);
+            border-radius: 12px;
+        }
+
         @media (max-width: 1024px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -862,6 +1006,9 @@
             <button class="admin-nav-btn" onclick="showSection('add-character')" id="btn-add-character">
                 ➕ CREATE PERSONNEL
             </button>
+            <button class="admin-nav-btn" onclick="showSection('techniques')" id="btn-techniques">
+                ⚡ TECHNIQUES MANAGER
+            </button>
             <button class="admin-nav-btn" onclick="showSection('logs')" id="btn-logs">
                 📜 SYSTEM LOGS
             </button>
@@ -934,6 +1081,41 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- Techniques Section -->
+        <div id="section-techniques" class="admin-section">
+            <div class="section-header">
+                <div class="section-title">TECHNIQUES MANAGEMENT</div>
+            </div>
+            <div class="section-content">
+                <div id="techniquesStep1" class="techniques-step active">
+                    <h3 style="margin-bottom: 20px; color: #f1f5f9; font-family: 'JetBrains Mono', monospace;">SELECT CHARACTER</h3>
+                    <div id="charactersList">
+                        <div class="loading-state">
+                            LOADING PERSONNEL...
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="techniquesStep2" class="techniques-step">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="color: #f1f5f9; font-family: 'JetBrains Mono', monospace;">
+                            TECHNIQUES FOR: <span id="selectedCharacterName">-</span>
+                        </h3>
+                        <div style="display: flex; gap: 12px;">
+                            <button class="btn btn-success" onclick="addNewTechnique()">ADD TECHNIQUE</button>
+                            <button class="btn" onclick="backToCharacterSelection()">BACK</button>
+                        </div>
+                    </div>
+                    
+                    <div id="characterTechniques">
+                        <div class="loading-state">
+                            LOADING TECHNIQUES...
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1202,6 +1384,154 @@
         </div>
     </div>
 
+    <!-- Technique Modal -->
+    <div id="techniqueModal" class="modal">
+        <div class="modal-content" style="max-width: 1000px; width: 95%;">
+            <div class="modal-header">
+                <div class="modal-title" id="techniqueModalTitle">ADD NEW TECHNIQUE</div>
+                <button class="close" onclick="closeTechniqueModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="techniqueForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="techniqueName" class="form-label">Technique Name *</label>
+                            <input type="text" id="techniqueName" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="threatLevel" class="form-label">Threat Level *</label>
+                            <select id="threatLevel" class="form-select" required>
+                                <option value="0">0</option>
+                                <option value="I">I</option>
+                                <option value="II">II</option>
+                                <option value="III">III</option>
+                                <option value="IV">IV</option>
+                                <option value="V">V</option>
+                                <option value="VI">VI</option>
+                                <option value="VII">VII</option>
+                                <option value="VIII">VIII</option>
+                                <option value="IX">IX</option>
+                                <option value="X">X</option>
+                                <option value="XI">XI</option>
+                                <option value="XII">XII</option>
+                                <option value="XIII">XIII</option>
+                                <option value="XIV">XIV</option>
+                                <option value="XV">XV</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="primaryStatCategory" class="form-label">Primary Stat Category</label>
+                        <select id="primaryStatCategory" class="form-select">
+                            <option value="other">Other/Mixed</option>
+                            <option value="strength">Strength</option>
+                            <option value="vitality">Vitality</option>
+                            <option value="speed">Speed</option>
+                            <option value="defense">Defense</option>
+                            <option value="reiatsu">Reiatsu</option>
+                            <option value="hakuda">Hakuda</option>
+                            <option value="weapon">Weapon Skill</option>
+                            <option value="tamashi">Tamashi Skill</option>
+                            <option value="magic">Magic Skill</option>
+                            <option value="nazo">Nazo</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="techniqueDescription" class="form-label">Description *</label>
+                        <div class="rich-text-editor">
+                            <div class="editor-toolbar">
+                                <button type="button" class="btn btn-small" onclick="insertStatCalculation()">+ STAT CALC</button>
+                            </div>
+                            <textarea id="techniqueDescription" class="form-input" style="min-height: 100px;" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Technical Details</label>
+                        <div id="technicalDetailsContainer">
+                            <!-- Dynamic technical details will go here -->
+                        </div>
+                        <button type="button" class="btn btn-small" onclick="addTechnicalDetail()">ADD DETAIL</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Additional Sections</label>
+                        <div id="additionalSectionsContainer">
+                            <!-- Dynamic additional sections will go here -->
+                        </div>
+                        <button type="button" class="btn btn-small" onclick="addAdditionalSection()">ADD SECTION</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="specialNotes" class="form-label">Special Notes</label>
+                        <textarea id="specialNotes" class="form-input" style="min-height: 80px;" placeholder="Race restrictions, special requirements, etc."></textarea>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid rgba(71, 85, 105, 0.3);">
+                        <button type="button" class="btn" onclick="closeTechniqueModal()" style="margin-right: 15px;">CANCEL</button>
+                        <button type="submit" class="btn btn-success">SAVE TECHNIQUE</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stat Calculation Modal -->
+    <div id="statCalcModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <div class="modal-title">INSERT STAT CALCULATION</div>
+                <button class="close" onclick="closeStatCalcModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Multiplier</label>
+                    <input type="number" id="statMultiplier" class="form-input" step="0.1" placeholder="0.5">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Stat Name</label>
+                    <select id="statName" class="form-select">
+                        <optgroup label="Basic Stats">
+                            <option value="Strength">Strength</option>
+                            <option value="Vitality">Vitality</option>
+                            <option value="Speed">Speed</option>
+                            <option value="Defense">Defense</option>
+                            <option value="Reiatsu">Reiatsu</option>
+                        </optgroup>
+                        <optgroup label="Combat Skills">
+                            <option value="Hakuda">Hakuda</option>
+                            <option value="Zanjutsu">Zanjutsu</option>
+                            <option value="Ojigi">Ojigi</option>
+                            <option value="Weaponship">Weaponship</option>
+                        </optgroup>
+                        <optgroup label="Spiritual Skills">
+                            <option value="Zanpakuto Mastery">Zanpakuto Mastery</option>
+                            <option value="Blood Legacy">Blood Legacy</option>
+                            <option value="Fullbring Mastery">Fullbring Mastery</option>
+                            <option value="Kido Mastery">Kido Mastery</option>
+                            <option value="Primal Reiryoku">Primal Reiryoku</option>
+                            <option value="Ginto Mastery">Ginto Mastery</option>
+                            <option value="Soul Manipulation">Soul Manipulation</option>
+                        </optgroup>
+                        <optgroup label="Special">
+                            <option value="Custom">Custom Stat Name</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="form-group" id="customStatGroup" style="display: none;">
+                    <label class="form-label">Custom Stat Name</label>
+                    <input type="text" id="customStatName" class="form-input" placeholder="e.g., Wydane Reiatsu">
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn" onclick="closeStatCalcModal()" style="margin-right: 10px;">CANCEL</button>
+                    <button class="btn btn-success" onclick="insertCalculation()">INSERT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
@@ -1239,6 +1569,12 @@
         let currentUser = null;
         let allCharacters = [];
         let allLogs = [];
+
+        // Techniques System Variables
+        let selectedCharacterForTechniques = null;
+        let characterTechniques = [];
+        let currentTechniqueEditId = null;
+        let activeTextarea = null;
 
         function showError(message) {
             const errorDiv = document.createElement('div');
@@ -1573,7 +1909,10 @@
                 'character_updated': '✏️ PERSONNEL UPDATED',
                 'stats_distributed': '📊 STATS MODIFIED',
                 'reisen_absorbed': '💎 REISEN ABSORBED',
-                'admin_grant': '👑 ADMIN ACTION'
+                'admin_grant': '👑 ADMIN ACTION',
+                'technique_created': '⚡ TECHNIQUE CREATED',
+                'technique_updated': '⚡ TECHNIQUE UPDATED',
+                'technique_deleted': '⚡ TECHNIQUE DELETED'
             };
             return texts[action] || action.toUpperCase();
         }
@@ -1584,7 +1923,10 @@
                 'character_updated': 'modified',
                 'stats_distributed': 'updated stats for',
                 'reisen_absorbed': 'absorbed reisen for',
-                'admin_grant': 'granted access to'
+                'admin_grant': 'granted access to',
+                'technique_created': 'created technique for',
+                'technique_updated': 'updated technique for',
+                'technique_deleted': 'deleted technique for'
             };
             return verbs[action] || 'performed action on';
         }
@@ -1725,6 +2067,524 @@
                 displayCharacters();
             } else if (sectionName === 'logs' && allLogs.length > 0) {
                 displayLogs();
+            } else if (sectionName === 'techniques') {
+                showTechniquesSection();
+            }
+        }
+
+        // Techniques System Functions
+        function showTechniquesSection() {
+            // Reset state
+            selectedCharacterForTechniques = null;
+            currentTechniqueEditId = null;
+            
+            // Show step 1
+            document.getElementById('techniquesStep1').classList.add('active');
+            document.getElementById('techniquesStep2').classList.remove('active');
+            
+            // Load characters for selection
+            loadCharactersForTechniques();
+        }
+
+        function loadCharactersForTechniques() {
+            const container = document.getElementById('charactersList');
+            
+            if (allCharacters.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>NO CHARACTERS FOUND</h3>
+                        <p>Create characters first before managing techniques</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="character-selection-grid">';
+            allCharacters.forEach(char => {
+                html += `
+                    <div class="character-select-card" onclick="selectCharacterForTechniques('${char.docId}')">
+                        <h4 style="font-family: 'JetBrains Mono', monospace; color: #f1f5f9; margin-bottom: 8px;">
+                            ${char.firstName} ${char.lastName}
+                        </h4>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #94a3b8;">
+                            ID: ${char.id} | RACE: ${char.race} | RANK: ${char.rank || 'I'}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            container.innerHTML = html;
+        }
+
+        async function selectCharacterForTechniques(docId) {
+            selectedCharacterForTechniques = allCharacters.find(c => c.docId === docId);
+            if (!selectedCharacterForTechniques) return;
+
+            // Update UI
+            document.getElementById('selectedCharacterName').textContent = 
+                `${selectedCharacterForTechniques.firstName} ${selectedCharacterForTechniques.lastName}`;
+            
+            // Switch to step 2
+            document.getElementById('techniquesStep1').classList.remove('active');
+            document.getElementById('techniquesStep2').classList.add('active');
+            
+            // Load techniques for this character
+            await loadCharacterTechniques();
+        }
+
+        async function loadCharacterTechniques() {
+            const container = document.getElementById('characterTechniques');
+            container.innerHTML = '<div class="loading-state">LOADING TECHNIQUES...</div>';
+
+            try {
+                const techniquesRef = window.collection(window.db, 'techniques');
+                const q = window.query(techniquesRef, window.where('characterId', '==', selectedCharacterForTechniques.id));
+                const querySnapshot = await window.getDocs(q);
+                
+                characterTechniques = [];
+                querySnapshot.forEach(doc => {
+                    characterTechniques.push({ 
+                        docId: doc.id, 
+                        ...doc.data() 
+                    });
+                });
+                
+                displayCharacterTechniques();
+
+            } catch (error) {
+                console.error('Error loading techniques:', error);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>ERROR LOADING TECHNIQUES</h3>
+                        <p>Please try again</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayCharacterTechniques() {
+            const container = document.getElementById('characterTechniques');
+            
+            if (characterTechniques.length === 0) {
+                container.innerHTML = `
+                    <div class="no-techniques-message">
+                        <h4>NO TECHNIQUES LEARNED</h4>
+                        <p>This character hasn't learned any techniques yet.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            characterTechniques.forEach(technique => {
+                html += `
+                    <div class="technique-item">
+                        <div class="technique-header">
+                            <div class="technique-info">
+                                <h4>${technique.name}</h4>
+                                <div class="technique-meta">
+                                    THREAT: ${technique.threatLevel || 'I'} | 
+                                    CATEGORY: ${(technique.primaryStatCategory || 'other').toUpperCase()} |
+                                    CREATED: ${new Date(technique.createdAt).toLocaleDateString()}
+                                </div>
+                            </div>
+                            <div class="technique-actions">
+                                <button class="btn btn-small" onclick="editTechnique('${technique.docId}')">EDIT</button>
+                                <button class="btn btn-small btn-danger" onclick="deleteTechnique('${technique.docId}', '${technique.name}')">DELETE</button>
+                            </div>
+                        </div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #cbd5e1; margin-top: 8px;">
+                            ${technique.description.substring(0, 150)}${technique.description.length > 150 ? '...' : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function backToCharacterSelection() {
+            selectedCharacterForTechniques = null;
+            document.getElementById('techniquesStep2').classList.remove('active');
+            document.getElementById('techniquesStep1').classList.add('active');
+        }
+
+        function addNewTechnique() {
+            currentTechniqueEditId = null;
+            document.getElementById('techniqueModalTitle').textContent = 'ADD NEW TECHNIQUE';
+            resetTechniqueForm();
+            document.getElementById('techniqueModal').style.display = 'block';
+        }
+
+        function editTechnique(docId) {
+            const technique = characterTechniques.find(t => t.docId === docId);
+            if (!technique) return;
+
+            currentTechniqueEditId = docId;
+            document.getElementById('techniqueModalTitle').textContent = 'EDIT TECHNIQUE';
+            populateTechniqueForm(technique);
+            document.getElementById('techniqueModal').style.display = 'block';
+        }
+
+        function resetTechniqueForm() {
+            document.getElementById('techniqueForm').reset();
+            document.getElementById('technicalDetailsContainer').innerHTML = '';
+            document.getElementById('additionalSectionsContainer').innerHTML = '';
+            
+            // Add one default technical detail
+            addTechnicalDetail();
+        }
+
+        function populateTechniqueForm(technique) {
+            document.getElementById('techniqueName').value = technique.name || '';
+            document.getElementById('threatLevel').value = technique.threatLevel || 'I';
+            document.getElementById('primaryStatCategory').value = technique.primaryStatCategory || 'other';
+            document.getElementById('techniqueDescription').value = technique.description || '';
+            document.getElementById('specialNotes').value = technique.specialNotes || '';
+
+            // Populate technical details
+            const detailsContainer = document.getElementById('technicalDetailsContainer');
+            detailsContainer.innerHTML = '';
+            if (technique.technicalDetails && technique.technicalDetails.length > 0) {
+                technique.technicalDetails.forEach(detail => {
+                    addTechnicalDetail(detail);
+                });
+            } else {
+                addTechnicalDetail();
+            }
+
+            // Populate additional sections
+            const sectionsContainer = document.getElementById('additionalSectionsContainer');
+            sectionsContainer.innerHTML = '';
+            if (technique.additionalSections && technique.additionalSections.length > 0) {
+                technique.additionalSections.forEach(section => {
+                    addAdditionalSection(section);
+                });
+            }
+        }
+
+        function addTechnicalDetail(existingDetail = null) {
+            const container = document.getElementById('technicalDetailsContainer');
+            const detailId = 'detail_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            const detailDiv = document.createElement('div');
+            detailDiv.className = 'detail-item';
+            detailDiv.setAttribute('data-detail-id', detailId);
+
+            const type = existingDetail ? existingDetail.type : 'field';
+            
+            detailDiv.innerHTML = `
+                <button type="button" class="remove-btn" onclick="removeDetailItem('${detailId}')">&times;</button>
+                <div class="detail-type-selector">
+                    <button type="button" class="detail-type-btn ${type === 'text' ? 'active' : ''}" 
+                            onclick="setDetailType('${detailId}', 'text')">TEXT</button>
+                    <button type="button" class="detail-type-btn ${type === 'field' ? 'active' : ''}" 
+                            onclick="setDetailType('${detailId}', 'field')">FIELD</button>
+                </div>
+                <div class="detail-content">
+                    ${type === 'field' ? `
+                        <div class="form-row">
+                            <div class="form-group" style="width: 30%;">
+                                <input type="text" class="form-input detail-label" placeholder="Label (e.g., Range)" 
+                                       value="${existingDetail ? existingDetail.label || '' : ''}">
+                            </div>
+                            <div class="form-group" style="width: 70%;">
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <input type="text" class="form-input detail-value" placeholder="Value" 
+                                           value="${existingDetail ? existingDetail.content || '' : ''}">
+                                    <button type="button" class="btn btn-small" onclick="openStatCalcForField('${detailId}')">+ CALC</button>
+                                </div>
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="form-group">
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <textarea class="form-input detail-text" placeholder="Text content">${existingDetail ? existingDetail.content || '' : ''}</textarea>
+                                <button type="button" class="btn btn-small" onclick="openStatCalcForField('${detailId}')">+ CALC</button>
+                            </div>
+                        </div>
+                    `}
+                </div>
+            `;
+
+            container.appendChild(detailDiv);
+        }
+
+        function addAdditionalSection(existingSection = null) {
+            const container = document.getElementById('additionalSectionsContainer');
+            const sectionId = 'section_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            const sectionDiv = document.createElement('div');
+            sectionDiv.className = 'section-item';
+            sectionDiv.setAttribute('data-section-id', sectionId);
+            
+            sectionDiv.innerHTML = `
+                <button type="button" class="remove-btn" onclick="removeSectionItem('${sectionId}')">&times;</button>
+                <div class="form-group">
+                    <label class="form-label">Section Title</label>
+                    <input type="text" class="form-input section-title" placeholder="e.g., Development Notes" 
+                           value="${existingSection ? existingSection.title || '' : ''}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Section Content</label>
+                    <div style="display: flex; gap: 8px; align-items: flex-start;">
+                        <textarea class="form-input section-content" placeholder="Section content..." 
+                                  style="min-height: 80px;">${existingSection ? existingSection.content || '' : ''}</textarea>
+                        <button type="button" class="btn btn-small" onclick="openStatCalcForField('${sectionId}')">+ CALC</button>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(sectionDiv);
+        }
+
+        function removeDetailItem(detailId) {
+            const element = document.querySelector(`[data-detail-id="${detailId}"]`);
+            if (element) element.remove();
+        }
+
+        function removeSectionItem(sectionId) {
+            const element = document.querySelector(`[data-section-id="${sectionId}"]`);
+            if (element) element.remove();
+        }
+
+        function setDetailType(detailId, type) {
+            const detailItem = document.querySelector(`[data-detail-id="${detailId}"]`);
+            if (!detailItem) return;
+
+            // Update buttons
+            detailItem.querySelectorAll('.detail-type-btn').forEach(btn => btn.classList.remove('active'));
+            detailItem.querySelector(`[onclick*="'${type}'"]`).classList.add('active');
+
+            // Update content
+            const contentDiv = detailItem.querySelector('.detail-content');
+            if (type === 'field') {
+                contentDiv.innerHTML = `
+                    <div class="form-row">
+                        <div class="form-group" style="width: 30%;">
+                            <input type="text" class="form-input detail-label" placeholder="Label (e.g., Range)">
+                        </div>
+                        <div class="form-group" style="width: 70%;">
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <input type="text" class="form-input detail-value" placeholder="Value">
+                                <button type="button" class="btn btn-small" onclick="openStatCalcForField('${detailId}')">+ CALC</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                contentDiv.innerHTML = `
+                    <div class="form-group">
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <textarea class="form-input detail-text" placeholder="Text content"></textarea>
+                            <button type="button" class="btn btn-small" onclick="openStatCalcForField('${detailId}')">+ CALC</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function insertStatCalculation() {
+            activeTextarea = document.getElementById('techniqueDescription');
+            document.getElementById('statCalcModal').style.display = 'block';
+        }
+
+        function openStatCalcForField(fieldId) {
+            const item = document.querySelector(`[data-detail-id="${fieldId}"], [data-section-id="${fieldId}"]`);
+            if (!item) return;
+
+            // Find the appropriate textarea/input to insert into
+            const textArea = item.querySelector('textarea');
+            const textInput = item.querySelector('.detail-value');
+            
+            activeTextarea = textArea || textInput;
+            document.getElementById('statCalcModal').style.display = 'block';
+        }
+
+        function closeStatCalcModal() {
+            document.getElementById('statCalcModal').style.display = 'none';
+            activeTextarea = null;
+            
+            // Reset form
+            document.getElementById('statMultiplier').value = '';
+            document.getElementById('statName').value = '';
+            document.getElementById('customStatName').value = '';
+            document.getElementById('customStatGroup').style.display = 'none';
+        }
+
+        function insertCalculation() {
+            const multiplier = document.getElementById('statMultiplier').value;
+            const statName = document.getElementById('statName').value;
+            const customName = document.getElementById('customStatName').value;
+
+            if (!multiplier || (!statName && !customName)) {
+                showError('PLEASE FILL ALL FIELDS');
+                return;
+            }
+
+            const finalStatName = statName === 'Custom' ? customName : statName;
+            const calculation = `${multiplier} x [${finalStatName}]`;
+
+            if (activeTextarea) {
+                const cursorPos = activeTextarea.selectionStart;
+                const textBefore = activeTextarea.value.substring(0, cursorPos);
+                const textAfter = activeTextarea.value.substring(activeTextarea.selectionEnd);
+                
+                activeTextarea.value = textBefore + calculation + textAfter;
+                activeTextarea.focus();
+                activeTextarea.setSelectionRange(cursorPos + calculation.length, cursorPos + calculation.length);
+            }
+
+            closeStatCalcModal();
+        }
+
+        function closeTechniqueModal() {
+            document.getElementById('techniqueModal').style.display = 'none';
+            currentTechniqueEditId = null;
+        }
+
+        async function handleTechniqueSubmit(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('techniqueName').value.trim();
+            const threatLevel = document.getElementById('threatLevel').value;
+            const primaryStatCategory = document.getElementById('primaryStatCategory').value;
+            const description = document.getElementById('techniqueDescription').value.trim();
+            const specialNotes = document.getElementById('specialNotes').value.trim();
+
+            if (!name || !description) {
+                showError('NAME AND DESCRIPTION ARE REQUIRED');
+                return;
+            }
+
+            // Collect technical details
+            const technicalDetails = [];
+            document.querySelectorAll('.detail-item').forEach(item => {
+                const isField = item.querySelector('.detail-type-btn.active').textContent === 'FIELD';
+                
+                if (isField) {
+                    const label = item.querySelector('.detail-label').value.trim();
+                    const content = item.querySelector('.detail-value').value.trim();
+                    if (label && content) {
+                        technicalDetails.push({
+                            type: 'field',
+                            label: label,
+                            content: content
+                        });
+                    }
+                } else {
+                    const content = item.querySelector('.detail-text').value.trim();
+                    if (content) {
+                        technicalDetails.push({
+                            type: 'text',
+                            content: content
+                        });
+                    }
+                }
+            });
+
+            // Collect additional sections
+            const additionalSections = [];
+            document.querySelectorAll('.section-item').forEach(item => {
+                const title = item.querySelector('.section-title').value.trim();
+                const content = item.querySelector('.section-content').value.trim();
+                if (title && content) {
+                    additionalSections.push({
+                        title: title,
+                        content: content
+                    });
+                }
+            });
+
+            const techniqueData = {
+                name: name,
+                threatLevel: threatLevel,
+                primaryStatCategory: primaryStatCategory,
+                description: description,
+                technicalDetails: technicalDetails,
+                additionalSections: additionalSections,
+                specialNotes: specialNotes,
+                characterId: selectedCharacterForTechniques.id,
+                characterName: `${selectedCharacterForTechniques.firstName} ${selectedCharacterForTechniques.lastName}`,
+                lastEditedAt: new Date().toISOString(),
+                lastEditedBy: currentUser.login
+            };
+
+            if (!currentTechniqueEditId) {
+                techniqueData.createdAt = new Date().toISOString();
+                techniqueData.createdBy = currentUser.login;
+            }
+
+            try {
+                if (currentTechniqueEditId) {
+                    // Update existing technique
+                    await window.updateDoc(window.doc(window.db, 'techniques', currentTechniqueEditId), techniqueData);
+                    
+                    // Create log
+                    await window.addDoc(window.collection(window.db, 'logs'), {
+                        action: 'technique_updated',
+                        actorLogin: currentUser.login,
+                        actorRole: 'admin',
+                        targetId: selectedCharacterForTechniques.id,
+                        targetName: techniqueData.characterName,
+                        details: `Updated technique: ${name}`,
+                        timestamp: new Date().toISOString()
+                    });
+
+                    showSuccess('TECHNIQUE UPDATED SUCCESSFULLY');
+                } else {
+                    // Create new technique
+                    await window.addDoc(window.collection(window.db, 'techniques'), techniqueData);
+                    
+                    // Create log
+                    await window.addDoc(window.collection(window.db, 'logs'), {
+                        action: 'technique_created',
+                        actorLogin: currentUser.login,
+                        actorRole: 'admin',
+                        targetId: selectedCharacterForTechniques.id,
+                        targetName: techniqueData.characterName,
+                        details: `Created new technique: ${name} (Threat Level: ${threatLevel})`,
+                        timestamp: new Date().toISOString()
+                    });
+
+                    showSuccess('TECHNIQUE CREATED SUCCESSFULLY');
+                }
+
+                closeTechniqueModal();
+                await loadCharacterTechniques();
+
+            } catch (error) {
+                console.error('Error saving technique:', error);
+                showError('FAILED TO SAVE TECHNIQUE');
+            }
+        }
+
+        async function deleteTechnique(docId, techniqueName) {
+            if (!confirm(`Are you sure you want to DELETE technique "${techniqueName}"?\n\nThis action CANNOT be undone!`)) {
+                return;
+            }
+
+            try {
+                await window.deleteDoc(window.doc(window.db, 'techniques', docId));
+                
+                // Create log
+                await window.addDoc(window.collection(window.db, 'logs'), {
+                    action: 'technique_deleted',
+                    actorLogin: currentUser.login,
+                    actorRole: 'admin',
+                    targetId: selectedCharacterForTechniques.id,
+                    targetName: `${selectedCharacterForTechniques.firstName} ${selectedCharacterForTechniques.lastName}`,
+                    details: `Deleted technique: ${techniqueName}`,
+                    timestamp: new Date().toISOString()
+                });
+
+                showSuccess(`TECHNIQUE "${techniqueName}" DELETED`);
+                await loadCharacterTechniques();
+
+            } catch (error) {
+                console.error('Error deleting technique:', error);
+                showError('FAILED TO DELETE TECHNIQUE');
             }
         }
 
@@ -1962,65 +2822,6 @@
 
         function closeCharacterModal() {
             document.getElementById('characterModal').style.display = 'none';
-        }
-
-        async function changeNazoName(docId) {
-            const character = allCharacters.find(c => c.docId === docId);
-            
-            if (!character) {
-                showError('CHARACTER NOT FOUND');
-                return;
-            }
-
-            const currentName = character.nazoName || '???';
-            const newName = prompt(`Change Nazo ability name for ${character.firstName} ${character.lastName}:\n\nCurrent name: "${currentName}"\n\nEnter new name (or leave empty to return to "???"):`, currentName === '???' ? '' : currentName);
-            
-            if (newName === null) return; // User cancelled
-            
-            const finalName = newName.trim() || '???';
-            
-            try {
-                // Update in Firebase
-                const characterRef = window.doc(window.db, 'characters', docId);
-                await window.updateDoc(characterRef, {
-                    nazoName: finalName
-                });
-                
-                // Create log
-                await window.addDoc(window.collection(window.db, 'logs'), {
-                    action: 'character_updated',
-                    actorLogin: currentUser.login,
-                    actorRole: 'admin',
-                    targetId: character.id,
-                    targetName: `${character.firstName} ${character.lastName}`,
-                    details: `Administrator changed Nazo ability name from "${currentName}" to "${finalName}"`,
-                    changes: {
-                        nazoName: {
-                            before: currentName,
-                            after: finalName,
-                            type: 'text'
-                        }
-                    },
-                    timestamp: new Date().toISOString()
-                });
-                
-                // Update locally
-                character.nazoName = finalName;
-                
-                // Refresh display if modal is open
-                if (document.getElementById('characterModal').style.display === 'block') {
-                    displayCharacterCard(character);
-                }
-                
-                // Refresh character list
-                await loadAllCharacters();
-                
-                showSuccess(`ABILITY NAME CHANGED TO "${finalName}"`);
-                
-            } catch (error) {
-                console.error('Error changing Nazo name:', error);
-                showError('FAILED TO CHANGE ABILITY NAME');
-            }
         }
 
         function populateEditForm(character) {
@@ -2447,6 +3248,17 @@
 
         // Form submission
         document.getElementById('addCharacterForm').addEventListener('submit', handleCreateCharacter);
+        document.getElementById('techniqueForm').addEventListener('submit', handleTechniqueSubmit);
+
+        // Handle custom stat name visibility
+        document.getElementById('statName').addEventListener('change', function() {
+            const customGroup = document.getElementById('customStatGroup');
+            if (this.value === 'Custom') {
+                customGroup.style.display = 'block';
+            } else {
+                customGroup.style.display = 'none';
+            }
+        });
 
         // Initialize page
         window.addEventListener('load', function() {
@@ -2457,12 +3269,20 @@
         window.onclick = function(event) {
             const characterModal = document.getElementById('characterModal');
             const editModal = document.getElementById('editCharacterModal');
+            const techniqueModal = document.getElementById('techniqueModal');
+            const statCalcModal = document.getElementById('statCalcModal');
             
             if (event.target === characterModal) {
                 closeCharacterModal();
             }
             if (event.target === editModal) {
                 closeEditModal();
+            }
+            if (event.target === techniqueModal) {
+                closeTechniqueModal();
+            }
+            if (event.target === statCalcModal) {
+                closeStatCalcModal();
             }
         }
 
