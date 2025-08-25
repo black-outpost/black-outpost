@@ -593,23 +593,25 @@
             }
         }
 
-        /* Modal styles */
+        /* FIXED MODAL STYLES */
         .modal {
             display: none;
             position: fixed;
-            z-index: 9999 !important;
+            z-index: 999999 !important;
             left: 0;
             top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0,0,0,0.9);
+            overflow-y: auto;
         }
 
         .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,41,59,0.9) 100%);
-            backdrop-filter: blur(20px);
-            margin: 2% auto;
             padding: 0;
             border: 1px solid rgba(71, 85, 105, 0.4);
             border-radius: 16px;
@@ -2210,13 +2212,15 @@
             document.getElementById('techniquesStep1').classList.add('active');
         }
 
+        // FIXED MODAL FUNCTION
         function addNewTechnique() {
-            console.log('addNewTechnique called'); // Debug
+            console.log('addNewTechnique called');
             currentTechniqueEditId = null;
             
-            // Check if modal exists
             const modal = document.getElementById('techniqueModal');
-            console.log('Modal found:', modal); // Debug
+            console.log('Modal found:', modal);
+            console.log('Modal display before:', modal.style.display);
+            console.log('Modal computed style before:', window.getComputedStyle(modal).display);
             
             if (!modal) {
                 showError('TECHNIQUE MODAL NOT FOUND');
@@ -2234,7 +2238,15 @@
             }
             
             modal.style.display = 'block';
-            console.log('Modal should be visible now'); // Debug
+            modal.style.visibility = 'visible';
+            modal.style.opacity = '1';
+            
+            console.log('Modal display after:', modal.style.display);
+            console.log('Modal getBoundingClientRect:', modal.getBoundingClientRect());
+            console.log('Modal should be visible now');
+            
+            // Force reflow
+            modal.offsetHeight;
         }
 
         function editTechnique(docId) {
@@ -2287,7 +2299,7 @@
         }
 
         function addTechnicalDetail(existingDetail = null) {
-            console.log('addTechnicalDetail called with:', existingDetail); // Debug
+            console.log('addTechnicalDetail called with:', existingDetail);
             
             const container = document.getElementById('technicalDetailsContainer');
             if (!container) {
@@ -2338,7 +2350,7 @@
             `;
 
             container.appendChild(detailDiv);
-            console.log('Technical detail added successfully'); // Debug
+            console.log('Technical detail added successfully');
         }
 
         function addAdditionalSection(existingSection = null) {
