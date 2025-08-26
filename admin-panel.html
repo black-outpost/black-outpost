@@ -2055,13 +2055,26 @@
 
         // Techniques System Functions
         function showTechniquesSection() {
+            console.log('=== showTechniquesSection called ===');
+            
             // Reset state
             selectedCharacterForTechniques = null;
             currentTechniqueEditId = null;
             
             // Show step 1
-            document.getElementById('techniquesStep1').classList.add('active');
-            document.getElementById('techniquesStep2').classList.remove('active');
+            const step1 = document.getElementById('techniquesStep1');
+            const step2 = document.getElementById('techniquesStep2');
+            
+            if (!step1 || !step2) {
+                console.error('Techniques steps not found:', { step1, step2 });
+                showError('TECHNIQUES UI NOT FOUND');
+                return;
+            }
+            
+            step1.classList.add('active');
+            step2.classList.remove('active');
+            
+            console.log('Steps configured, loading characters...');
             
             // Load characters for selection
             loadCharactersForTechniques();
@@ -2099,23 +2112,72 @@
         }
 
         async function selectCharacterForTechniques(docId) {
+            console.log('=== selectCharacterForTechniques called ===', docId);
+            
             selectedCharacterForTechniques = allCharacters.find(c => c.docId === docId);
-            if (!selectedCharacterForTechniques) return;
+            if (!selectedCharacterForTechniques) {
+                console.error('Character not found with docId:', docId);
+                showError('CHARACTER NOT FOUND');
+                return;
+            }
 
-            // Update UI
-            document.getElementById('selectedCharacterName').textContent = 
-                `${selectedCharacterForTechniques.firstName} ${selectedCharacterForTechniques.lastName}`;
-            
-            // Switch to step 2
-            document.getElementById('techniquesStep1').classList.remove('active');
-            document.getElementById('techniquesStep2').classList.add('active');
-            
-            // Load techniques for this character
-            await loadCharacterTechniques();
+            console.log('Selected character:', selectedCharacterForTechniques);
+
+            try {
+                // Update UI
+                const nameElement = document.getElementById('selectedCharacterName');
+                const step1 = document.getElementById('techniquesStep1');
+                const step2 = document.getElementById('techniquesStep2');
+                
+                if (!nameElement || !step1 || !step2) {
+                    console.error('Step elements not found:', { nameElement, step1, step2 });
+                    showError('UI ELEMENTS NOT FOUND');
+                    return;
+                }
+                
+                nameElement.textContent = `${selectedCharacterForTechniques.firstName} ${selectedCharacterForTechniques.lastName}`;
+                
+                // Switch to step 2
+                step1.classList.remove('active');
+                step2.classList.add('active');
+                
+                console.log('Switched to step 2 successfully');
+                
+                // Load techniques for this character
+                await loadCharacterTechniques();
+                
+                // Check if ADD TECHNIQUE button exists and works
+                setTimeout(() => {
+                    const addButton = step2.querySelector('button[onclick="addNewTechnique()"]');
+                    console.log('ADD TECHNIQUE button found:', !!addButton);
+                    
+                    if (addButton) {
+                        console.log('Button onclick attribute:', addButton.getAttribute('onclick'));
+                        // Add alternative event listener as backup
+                        addButton.addEventListener('click', function(e) {
+                            console.log('ADD TECHNIQUE button clicked via event listener');
+                            e.preventDefault();
+                            addNewTechnique();
+                        });
+                    } else {
+                        console.error('ADD TECHNIQUE button not found in step 2');
+                    }
+                }, 100);
+                
+            } catch (error) {
+                console.error('Error in selectCharacterForTechniques:', error);
+                showError('ERROR SELECTING CHARACTER: ' + error.message);
+            }
         }
 
         async function loadCharacterTechniques() {
             const container = document.getElementById('characterTechniques');
+            
+            if (!container) {
+                console.error('characterTechniques container not found');
+                return;
+            }
+            
             container.innerHTML = '<div class="loading-state">LOADING TECHNIQUES...</div>';
 
             try {
@@ -2146,6 +2208,13 @@
 
         function displayCharacterTechniques() {
             const container = document.getElementById('characterTechniques');
+            
+            if (!container) {
+                console.error('characterTechniques container not found');
+                return;
+            }
+            
+            console.log('Displaying techniques, count:', characterTechniques.length);
             
             if (characterTechniques.length === 0) {
                 container.innerHTML = `
@@ -2183,6 +2252,7 @@
             });
             
             container.innerHTML = html;
+            console.log('Techniques displayed successfully');
         }
 
         function backToCharacterSelection() {
@@ -2193,18 +2263,42 @@
 
         // COMPLETELY REWRITTEN - SIMPLE TECHNIQUE FUNCTIONS
         function addNewTechnique() {
-            console.log('=== SIMPLE addNewTechnique called ===');
-            currentTechniqueEditId = null;
+            console.log('=== addNewTechnique called ===');
             
-            // Clear and reset form
-            document.getElementById('techniqueModalTitle').textContent = 'ADD NEW TECHNIQUE';
-            document.getElementById('techniqueForm').reset();
+            // Check if character is selected
+            if (!selectedCharacterForTechniques) {
+                console.error('No character selected for techniques');
+                showError('NO CHARACTER SELECTED');
+                return;
+            }
             
-            // Show modal - simple approach
-            const modal = document.getElementById('techniqueModal');
-            modal.style.display = 'block';
+            console.log('Selected character:', selectedCharacterForTechniques);
             
-            console.log('=== Modal displayed ===');
+            try {
+                currentTechniqueEditId = null;
+                
+                // Clear and reset form
+                const modalTitle = document.getElementById('techniqueModalTitle');
+                const techniqueForm = document.getElementById('techniqueForm');
+                const modal = document.getElementById('techniqueModal');
+                
+                if (!modalTitle || !techniqueForm || !modal) {
+                    console.error('Modal elements not found:', { modalTitle, techniqueForm, modal });
+                    showError('MODAL ELEMENTS NOT FOUND');
+                    return;
+                }
+                
+                modalTitle.textContent = 'ADD NEW TECHNIQUE';
+                techniqueForm.reset();
+                
+                // Show modal
+                modal.style.display = 'block';
+                console.log('=== Modal displayed successfully ===');
+                
+            } catch (error) {
+                console.error('Error in addNewTechnique:', error);
+                showError('ERROR OPENING TECHNIQUE MODAL: ' + error.message);
+            }
         }
 
         function editTechnique(docId) {
@@ -3012,6 +3106,14 @@
             window.location.href = 'index.html';
         }
 
+        // Make sure functions are available globally
+        window.addNewTechnique = addNewTechnique;
+        window.editTechnique = editTechnique;
+        window.deleteTechnique = deleteTechnique;
+        window.closeTechniqueModal = closeTechniqueModal;
+        window.selectCharacterForTechniques = selectCharacterForTechniques;
+        window.backToCharacterSelection = backToCharacterSelection;
+
         // Auto-update generated login
         document.getElementById('firstName')?.addEventListener('input', () => {
             if (!document.getElementById('generatedLogin').value) {
@@ -3041,6 +3143,27 @@
 
         // Initialize page
         window.addEventListener('load', function() {
+            console.log('=== Page loading started ===');
+            
+            // Check if modal exists
+            const modal = document.getElementById('techniqueModal');
+            const modalTitle = document.getElementById('techniqueModalTitle');
+            const techniqueForm = document.getElementById('techniqueForm');
+            
+            console.log('Modal elements check:', {
+                modal: !!modal,
+                modalTitle: !!modalTitle,
+                techniqueForm: !!techniqueForm
+            });
+            
+            if (!modal) {
+                console.error('techniqueModal not found in DOM!');
+            }
+            
+            // Check if addNewTechnique is available globally
+            console.log('addNewTechnique function available:', typeof window.addNewTechnique);
+            console.log('addNewTechnique function available (global):', typeof addNewTechnique);
+            
             loadUserData();
         });
 
