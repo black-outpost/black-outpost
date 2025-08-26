@@ -1383,9 +1383,9 @@
         </div>
     </div>
 
-    <!-- Technique Modal -->
+    <!-- COMPLETELY REWRITTEN Technique Modal -->
     <div id="techniqueModal" class="modal">
-        <div class="modal-content" style="max-width: 1000px; width: 95%;">
+        <div class="modal-content" style="max-width: 900px; width: 90%;">
             <div class="modal-header">
                 <div class="modal-title" id="techniqueModalTitle">ADD NEW TECHNIQUE</div>
                 <button class="close" onclick="closeTechniqueModal()">&times;</button>
@@ -1395,11 +1395,11 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="techniqueName" class="form-label">Technique Name *</label>
-                            <input type="text" id="techniqueName" class="form-input" required>
+                            <input type="text" id="techniqueName" name="techniqueName" class="form-input" required>
                         </div>
                         <div class="form-group">
                             <label for="threatLevel" class="form-label">Threat Level *</label>
-                            <select id="threatLevel" class="form-select" required>
+                            <select id="threatLevel" name="threatLevel" class="form-select" required>
                                 <option value="0">0</option>
                                 <option value="I">I</option>
                                 <option value="II">II</option>
@@ -1411,18 +1411,13 @@
                                 <option value="VIII">VIII</option>
                                 <option value="IX">IX</option>
                                 <option value="X">X</option>
-                                <option value="XI">XI</option>
-                                <option value="XII">XII</option>
-                                <option value="XIII">XIII</option>
-                                <option value="XIV">XIV</option>
-                                <option value="XV">XV</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="primaryStatCategory" class="form-label">Primary Stat Category</label>
-                        <select id="primaryStatCategory" class="form-select">
+                        <select id="primaryStatCategory" name="primaryStatCategory" class="form-select">
                             <option value="other">Other/Mixed</option>
                             <option value="strength">Strength</option>
                             <option value="vitality">Vitality</option>
@@ -1439,33 +1434,20 @@
 
                     <div class="form-group">
                         <label for="techniqueDescription" class="form-label">Description *</label>
-                        <div class="rich-text-editor">
-                            <div class="editor-toolbar">
-                                <button type="button" class="btn btn-small" onclick="insertStatCalculation()">+ STAT CALC</button>
-                            </div>
-                            <textarea id="techniqueDescription" class="form-input" style="min-height: 100px;" required></textarea>
-                        </div>
+                        <textarea id="techniqueDescription" name="techniqueDescription" class="form-input" style="min-height: 120px;" required 
+                                  placeholder="Describe the technique and its effects. Use format: 0.5 x [Strength] for calculations."></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Technical Details</label>
-                        <div id="technicalDetailsContainer">
-                            <!-- Dynamic technical details will go here -->
-                        </div>
-                        <button type="button" class="btn btn-small" onclick="addTechnicalDetail()">ADD DETAIL</button>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Additional Sections</label>
-                        <div id="additionalSectionsContainer">
-                            <!-- Dynamic additional sections will go here -->
-                        </div>
-                        <button type="button" class="btn btn-small" onclick="addAdditionalSection()">ADD SECTION</button>
+                        <label for="technicalDetails" class="form-label">Technical Details</label>
+                        <textarea id="technicalDetails" name="technicalDetails" class="form-input" style="min-height: 80px;" 
+                                  placeholder="Range, Duration, Requirements, etc. One detail per line."></textarea>
                     </div>
 
                     <div class="form-group">
                         <label for="specialNotes" class="form-label">Special Notes</label>
-                        <textarea id="specialNotes" class="form-input" style="min-height: 80px;" placeholder="Race restrictions, special requirements, etc."></textarea>
+                        <textarea id="specialNotes" name="specialNotes" class="form-input" style="min-height: 60px;" 
+                                  placeholder="Race restrictions, special requirements, etc."></textarea>
                     </div>
 
                     <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid rgba(71, 85, 105, 0.3);">
@@ -2209,274 +2191,51 @@
             document.getElementById('techniquesStep1').classList.add('active');
         }
 
-        // BRUTALLY SIMPLE MODAL FUNCTION - FORCE VISIBILITY
+        // COMPLETELY REWRITTEN - SIMPLE TECHNIQUE FUNCTIONS
         function addNewTechnique() {
-            console.log('addNewTechnique called - FORCE SHOW');
+            console.log('=== SIMPLE addNewTechnique called ===');
             currentTechniqueEditId = null;
             
-            // Set modal title first
+            // Clear and reset form
             document.getElementById('techniqueModalTitle').textContent = 'ADD NEW TECHNIQUE';
-            
-            // Reset form BEFORE showing modal
             document.getElementById('techniqueForm').reset();
-            document.getElementById('technicalDetailsContainer').innerHTML = '';
-            document.getElementById('additionalSectionsContainer').innerHTML = '';
             
-            // Add one default technical detail
-            addTechnicalDetail();
-            
-            // FORCE SHOW modal with inline styles
+            // Show modal - simple approach
             const modal = document.getElementById('techniqueModal');
-            modal.style.cssText = 'display: block !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: rgba(0,0,0,0.9) !important; z-index: 99999 !important; overflow-y: auto !important;';
+            modal.style.display = 'block';
             
-            const content = modal.querySelector('.modal-content');
-            content.style.cssText = 'position: relative !important; margin: 50px auto !important; width: 90% !important; max-width: 1000px !important; background: #1e293b !important; border-radius: 16px !important; padding: 0 !important; transform: none !important; top: auto !important; left: auto !important;';
-            
-            console.log('Modal FORCED visible with inline styles');
+            console.log('=== Modal displayed ===');
         }
 
         function editTechnique(docId) {
             const technique = characterTechniques.find(t => t.docId === docId);
             if (!technique) return;
 
+            console.log('=== SIMPLE editTechnique called ===', technique.name);
             currentTechniqueEditId = docId;
             document.getElementById('techniqueModalTitle').textContent = 'EDIT TECHNIQUE';
             
-            // Reset form first
-            document.getElementById('techniqueForm').reset();
-            document.getElementById('technicalDetailsContainer').innerHTML = '';
-            document.getElementById('additionalSectionsContainer').innerHTML = '';
-            
-            // Populate form
-            populateTechniqueForm(technique);
-            
-            document.getElementById('techniqueModal').style.display = 'block';
-        }
-
-        // REMOVED resetTechniqueForm() - doing inline instead
-
-        function populateTechniqueForm(technique) {
-            console.log('Populating technique form for:', technique.name);
-            
+            // Populate simple form
             document.getElementById('techniqueName').value = technique.name || '';
             document.getElementById('threatLevel').value = technique.threatLevel || 'I';
             document.getElementById('primaryStatCategory').value = technique.primaryStatCategory || 'other';
             document.getElementById('techniqueDescription').value = technique.description || '';
             document.getElementById('specialNotes').value = technique.specialNotes || '';
-
-            // Populate technical details - SIMPLIFIED
+            
+            // Convert complex technical details to simple text
+            let technicalText = '';
             if (technique.technicalDetails && technique.technicalDetails.length > 0) {
                 technique.technicalDetails.forEach(detail => {
-                    try {
-                        addTechnicalDetail(detail);
-                    } catch (error) {
-                        console.error('Error adding technical detail:', error);
-                    }
-                });
-            } else {
-                // Add default detail for editing
-                try {
-                    addTechnicalDetail();
-                } catch (error) {
-                    console.error('Error adding default detail:', error);
-                }
-            }
-
-            // Populate additional sections - SIMPLIFIED  
-            if (technique.additionalSections && technique.additionalSections.length > 0) {
-                technique.additionalSections.forEach(section => {
-                    try {
-                        addAdditionalSection(section);
-                    } catch (error) {
-                        console.error('Error adding section:', error);
+                    if (detail.type === 'field' && detail.label) {
+                        technicalText += `${detail.label}: ${detail.content}\n`;
+                    } else {
+                        technicalText += `${detail.content}\n`;
                     }
                 });
             }
+            document.getElementById('technicalDetails').value = technicalText.trim();
             
-            console.log('Form populated successfully');
-        }
-
-        function addTechnicalDetail(existingDetail = null) {
-            console.log('addTechnicalDetail called with:', existingDetail);
-            
-            const container = document.getElementById('technicalDetailsContainer');
-            if (!container) {
-                console.error('technicalDetailsContainer not found');
-                return;
-            }
-            
-            const detailId = 'detail_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            
-            const detailDiv = document.createElement('div');
-            detailDiv.className = 'detail-item';
-            detailDiv.setAttribute('data-detail-id', detailId);
-
-            const type = existingDetail ? existingDetail.type : 'field';
-            
-            detailDiv.innerHTML = `
-                <button type="button" class="remove-btn" onclick="removeDetailItem('${detailId}')">&times;</button>
-                <div class="detail-type-selector">
-                    <button type="button" class="detail-type-btn ${type === 'text' ? 'active' : ''}" 
-                            onclick="setDetailType('${detailId}', 'text')">TEXT</button>
-                    <button type="button" class="detail-type-btn ${type === 'field' ? 'active' : ''}" 
-                            onclick="setDetailType('${detailId}', 'field')">FIELD</button>
-                </div>
-                <div class="detail-content">
-                    ${type === 'field' ? `
-                        <div class="form-row">
-                            <div class="form-group" style="width: 30%;">
-                                <input type="text" class="form-input detail-label" placeholder="Label (e.g., Range)" 
-                                       value="${existingDetail ? (existingDetail.label || '') : ''}">
-                            </div>
-                            <div class="form-group" style="width: 70%;">
-                                <div style="display: flex; gap: 8px; align-items: center;">
-                                    <input type="text" class="form-input detail-value" placeholder="Value" 
-                                           value="${existingDetail ? (existingDetail.content || '') : ''}">
-                                    <button type="button" class="btn btn-small" onclick="openStatCalcForField('${detailId}')">+ CALC</button>
-                                </div>
-                            </div>
-                        </div>
-                    ` : `
-                        <div class="form-group">
-                            <div style="display: flex; gap: 8px; align-items: center;">
-                                <textarea class="form-input detail-text" placeholder="Text content">${existingDetail ? (existingDetail.content || '') : ''}</textarea>
-                                <button type="button" class="btn btn-small" onclick="openStatCalcForField('${detailId}')">+ CALC</button>
-                            </div>
-                        </div>
-                    `}
-                </div>
-            `;
-
-            container.appendChild(detailDiv);
-            console.log('Technical detail added successfully');
-        }
-
-        function addAdditionalSection(existingSection = null) {
-            const container = document.getElementById('additionalSectionsContainer');
-            const sectionId = 'section_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            
-            const sectionDiv = document.createElement('div');
-            sectionDiv.className = 'section-item';
-            sectionDiv.setAttribute('data-section-id', sectionId);
-            
-            sectionDiv.innerHTML = `
-                <button type="button" class="remove-btn" onclick="removeSectionItem('${sectionId}')">&times;</button>
-                <div class="form-group">
-                    <label class="form-label">Section Title</label>
-                    <input type="text" class="form-input section-title" placeholder="e.g., Development Notes" 
-                           value="${existingSection ? existingSection.title || '' : ''}">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Section Content</label>
-                    <div style="display: flex; gap: 8px; align-items: flex-start;">
-                        <textarea class="form-input section-content" placeholder="Section content..." 
-                                  style="min-height: 80px;">${existingSection ? existingSection.content || '' : ''}</textarea>
-                        <button type="button" class="btn btn-small" onclick="openStatCalcForField('${sectionId}')">+ CALC</button>
-                    </div>
-                </div>
-            `;
-
-            container.appendChild(sectionDiv);
-        }
-
-        function removeDetailItem(detailId) {
-            const element = document.querySelector(`[data-detail-id="${detailId}"]`);
-            if (element) element.remove();
-        }
-
-        function removeSectionItem(sectionId) {
-            const element = document.querySelector(`[data-section-id="${sectionId}"]`);
-            if (element) element.remove();
-        }
-
-        function setDetailType(detailId, type) {
-            const detailItem = document.querySelector(`[data-detail-id="${detailId}"]`);
-            if (!detailItem) return;
-
-            // Update buttons
-            detailItem.querySelectorAll('.detail-type-btn').forEach(btn => btn.classList.remove('active'));
-            detailItem.querySelector(`[onclick*="'${type}'"]`).classList.add('active');
-
-            // Update content
-            const contentDiv = detailItem.querySelector('.detail-content');
-            if (type === 'field') {
-                contentDiv.innerHTML = `
-                    <div class="form-row">
-                        <div class="form-group" style="width: 30%;">
-                            <input type="text" class="form-input detail-label" placeholder="Label (e.g., Range)">
-                        </div>
-                        <div class="form-group" style="width: 70%;">
-                            <div style="display: flex; gap: 8px; align-items: center;">
-                                <input type="text" class="form-input detail-value" placeholder="Value">
-                                <button type="button" class="btn btn-small" onclick="openStatCalcForField('${detailId}')">+ CALC</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                contentDiv.innerHTML = `
-                    <div class="form-group">
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            <textarea class="form-input detail-text" placeholder="Text content"></textarea>
-                            <button type="button" class="btn btn-small" onclick="openStatCalcForField('${detailId}')">+ CALC</button>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        function insertStatCalculation() {
-            activeTextarea = document.getElementById('techniqueDescription');
-            document.getElementById('statCalcModal').style.display = 'block';
-        }
-
-        function openStatCalcForField(fieldId) {
-            const item = document.querySelector(`[data-detail-id="${fieldId}"], [data-section-id="${fieldId}"]`);
-            if (!item) return;
-
-            // Find the appropriate textarea/input to insert into
-            const textArea = item.querySelector('textarea');
-            const textInput = item.querySelector('.detail-value');
-            
-            activeTextarea = textArea || textInput;
-            document.getElementById('statCalcModal').style.display = 'block';
-        }
-
-        function closeStatCalcModal() {
-            document.getElementById('statCalcModal').style.display = 'none';
-            activeTextarea = null;
-            
-            // Reset form
-            document.getElementById('statMultiplier').value = '';
-            document.getElementById('statName').value = '';
-            document.getElementById('customStatName').value = '';
-            document.getElementById('customStatGroup').style.display = 'none';
-        }
-
-        function insertCalculation() {
-            const multiplier = document.getElementById('statMultiplier').value;
-            const statName = document.getElementById('statName').value;
-            const customName = document.getElementById('customStatName').value;
-
-            if (!multiplier || (!statName && !customName)) {
-                showError('PLEASE FILL ALL FIELDS');
-                return;
-            }
-
-            const finalStatName = statName === 'Custom' ? customName : statName;
-            const calculation = `${multiplier} x [${finalStatName}]`;
-
-            if (activeTextarea) {
-                const cursorPos = activeTextarea.selectionStart;
-                const textBefore = activeTextarea.value.substring(0, cursorPos);
-                const textAfter = activeTextarea.value.substring(activeTextarea.selectionEnd);
-                
-                activeTextarea.value = textBefore + calculation + textAfter;
-                activeTextarea.focus();
-                activeTextarea.setSelectionRange(cursorPos + calculation.length, cursorPos + calculation.length);
-            }
-
-            closeStatCalcModal();
+            document.getElementById('techniqueModal').style.display = 'block';
         }
 
         function closeTechniqueModal() {
@@ -2486,56 +2245,40 @@
 
         async function handleTechniqueSubmit(e) {
             e.preventDefault();
+            console.log('=== SIMPLE handleTechniqueSubmit called ===');
 
             const name = document.getElementById('techniqueName').value.trim();
             const threatLevel = document.getElementById('threatLevel').value;
             const primaryStatCategory = document.getElementById('primaryStatCategory').value;
             const description = document.getElementById('techniqueDescription').value.trim();
             const specialNotes = document.getElementById('specialNotes').value.trim();
+            const technicalDetailsText = document.getElementById('technicalDetails').value.trim();
 
             if (!name || !description) {
                 showError('NAME AND DESCRIPTION ARE REQUIRED');
                 return;
             }
 
-            // Collect technical details
+            // Convert simple technical details text to array format
             const technicalDetails = [];
-            document.querySelectorAll('.detail-item').forEach(item => {
-                const isField = item.querySelector('.detail-type-btn.active').textContent === 'FIELD';
-                
-                if (isField) {
-                    const label = item.querySelector('.detail-label').value.trim();
-                    const content = item.querySelector('.detail-value').value.trim();
-                    if (label && content) {
+            if (technicalDetailsText) {
+                const lines = technicalDetailsText.split('\n').filter(line => line.trim());
+                lines.forEach(line => {
+                    if (line.includes(':')) {
+                        const [label, content] = line.split(':');
                         technicalDetails.push({
                             type: 'field',
-                            label: label,
-                            content: content
+                            label: label.trim(),
+                            content: content.trim()
                         });
-                    }
-                } else {
-                    const content = item.querySelector('.detail-text').value.trim();
-                    if (content) {
+                    } else {
                         technicalDetails.push({
                             type: 'text',
-                            content: content
+                            content: line.trim()
                         });
                     }
-                }
-            });
-
-            // Collect additional sections
-            const additionalSections = [];
-            document.querySelectorAll('.section-item').forEach(item => {
-                const title = item.querySelector('.section-title').value.trim();
-                const content = item.querySelector('.section-content').value.trim();
-                if (title && content) {
-                    additionalSections.push({
-                        title: title,
-                        content: content
-                    });
-                }
-            });
+                });
+            }
 
             const techniqueData = {
                 name: name,
@@ -2543,7 +2286,7 @@
                 primaryStatCategory: primaryStatCategory,
                 description: description,
                 technicalDetails: technicalDetails,
-                additionalSections: additionalSections,
+                additionalSections: [], // Empty for now - can be added later if needed
                 specialNotes: specialNotes,
                 characterId: selectedCharacterForTechniques.id,
                 characterName: `${selectedCharacterForTechniques.firstName} ${selectedCharacterForTechniques.lastName}`,
@@ -2558,10 +2301,8 @@
 
             try {
                 if (currentTechniqueEditId) {
-                    // Update existing technique
                     await window.updateDoc(window.doc(window.db, 'techniques', currentTechniqueEditId), techniqueData);
                     
-                    // Create log
                     await window.addDoc(window.collection(window.db, 'logs'), {
                         action: 'technique_updated',
                         actorLogin: currentUser.login,
@@ -2574,10 +2315,8 @@
 
                     showSuccess('TECHNIQUE UPDATED SUCCESSFULLY');
                 } else {
-                    // Create new technique
                     await window.addDoc(window.collection(window.db, 'techniques'), techniqueData);
                     
-                    // Create log
                     await window.addDoc(window.collection(window.db, 'logs'), {
                         action: 'technique_created',
                         actorLogin: currentUser.login,
