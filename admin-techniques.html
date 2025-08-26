@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Techniques Management - Black Outpost Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(20,20,30,0.9) 100%), 
+                        url('https://cdn.discordapp.com/attachments/1408447648767414476/1408592371725242478/image_1.png?ex=68aa4d5f&is=68a8fbdf&hm=3c8442351405014db57137c5664aada195f2e2573e8ffc25ecf22b5b97814cc7&');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e0e6ed;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-bar {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-title::before {
+            content: "⚡";
+            color: #8b5cf6;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+            border-color: rgba(148, 163, 184, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.8) 0%, rgba(5, 150, 105, 0.9) 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.9) 100%);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .section-content {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(51,65,85,0.8) 100%);
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+        }
+
+        .section-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            letter-spacing: 0.5px;
+        }
+
+        .techniques-step {
+            display: none;
+            padding: 24px;
+        }
+        
+        .techniques-step.active {
+            display: block;
+        }
+
+        .character-selection-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .character-select-card {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .character-select-card:hover {
+            border-color: rgba(139, 92, 246, 0.4);
+            background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(51,65,85,0.6) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .character-select-card h4 {
+            font-family: 'JetBrains Mono', monospace;
+            color: #f1f5f9;
+            margin-bottom: 8px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .character-select-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .technique-item {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .technique-item:hover {
+            border-color: rgba(148, 163, 184, 0.4);
+            background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(51,65,85,0.6) 100%);
+        }
+
+        .technique-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .technique-info h4 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .technique-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .technique-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .step-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .step-title {
+            color: #f1f5f9;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .step-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .no-techniques-message {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, rgba(30,41,59,0.4) 0%, rgba(51,65,85,0.3) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.2);
+            border-radius: 12px;
+        }
+
+        .no-techniques-message h4 {
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 40px;
+            color: #64748b;
+        }
+
+        .empty-state h3 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #94a3b8;
+        }
+
+        .error-message, .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 1001;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, rgba(153, 27, 27, 0.9) 0%, rgba(127, 29, 29, 0.8) 100%);
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.9) 0%, rgba(16, 185, 129, 0.8) 100%);
+            color: #a7f3d0;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .nav-bar {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .step-controls {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .step-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(30,41,59,0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav-bar">
+            <div class="nav-title">
+                TECHNIQUES MANAGEMENT
+            </div>
+            <div class="nav-actions">
+                <a href="admin-dashboard.html" class="btn" id="backToDashboard">DASHBOARD</a>
+                <a href="index.html" class="btn btn-danger" onclick="logout()">LOGOUT</a>
+            </div>
+        </nav>
+
+        <div class="section-content">
+            <div class="section-header">
+                <div class="section-title">COMBAT TECHNIQUES DATABASE</div>
+            </div>
+            
+            <div id="techniquesStep1" class="techniques-step active">
+                <div class="step-controls">
+                    <h3 class="step-title">SELECT CHARACTER</h3>
+                </div>
+                <div id="charactersList">
+                    <div class="loading-state">
+                        LOADING PERSONNEL...
+                    </div>
+                </div>
+            </div>
+            
+            <div id="techniquesStep2" class="techniques-step">
+                <div class="step-controls">
+                    <h3 class="step-title">
+                        TECHNIQUES FOR: <span id="selectedCharacterName">-</span>
+                    </h3>
+                    <div class="step-actions">
+                        <button class="btn btn-success" onclick="addNewTechnique()">ADD TECHNIQUE</button>
+                        <button class="btn" onclick="backToCharacterSelection()">BACK</button>
+                    </div>
+                </div>
+                
+                <div id="characterTechniques">
+                    <div class="loading-state">
+                        LOADING TECHNIQUES...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, setDoc, getDocs, query, orderBy, limit, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
+            authDomain: "bleach-black-outpost.firebaseapp.com",
+            projectId: "bleach-black-outpost",
+            storageBucket: "bleach-black-outpost.firebasestorage.app",
+            messagingSenderId: "201204368777",
+            appId: "1:201204368777:web:c2a34d61acb46e7b494d58",
+            measurementId: "G-SBD3766NQ6"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        window.db = db;
+        window.getDoc = getDoc;
+        window.doc = doc;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.setDoc = setDoc;
+        window.getDocs = getDocs;
+        window.query = query;
+        window.orderBy = orderBy;
+        window.limit = limit;
+        window.where = where;
+        window.updateDoc = updateDoc;
+        window.deleteDoc = deleteDoc;
+    </script>
+
+    <script>
+        let currentUser = null;
+        let allCharacters = [];
+        let selectedCharacterForTechniques = null;
+        let characterTechniques = [];
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
+
+        async function loadUserData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const login = urlParams.get('login') || localStorage.getItem('currentUser');
+            
+            if (!login) {
+                showError('NO USER SESSION FOUND');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+
+            try {
+                const userDoc = await window.getDoc(window.doc(window.db, 'users', login));
+                if (!userDoc.exists()) {
+                    showError('USER DATA NOT FOUND');
+                    return;
+                }
+
+                currentUser = { login, ...userDoc.data() };
+
+                if (currentUser.role !== 'admin') {
+                    showError('INSUFFICIENT PRIVILEGES');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                    return;
+                }
+
+                // Update navigation links
+                document.getElementById('backToDashboard').href = `admin-dashboard.html?login=${login}`;
+
+                await loadAllCharacters();
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('DATABASE CONNECTION ERROR');
+            }
+        }
+
+        async function loadAllCharacters() {
+            try {
+                const charactersRef = window.collection(window.db, 'characters');
+                const q = window.query(charactersRef, window.orderBy('createdAt', 'desc'));
+                const querySnapshot = await window.getDocs(q);
+                
+                allCharacters = [];
+                querySnapshot.forEach(doc => {
+                    allCharacters.push({ 
+                        docId: doc.id, 
+                        ...doc.data() 
+                    });
+                });
+                
+                loadCharactersForTechniques();
+
+            } catch (error) {
+                console.error('Error loading characters:', error);
+                document.getElementById('charactersList').innerHTML = `
+                    <div class="empty-state">
+                        <h3>LOADING ERROR</h3>
+                        <p>Unable to load personnel data</p>
+                    </div>
+                `;
+            }
+        }
+
+        function loadCharactersForTechniques() {
+            const container = document.getElementById('charactersList');
+            
+            if (allCharacters.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>NO CHARACTERS FOUND</h3>
+                        <p>Create characters first before managing techniques</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="character-selection-grid">';
+            allCharacters.forEach(char => {
+                html += `
+                    <div class="character-select-card" onclick="selectCharacterForTechniques('${char.docId}')">
+                        <h4>${char.firstName} ${char.lastName}</h4>
+                        <div class="character-select-meta">
+                            ID: ${char.id} | RACE: ${char.race} | RANK: ${char.rank || 'I'}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            container.innerHTML = html;
+        }
+
+        async function selectCharacterForTechniques(docId) {
+            selectedCharacterForTechniques = allCharacters.find(c => c.docId === docId);
+            if (!selectedCharacterForTechniques) {
+                showError('CHARACTER NOT FOUND');
+                return;
+            }
+
+            // Update UI
+            document.getElementById('selectedCharacterName').textContent = 
+                `${selectedCharacterForTechniques.firstName} ${selectedCharacterForTechniques.lastName}`;
+            
+            // Switch to step 2
+            document.getElementById('techniquesStep1').classList.remove('active');
+            document.getElementById('techniquesStep2').classList.add('active');
+            
+            // Load techniques for this character
+            await loadCharacterTechniques();
+        }
+
+        async function loadCharacterTechniques() {
+            const container = document.getElementById('characterTechniques');
+            container.innerHTML = '<div class="loading-state">LOADING TECHNIQUES...</div>';
+
+            try {
+                const techniquesRef = window.collection(window.db, 'techniques');
+                const q = window.query(techniquesRef, window.where('characterId', '==', selectedCharacterForTechniques.id));
+                const querySnapshot = await window.getDocs(q);
+                
+                characterTechniques = [];
+                querySnapshot.forEach(doc => {
+                    characterTechniques.push({ 
+                        docId: doc.id, 
+                        ...doc.data() 
+                    });
+                });
+                
+                displayCharacterTechniques();
+
+            } catch (error) {
+                console.error('Error loading techniques:', error);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>ERROR LOADING TECHNIQUES</h3>
+                        <p>Please try again</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayCharacterTechniques() {
+            const container = document.getElementById('characterTechniques');
+            
+            if (characterTechniques.length === 0) {
+                container.innerHTML = `
+                    <div class="no-techniques-message">
+                        <h4>NO TECHNIQUES LEARNED</h4>
+                        <p>This character hasn't learned any techniques yet.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            characterTechniques.forEach(technique => {
+                html += `
+                    <div class="technique-item">
+                        <div class="technique-header">
+                            <div class="technique-info">
+                                <h4>${technique.name}</h4>
+                                <div class="technique-meta">
+                                    THREAT: ${technique.threatLevel || 'I'} | 
+                                    CATEGORY: ${(technique.primaryStatCategory || 'other').toUpperCase()} |
+                                    CREATED: ${new Date(technique.createdAt).toLocaleDateString()}
+                                </div>
+                            </div>
+                            <div class="technique-actions">
+                                <button class="btn btn-small" onclick="viewTechnique('${technique.docId}')">VIEW</button>
+                                <button class="btn btn-small" onclick="editTechnique('${technique.docId}')">EDIT</button>
+                                <button class="btn btn-small btn-danger" onclick="deleteTechnique('${technique.docId}', '${technique.name}')">DELETE</button>
+                            </div>
+                        </div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #cbd5e1; margin-top: 8px;">
+                            ${technique.description.substring(0, 150)}${technique.description.length > 150 ? '...' : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function backToCharacterSelection() {
+            selectedCharacterForTechniques = null;
+            document.getElementById('techniquesStep2').classList.remove('active');
+            document.getElementById('techniquesStep1').classList.add('active');
+        }
+
+        function addNewTechnique() {
+            if (!selectedCharacterForTechniques) {
+                showError('NO CHARACTER SELECTED');
+                return;
+            }
+            
+            const login = currentUser.login;
+            const characterDocId = selectedCharacterForTechniques.docId;
+            window.location.href = `admin-technique-create.html?login=${login}&character=${characterDocId}`;
+        }
+
+        function viewTechnique(techniqueDocId) {
+            const login = currentUser.login;
+            const characterDocId = selectedCharacterForTechniques.docId;
+            window.location.href = `admin-technique-view.html?login=${login}&character=${characterDocId}&technique=${techniqueDocId}`;
+        }
+
+        function editTechnique(techniqueDocId) {
+            const login = currentUser.login;
+            const characterDocId = selectedCharacterForTechniques.docId;
+            window.location.href = `admin-technique-edit.html?login=${login}&character=${characterDocId}&technique=${techniqueDocId}`;
+        }
+
+        async function deleteTechnique(docId, techniqueName) {
+            if (!confirm(`Are you sure you want to DELETE technique "${techniqueName}"?\n\nThis action CANNOT be undone!`)) {
+                return;
+            }
+
+            try {
+                await window.deleteDoc(window.doc(window.db, 'techniques', docId));
+                
+                // Create log
+                await window.addDoc(window.collection(window.db, 'logs'), {
+                    action: 'technique_deleted',
+                    actorLogin: currentUser.login,
+                    actorRole: 'admin',
+                    targetId: selectedCharacterForTechniques.id,
+                    targetName: `${selectedCharacterForTechniques.firstName} ${selectedCharacterForTechniques.lastName}`,
+                    details: `Deleted technique: ${techniqueName}`,
+                    timestamp: new Date().toISOString()
+                });
+
+                showSuccess(`TECHNIQUE "${techniqueName}" DELETED`);
+                await loadCharacterTechniques();
+
+            } catch (error) {
+                console.error('Error deleting technique:', error);
+                showError('FAILED TO DELETE TECHNIQUE');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Initialize page
+        window.addEventListener('load', function() {
+            loadUserData();
+        });
+    </script>
+</body>
+</html>

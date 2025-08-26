@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character View - Black Outpost Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(20,20,30,0.9) 100%), 
+                        url('https://cdn.discordapp.com/attachments/1408447648767414476/1408592371725242478/image_1.png?ex=68aa4d5f&is=68a8fbdf&hm=3c8442351405014db57137c5664aada195f2e2573e8ffc25ecf22b5b97814cc7&');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e0e6ed;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-bar {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-title::before {
+            content: "👁";
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+            border-color: rgba(148, 163, 184, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(37, 99, 235, 0.9) 100%);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .id-card {
+            background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,41,59,0.9) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .id-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #10b981, #3b82f6, #8b5cf6);
+            border-radius: 16px 16px 0 0;
+        }
+
+        .id-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .org-info {
+            flex: 1;
+        }
+
+        .org-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            color: #f1f5f9;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .classification {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: #64748b;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .rank-badge {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .photo-section {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .id-photo {
+            width: 120px;
+            height: 150px;
+            border: 2px solid rgba(71, 85, 105, 0.5);
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .id-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .no-photo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: #64748b;
+            text-align: center;
+        }
+
+        .character-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            color: #f1f5f9;
+            text-align: center;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .id-details {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #94a3b8;
+        }
+
+        .id-details .field {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            padding: 4px 0;
+        }
+
+        .id-details .label {
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .id-details .value {
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        .id-footer {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(71, 85, 105, 0.3);
+            text-align: center;
+        }
+
+        .issue-date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .security-notice {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            color: #475569;
+            line-height: 1.3;
+        }
+
+        .barcode {
+            margin-top: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            letter-spacing: 1px;
+            color: #64748b;
+        }
+
+        .character-info {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .info-header {
+            background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(51,65,85,0.8) 100%);
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+        }
+
+        .info-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            letter-spacing: 0.5px;
+        }
+
+        .info-content {
+            padding: 0;
+        }
+
+        .info-section {
+            border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+        }
+
+        .info-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.5) 100%);
+            padding: 12px 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .info-row {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.15);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            background: linear-gradient(135deg, rgba(30,41,59,0.4) 0%, rgba(51,65,85,0.3) 100%);
+            padding: 12px 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            color: #94a3b8;
+            border-right: 1px solid rgba(71, 85, 105, 0.2);
+        }
+
+        .info-value {
+            padding: 12px 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reiatsu-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            display: inline-block;
+        }
+
+        .descriptions {
+            margin-top: 30px;
+            display: grid;
+            gap: 24px;
+        }
+
+        .description-block {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .description-header {
+            background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(51,65,85,0.8) 100%);
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+        }
+
+        .description-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            color: #f1f5f9;
+            letter-spacing: 0.5px;
+        }
+
+        .description-content {
+            padding: 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #cbd5e1;
+            letter-spacing: 0.3px;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.98) 0%, rgba(15,23,42,0.95) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(71, 85, 105, 0.3);
+            border-top: 3px solid #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #64748b;
+            letter-spacing: 0.5px;
+        }
+
+        .error-message, .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 1001;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, rgba(153, 27, 27, 0.9) 0%, rgba(127, 29, 29, 0.8) 100%);
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.9) 0%, rgba(16, 185, 129, 0.8) 100%);
+            color: #a7f3d0;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        @media (max-width: 1024px) {
+            .profile-layout {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .id-card {
+                max-width: 500px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .nav-bar {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .nav-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-row {
+                grid-template-columns: 1fr;
+            }
+
+            .info-label {
+                border-right: none;
+                border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(30,41,59,0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">ACCESSING PERSONNEL RECORD...</div>
+    </div>
+
+    <div class="container">
+        <nav class="nav-bar">
+            <div class="nav-title">
+                PERSONNEL RECORD VIEW
+            </div>
+            <div class="nav-actions">
+                <a href="admin-characters.html" class="btn" id="backToCharacters">BACK TO LIST</a>
+                <a href="#" class="btn btn-primary" id="editCharacterBtn">EDIT CHARACTER</a>
+                <a href="admin-dashboard.html" class="btn" id="backToDashboard">DASHBOARD</a>
+            </div>
+        </nav>
+
+        <div class="profile-layout">
+            <div class="id-card">
+                <div class="id-header">
+                    <div class="org-info">
+                        <div class="org-name">BLACK OUTPOST</div>
+                        <div class="classification">[Delver]</div>
+                    </div>
+                    <div class="rank-badge" id="rankBadge">I</div>
+                </div>
+
+                <div class="photo-section">
+                    <div class="id-photo" id="characterPhoto">
+                        <div class="no-photo">NO PHOTO<br>AVAILABLE</div>
+                    </div>
+                    <div class="character-name" id="characterName">LOADING...</div>
+                </div>
+
+                <div class="id-details">
+                    <div class="field">
+                        <span class="label">DID:</span>
+                        <span class="value" id="characterId">------</span>
+                    </div>
+                    <div class="field">
+                        <span class="label">SLV:</span>
+                        <span class="value" id="characterSlv">MAIN DELVE TEAM</span>
+                    </div>
+                    <div class="field">
+                        <span class="label">Sc.A.:</span>
+                        <span class="value" id="characterScA">I</span>
+                    </div>
+                    <div class="field">
+                        <span class="label">POSITION:</span>
+                        <span class="value" id="characterPosition">DELVER</span>
+                    </div>
+                </div>
+
+                <div class="id-footer">
+                    <div class="issue-date" id="issueDate">ISSUED: 2015-4-16 AD.</div>
+                    <div class="security-notice">
+                        ALL RIGHTS RESERVED UNDER CENTRAL 46<br>
+                        RESOLUTION XVI
+                    </div>
+                    <div class="barcode">||||| |||| | ||||| || | ||| |||||| || |||</div>
+                </div>
+            </div>
+
+            <div class="character-info">
+                <div class="info-header">
+                    <div class="info-title">PERSONNEL DOSSIER</div>
+                </div>
+                <div class="info-content">
+                    <div class="info-section">
+                        <div class="section-header">BASIC INFORMATION</div>
+                        <div class="info-row">
+                            <div class="info-label">RACE</div>
+                            <div class="info-value" id="characterRace">-</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">RANK</div>
+                            <div class="info-value" id="infoRank">I</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">REIATSU</div>
+                            <div class="info-value" id="riatsuInfo">
+                                <span id="riatsuColorName">UNKNOWN</span>
+                                <span class="reiatsu-color" id="riatsuColorDisplay"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <div class="section-header">PHYSICAL DATA</div>
+                        <div class="info-row">
+                            <div class="info-label">HEIGHT</div>
+                            <div class="info-value" id="characterHeight">CLASSIFIED</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">WEIGHT</div>
+                            <div class="info-value" id="characterWeight">CLASSIFIED</div>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <div class="section-header">COMBAT STATISTICS</div>
+                        <div class="info-grid">
+                            <div class="info-row">
+                                <div class="info-label">STRENGTH</div>
+                                <div class="info-value" id="statStrength">0</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">VITALITY</div>
+                                <div class="info-value" id="statVitality">0</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">SPEED</div>
+                                <div class="info-value" id="statSpeed">0</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">DEFENSE</div>
+                                <div class="info-value" id="statDefense">0</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">REIATSU</div>
+                                <div class="info-value" id="statReiatsu">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <div class="section-header">SPECIALIZED SKILLS</div>
+                        <div class="info-grid">
+                            <div class="info-row">
+                                <div class="info-label">HAKUDA</div>
+                                <div class="info-value" id="statHakuda">0</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label" id="weaponSkillLabel">WEAPONSHIP</div>
+                                <div class="info-value" id="statWeapon">0</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label" id="tamashiSkillLabel">TAMASHI</div>
+                                <div class="info-value" id="statTamashi">0</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label" id="magicSkillLabel">MAGIC</div>
+                                <div class="info-value" id="statMagic">0</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label" id="nazoSkillLabel">???</div>
+                                <div class="info-value" id="statNazo">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <div class="section-header">RESOURCES</div>
+                        <div class="info-grid">
+                            <div class="info-row">
+                                <div class="info-label">POINTS LEFT</div>
+                                <div class="info-value" id="pointsLeft">0</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">NODE POINTS</div>
+                                <div class="info-value" id="nodePoints">0</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">REISEN (HAND)</div>
+                                <div class="info-value" id="reisenInHand">0</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">REISEN (ABS.)</div>
+                                <div class="info-value" id="reisenAbsorbed">0</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">NODE PROGRESS</div>
+                                <div class="info-value" id="nodeProgress">0/4</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">YEN</div>
+                                <div class="info-value" id="yenAmount">0</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">LOYALTY</div>
+                                <div class="info-value" id="loyaltyLeft">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="descriptions" id="descriptionsSection">
+            <!-- Descriptions will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
+            authDomain: "bleach-black-outpost.firebaseapp.com",
+            projectId: "bleach-black-outpost",
+            storageBucket: "bleach-black-outpost.firebasestorage.app",
+            messagingSenderId: "201204368777",
+            appId: "1:201204368777:web:c2a34d61acb46e7b494d58",
+            measurementId: "G-SBD3766NQ6"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        window.db = db;
+        window.getDoc = getDoc;
+        window.doc = doc;
+        window.collection = collection;
+        window.query = query;
+        window.where = where;
+        window.getDocs = getDocs;
+    </script>
+
+    <script>
+        let currentUser = null;
+        let currentCharacter = null;
+
+        // Race-specific skill names
+        const raceSkillNames = {
+            'Soul-Reaper': {
+                weapon: 'ZANJUTSU',
+                tamashi: 'ZANPAKUTO MASTERY',
+                magic: 'KIDO MASTERY'
+            },
+            'Arrancar': {
+                weapon: 'ZANJUTSU',
+                tamashi: 'ZANPAKUTO MASTERY',
+                magic: 'PRIMAL REIRYOKU'
+            },
+            'Quincy': {
+                weapon: 'OJIGI',
+                tamashi: 'BLOOD LEGACY',
+                magic: 'GINTO MASTERY'
+            },
+            'Fullbringer': {
+                weapon: 'WEAPON MASTERY',
+                tamashi: 'FULLBRING MASTERY',
+                magic: 'SOUL MANIPULATION'
+            }
+        };
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        async function loadUserData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const login = urlParams.get('login') || localStorage.getItem('currentUser');
+            const characterDocId = urlParams.get('character');
+            
+            if (!login) {
+                showError('NO USER SESSION FOUND');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+
+            if (!characterDocId) {
+                showError('NO CHARACTER SPECIFIED');
+                setTimeout(() => {
+                    window.location.href = `admin-characters.html?login=${login}`;
+                }, 2000);
+                return;
+            }
+
+            try {
+                const userDoc = await window.getDoc(window.doc(window.db, 'users', login));
+                if (!userDoc.exists()) {
+                    showError('USER DATA NOT FOUND');
+                    return;
+                }
+
+                currentUser = { login, ...userDoc.data() };
+
+                if (currentUser.role !== 'admin') {
+                    showError('INSUFFICIENT PRIVILEGES');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                    return;
+                }
+
+                // Update navigation links
+                document.getElementById('backToCharacters').href = `admin-characters.html?login=${login}`;
+                document.getElementById('editCharacterBtn').href = `admin-character-edit.html?login=${login}&character=${characterDocId}`;
+                document.getElementById('backToDashboard').href = `admin-dashboard.html?login=${login}`;
+
+                // Get character data
+                const characterDoc = await window.getDoc(window.doc(window.db, 'characters', characterDocId));
+                if (!characterDoc.exists()) {
+                    showError('CHARACTER NOT FOUND');
+                    setTimeout(() => {
+                        window.location.href = `admin-characters.html?login=${login}`;
+                    }, 2000);
+                    return;
+                }
+
+                currentCharacter = { docId: characterDocId, ...characterDoc.data() };
+                displayCharacterData();
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('DATABASE CONNECTION ERROR');
+            }
+        }
+
+        function displayCharacterData() {
+            if (!currentCharacter) return;
+
+            const char = currentCharacter;
+            
+            // Update ID Card
+            document.getElementById('rankBadge').textContent = char.rank || 'I';
+            document.getElementById('characterName').textContent = `${char.firstName || ''} ${char.lastName || ''}`.trim().toUpperCase();
+            document.getElementById('characterId').textContent = char.id || '------';
+            document.getElementById('characterSlv').textContent = char.slv || 'MAIN DELVE TEAM';
+            document.getElementById('characterScA').textContent = char.scA || 'I';
+            document.getElementById('characterPosition').textContent = (char.position || 'DELVER').toUpperCase();
+            
+            // Update photo
+            if (char.photoUrl) {
+                document.getElementById('characterPhoto').innerHTML = `<img src="${char.photoUrl}" alt="Character Photo">`;
+            }
+
+            // Update issue date
+            if (char.createdAt) {
+                const date = new Date(char.createdAt).toLocaleDateString('en-GB').replace(/\//g, '-') + ' AD.';
+                document.getElementById('issueDate').textContent = `ISSUED: ${date}`;
+            }
+
+            // Update info panel
+            document.getElementById('characterRace').textContent = char.race || '-';
+            document.getElementById('infoRank').textContent = char.rank || 'I';
+
+            // Update reiatsu color
+            if (char.riatsuColor) {
+                document.getElementById('riatsuColorName').textContent = char.riatsuColor.name || 'UNKNOWN';
+                document.getElementById('riatsuColorDisplay').style.backgroundColor = char.riatsuColor.hex || '#666';
+            }
+
+            // Update physical data
+            document.getElementById('characterHeight').textContent = char.height ? `${char.height} CM` : 'CLASSIFIED';
+            document.getElementById('characterWeight').textContent = char.weight ? `${char.weight} KG` : 'CLASSIFIED';
+
+            // Update combat stats
+            document.getElementById('statStrength').textContent = char.strength || 0;
+            document.getElementById('statVitality').textContent = char.vitality || 0;
+            document.getElementById('statSpeed').textContent = char.speed || 0;
+            document.getElementById('statDefense').textContent = char.defense || 0;
+            document.getElementById('statReiatsu').textContent = char.reiatsu || 0;
+
+            // Update specialized skills with race-specific names
+            const skillNames = raceSkillNames[char.race] || raceSkillNames['Soul-Reaper'];
+            document.getElementById('weaponSkillLabel').textContent = skillNames.weapon;
+            document.getElementById('tamashiSkillLabel').textContent = skillNames.tamashi;
+            document.getElementById('magicSkillLabel').textContent = skillNames.magic;
+            document.getElementById('nazoSkillLabel').textContent = char.nazoName || '???';
+
+            document.getElementById('statHakuda').textContent = char.hakuda || 0;
+            document.getElementById('statWeapon').textContent = char.weaponship || 0;
+            document.getElementById('statTamashi').textContent = char.tamashi || 0;
+            document.getElementById('statMagic').textContent = char.magic || 0;
+            document.getElementById('statNazo').textContent = char.nazo || 0;
+
+            // Update resources
+            document.getElementById('pointsLeft').textContent = char.pointsToDistribute || 0;
+            document.getElementById('nodePoints').textContent = char.nodePointsToDistribute || 0;
+            document.getElementById('reisenInHand').textContent = char.reisenInHand || 0;
+            document.getElementById('reisenAbsorbed').textContent = char.reisenAbsorbed || 0;
+            document.getElementById('nodeProgress').textContent = char.nextNodeProgress || '0/4';
+            document.getElementById('yenAmount').textContent = char.yenInHand || 0;
+            document.getElementById('loyaltyLeft').textContent = char.loyaltyLeft || 0;
+
+            // Update descriptions
+            displayDescriptions();
+        }
+
+        function displayDescriptions() {
+            const descriptionsSection = document.getElementById('descriptionsSection');
+            let descriptionsHtml = '';
+
+            if (currentCharacter.appearance) {
+                descriptionsHtml += `
+                    <div class="description-block">
+                        <div class="description-header">
+                            <div class="description-title">PHYSICAL DESCRIPTION</div>
+                        </div>
+                        <div class="description-content">${currentCharacter.appearance}</div>
+                    </div>
+                `;
+            }
+
+            if (currentCharacter.personality) {
+                descriptionsHtml += `
+                    <div class="description-block">
+                        <div class="description-header">
+                            <div class="description-title">PSYCHOLOGICAL PROFILE</div>
+                        </div>
+                        <div class="description-content">${currentCharacter.personality}</div>
+                    </div>
+                `;
+            }
+
+            if (currentCharacter.history) {
+                descriptionsHtml += `
+                    <div class="description-block">
+                        <div class="description-header">
+                            <div class="description-title">OPERATIONAL HISTORY</div>
+                        </div>
+                        <div class="description-content">${currentCharacter.history}</div>
+                    </div>
+                `;
+            }
+
+            descriptionsSection.innerHTML = descriptionsHtml;
+        }
+
+        // Initialize page
+        window.addEventListener('load', async function() {
+            // Hide loading screen after data loads
+            await loadUserData();
+            
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

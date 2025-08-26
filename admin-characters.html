@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Characters Management - Black Outpost Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(20,20,30,0.9) 100%), 
+                        url('https://cdn.discordapp.com/attachments/1408447648767414476/1408592371725242478/image_1.png?ex=68aa4d5f&is=68a8fbdf&hm=3c8442351405014db57137c5664aada195f2e2573e8ffc25ecf22b5b97814cc7&');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e0e6ed;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-bar {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-title::before {
+            content: "👥";
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+            border-color: rgba(148, 163, 184, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.8) 0%, rgba(5, 150, 105, 0.9) 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.9) 100%);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+
+        .controls-section {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .controls-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: #64748b;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+
+        .section-content {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .character-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .character-card {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .character-card:hover {
+            border-color: rgba(148, 163, 184, 0.4);
+            background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(51,65,85,0.6) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .character-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .character-details h3 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .character-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .character-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .reiatsu-badge {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            display: inline-block;
+        }
+
+        .nazo-badge {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 40px;
+            color: #64748b;
+        }
+
+        .empty-state h3 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #94a3b8;
+        }
+
+        .error-message, .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 1001;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, rgba(153, 27, 27, 0.9) 0%, rgba(127, 29, 29, 0.8) 100%);
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.9) 0%, rgba(16, 185, 129, 0.8) 100%);
+            color: #a7f3d0;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        @media (max-width: 1024px) {
+            .character-info {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+
+            .character-actions {
+                align-self: stretch;
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .nav-bar {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .character-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(30,41,59,0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav-bar">
+            <div class="nav-title">
+                PERSONNEL MANAGEMENT
+            </div>
+            <div class="nav-actions">
+                <a href="admin-dashboard.html" class="btn" id="backToDashboard">DASHBOARD</a>
+                <a href="index.html" class="btn btn-danger" onclick="logout()">LOGOUT</a>
+            </div>
+        </nav>
+
+        <div class="controls-section">
+            <div class="controls-title">PERSONNEL CONTROLS</div>
+            <div class="controls-row">
+                <div class="search-box">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search characters...">
+                </div>
+                <a href="admin-character-create.html" class="btn btn-success" id="createCharacterBtn">CREATE NEW CHARACTER</a>
+            </div>
+        </div>
+
+        <div class="section-content">
+            <div id="charactersContainer">
+                <div class="loading-state">
+                    LOADING PERSONNEL DATA...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, setDoc, getDocs, query, orderBy, limit, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
+            authDomain: "bleach-black-outpost.firebaseapp.com",
+            projectId: "bleach-black-outpost",
+            storageBucket: "bleach-black-outpost.firebasestorage.app",
+            messagingSenderId: "201204368777",
+            appId: "1:201204368777:web:c2a34d61acb46e7b494d58",
+            measurementId: "G-SBD3766NQ6"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        window.db = db;
+        window.getDoc = getDoc;
+        window.doc = doc;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.setDoc = setDoc;
+        window.getDocs = getDocs;
+        window.query = query;
+        window.orderBy = orderBy;
+        window.limit = limit;
+        window.where = where;
+        window.updateDoc = updateDoc;
+        window.deleteDoc = deleteDoc;
+    </script>
+
+    <script>
+        let currentUser = null;
+        let allCharacters = [];
+        let filteredCharacters = [];
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
+
+        async function loadUserData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const login = urlParams.get('login') || localStorage.getItem('currentUser');
+            
+            if (!login) {
+                showError('NO USER SESSION FOUND');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+
+            try {
+                const userDoc = await window.getDoc(window.doc(window.db, 'users', login));
+                if (!userDoc.exists()) {
+                    showError('USER DATA NOT FOUND');
+                    return;
+                }
+
+                currentUser = { login, ...userDoc.data() };
+
+                if (currentUser.role !== 'admin') {
+                    showError('INSUFFICIENT PRIVILEGES');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                    return;
+                }
+
+                // Update navigation links with login parameter
+                document.getElementById('backToDashboard').href = `admin-dashboard.html?login=${login}`;
+                document.getElementById('createCharacterBtn').href = `admin-character-create.html?login=${login}`;
+
+                await loadAllCharacters();
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('DATABASE CONNECTION ERROR');
+            }
+        }
+
+        async function loadAllCharacters() {
+            try {
+                const charactersRef = window.collection(window.db, 'characters');
+                const q = window.query(charactersRef, window.orderBy('createdAt', 'desc'));
+                const querySnapshot = await window.getDocs(q);
+                
+                allCharacters = [];
+                querySnapshot.forEach(doc => {
+                    allCharacters.push({ 
+                        docId: doc.id, 
+                        ...doc.data() 
+                    });
+                });
+                
+                filteredCharacters = [...allCharacters];
+                displayCharacters();
+
+            } catch (error) {
+                console.error('Error loading characters:', error);
+                document.getElementById('charactersContainer').innerHTML = `
+                    <div class="empty-state">
+                        <h3>LOADING ERROR</h3>
+                        <p>Unable to load personnel data</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayCharacters() {
+            const container = document.getElementById('charactersContainer');
+            
+            if (filteredCharacters.length === 0) {
+                if (allCharacters.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <h3>NO PERSONNEL FOUND</h3>
+                            <p>Create the first personnel record using the "CREATE NEW CHARACTER" button</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <h3>NO MATCHING PERSONNEL</h3>
+                            <p>Try adjusting your search terms</p>
+                        </div>
+                    `;
+                }
+                return;
+            }
+
+            let html = '<div class="character-grid">';
+            
+            filteredCharacters.forEach(char => {
+                const riatsuDisplay = char.riatsuColor ? 
+                    `<span class="reiatsu-badge" style="background-color: ${char.riatsuColor.hex};" title="${char.riatsuColor.name}"></span>` : 
+                    '';
+                
+                const nazoDisplay = char.nazoName && char.nazoName !== '???' ? 
+                    `<span class="nazo-badge">${char.nazoName}</span>` : '';
+                
+                html += `
+                    <div class="character-card">
+                        <div class="character-info">
+                            <div class="character-details">
+                                <h3>
+                                    ${char.firstName} ${char.lastName}
+                                    ${riatsuDisplay}
+                                    ${nazoDisplay}
+                                </h3>
+                                <div class="character-meta">ID: ${char.id} | LOGIN: ${char.login} | RACE: ${char.race}</div>
+                                <div class="character-meta">RANK: ${char.rank || 'I'} | POSITION: ${char.position || 'Delver'}</div>
+                                <div class="character-meta">CREATED: ${new Date(char.createdAt).toLocaleDateString()} by ${char.createdBy}</div>
+                            </div>
+                            <div class="character-actions">
+                                <button class="btn btn-small" onclick="viewCharacter('${char.docId}')">VIEW</button>
+                                <button class="btn btn-small" onclick="editCharacter('${char.docId}')">EDIT</button>
+                                <button class="btn btn-small btn-danger" onclick="deleteCharacter('${char.docId}', '${char.firstName} ${char.lastName}')">DELETE</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function viewCharacter(docId) {
+            const login = currentUser.login;
+            window.location.href = `admin-character-view.html?login=${login}&character=${docId}`;
+        }
+
+        function editCharacter(docId) {
+            const login = currentUser.login;
+            window.location.href = `admin-character-edit.html?login=${login}&character=${docId}`;
+        }
+
+        async function deleteCharacter(docId, characterName) {
+            if (!confirm(`Are you sure you want to DELETE character "${characterName}"?\n\nThis action CANNOT be undone!\n\nThis will also delete their login and all associated data.`)) {
+                return;
+            }
+
+            const character = allCharacters.find(c => c.docId === docId);
+            if (!character) {
+                showError('CHARACTER NOT FOUND');
+                return;
+            }
+
+            try {
+                // Delete character document
+                await window.deleteDoc(window.doc(window.db, 'characters', docId));
+                
+                // Delete user login
+                if (character.login) {
+                    await window.deleteDoc(window.doc(window.db, 'users', character.login));
+                }
+                
+                // Create log
+                await window.addDoc(window.collection(window.db, 'logs'), {
+                    action: 'character_deleted',
+                    actorLogin: currentUser.login,
+                    actorRole: 'admin',
+                    targetId: character.id,
+                    targetName: characterName,
+                    details: `Administrator permanently deleted character and login: ${character.login}`,
+                    timestamp: new Date().toISOString()
+                });
+                
+                showSuccess(`CHARACTER "${characterName}" DELETED PERMANENTLY`);
+                
+                // Refresh data
+                await loadAllCharacters();
+                
+            } catch (error) {
+                console.error('Error deleting character:', error);
+                showError(`FAILED TO DELETE CHARACTER: ${error.message}`);
+            }
+        }
+
+        function handleSearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            filteredCharacters = allCharacters.filter(char => {
+                return (
+                    char.firstName.toLowerCase().includes(searchTerm) ||
+                    char.lastName.toLowerCase().includes(searchTerm) ||
+                    char.id.toLowerCase().includes(searchTerm) ||
+                    char.login.toLowerCase().includes(searchTerm) ||
+                    char.race.toLowerCase().includes(searchTerm) ||
+                    (char.rank && char.rank.toLowerCase().includes(searchTerm)) ||
+                    (char.position && char.position.toLowerCase().includes(searchTerm))
+                );
+            });
+            
+            displayCharacters();
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', handleSearch);
+
+        // Initialize page
+        window.addEventListener('load', function() {
+            loadUserData();
+        });
+    </script>
+</body>
+</html>
