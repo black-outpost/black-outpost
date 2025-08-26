@@ -595,14 +595,21 @@
 
         /* COMPLETELY FIXED MODAL STYLES - SIMPLE AND WORKING */
         .modal {
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.8);
+            display: none !important;
+            position: fixed !important;
+            z-index: 99999 !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background-color: rgba(0,0,0,0.8) !important;
+            overflow: auto !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .modal.show {
+            display: block !important;
         }
 
         .modal-content {
@@ -1468,11 +1475,11 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label class="form-label">Multiplier</label>
+                    <label for="statMultiplier" class="form-label">Multiplier</label>
                     <input type="number" id="statMultiplier" class="form-input" step="0.1" placeholder="0.5">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Stat Name</label>
+                    <label for="statName" class="form-label">Stat Name</label>
                     <select id="statName" class="form-select">
                         <optgroup label="Basic Stats">
                             <option value="Strength">Strength</option>
@@ -2291,9 +2298,103 @@
                 modalTitle.textContent = 'ADD NEW TECHNIQUE';
                 techniqueForm.reset();
                 
-                // Show modal
+                // Debug modal CSS before showing
+                console.log('Modal before show:', {
+                    display: modal.style.display,
+                    position: getComputedStyle(modal).position,
+                    zIndex: getComputedStyle(modal).zIndex,
+                    visibility: getComputedStyle(modal).visibility,
+                    opacity: getComputedStyle(modal).opacity
+                });
+                
+                // Show modal using class (more reliable)
+                modal.classList.add('show');
                 modal.style.display = 'block';
+                
+                // Also force inline styles as backup
+                modal.style.position = 'fixed';
+                modal.style.zIndex = '99999';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.width = '100vw';
+                modal.style.height = '100vh';
+                modal.style.visibility = 'visible';
+                modal.style.opacity = '1';
+                modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
+                
+                // Move modal to body if it's not already there
+                if (modal.parentElement !== document.body) {
+                    console.log('Moving modal to body');
+                    document.body.appendChild(modal);
+                }
+                
+                // Check body and container CSS that might interfere
+                const bodyStyles = getComputedStyle(document.body);
+                const containerStyles = getComputedStyle(document.querySelector('.container'));
+                console.log('Body CSS:', {
+                    overflow: bodyStyles.overflow,
+                    overflowX: bodyStyles.overflowX,
+                    overflowY: bodyStyles.overflowY,
+                    position: bodyStyles.position,
+                    zIndex: bodyStyles.zIndex
+                });
+                console.log('Container CSS:', {
+                    overflow: containerStyles.overflow,
+                    overflowX: containerStyles.overflowX,
+                    overflowY: containerStyles.overflowY,
+                    position: containerStyles.position,
+                    zIndex: containerStyles.zIndex
+                });
+                
+                // Debug modal CSS after showing
+                console.log('Modal after show:', {
+                    display: modal.style.display,
+                    position: getComputedStyle(modal).position,
+                    zIndex: getComputedStyle(modal).zIndex,
+                    visibility: getComputedStyle(modal).visibility,
+                    opacity: getComputedStyle(modal).opacity,
+                    boundingRect: modal.getBoundingClientRect(),
+                    parentElement: modal.parentElement.tagName
+                });
+                
+                // Force a repaint
+                modal.offsetHeight;
+                
+                // Test if modal is actually visible by checking if it's in the viewport
+                const rect = modal.getBoundingClientRect();
+                const isVisible = rect.top >= 0 && rect.left >= 0 && 
+                                  rect.bottom <= window.innerHeight && 
+                                  rect.right <= window.innerWidth;
+                console.log('Modal visibility test:', { isVisible, rect });
+                
                 console.log('=== Modal displayed successfully ===');
+                
+                // Test function to force show modal
+        function forceShowModal() {
+            console.log('=== Force showing modal ===');
+            const modal = document.getElementById('techniqueModal');
+            if (modal) {
+                // Remove all classes and styles
+                modal.className = 'modal';
+                modal.style.cssText = '';
+                
+                // Set basic styles
+                modal.style.display = 'block';
+                modal.style.position = 'fixed';
+                modal.style.top = '50px';
+                modal.style.left = '50px';
+                modal.style.width = '80%';
+                modal.style.height = '80%';
+                modal.style.zIndex = '999999';
+                modal.style.backgroundColor = 'red'; // Make it obvious
+                modal.style.border = '5px solid yellow';
+                
+                console.log('Modal forced to show with red background');
+            }
+        }
+        
+        // Make it available globally for console testing
+        window.forceShowModal = forceShowModal;
                 
             } catch (error) {
                 console.error('Error in addNewTechnique:', error);
@@ -2333,7 +2434,13 @@
         }
 
         function closeTechniqueModal() {
-            document.getElementById('techniqueModal').style.display = 'none';
+            console.log('=== closeTechniqueModal called ===');
+            const modal = document.getElementById('techniqueModal');
+            if (modal) {
+                modal.classList.remove('show');
+                modal.style.display = 'none';
+                console.log('Modal hidden');
+            }
             currentTechniqueEditId = null;
         }
 
