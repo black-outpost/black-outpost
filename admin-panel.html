@@ -2212,41 +2212,27 @@
             document.getElementById('techniquesStep1').classList.add('active');
         }
 
-        // FIXED MODAL FUNCTION
+        // FIXED MODAL FUNCTION - BASED ON WORKING editCharacter()
         function addNewTechnique() {
-            console.log('addNewTechnique called');
+            console.log('addNewTechnique called - using editCharacter pattern');
             currentTechniqueEditId = null;
             
-            const modal = document.getElementById('techniqueModal');
-            console.log('Modal found:', modal);
-            console.log('Modal display before:', modal.style.display);
-            console.log('Modal computed style before:', window.getComputedStyle(modal).display);
-            
-            if (!modal) {
-                showError('TECHNIQUE MODAL NOT FOUND');
-                return;
-            }
-            
+            // Set modal title first
             document.getElementById('techniqueModalTitle').textContent = 'ADD NEW TECHNIQUE';
             
-            try {
-                resetTechniqueForm();
-            } catch (error) {
-                console.error('Error in resetTechniqueForm:', error);
-                showError('ERROR INITIALIZING FORM');
-                return;
-            }
+            // Reset form BEFORE showing modal
+            document.getElementById('techniqueForm').reset();
+            document.getElementById('technicalDetailsContainer').innerHTML = '';
+            document.getElementById('additionalSectionsContainer').innerHTML = '';
             
+            // Add one default technical detail
+            addTechnicalDetail();
+            
+            // Show modal using same pattern as editCharacter
+            const modal = document.getElementById('techniqueModal');
             modal.style.display = 'block';
-            modal.style.visibility = 'visible';
-            modal.style.opacity = '1';
             
-            console.log('Modal display after:', modal.style.display);
-            console.log('Modal getBoundingClientRect:', modal.getBoundingClientRect());
-            console.log('Modal should be visible now');
-            
-            // Force reflow
-            modal.offsetHeight;
+            console.log('Modal should be visible now using editCharacter pattern');
         }
 
         function editTechnique(docId) {
@@ -2255,47 +2241,59 @@
 
             currentTechniqueEditId = docId;
             document.getElementById('techniqueModalTitle').textContent = 'EDIT TECHNIQUE';
-            populateTechniqueForm(technique);
-            document.getElementById('techniqueModal').style.display = 'block';
-        }
-
-        function resetTechniqueForm() {
+            
+            // Reset form first
             document.getElementById('techniqueForm').reset();
             document.getElementById('technicalDetailsContainer').innerHTML = '';
             document.getElementById('additionalSectionsContainer').innerHTML = '';
             
-            // Add one default technical detail
-            setTimeout(() => {
-                addTechnicalDetail();
-            }, 100);
+            // Populate form
+            populateTechniqueForm(technique);
+            
+            document.getElementById('techniqueModal').style.display = 'block';
         }
 
+        // REMOVED resetTechniqueForm() - doing inline instead
+
         function populateTechniqueForm(technique) {
+            console.log('Populating technique form for:', technique.name);
+            
             document.getElementById('techniqueName').value = technique.name || '';
             document.getElementById('threatLevel').value = technique.threatLevel || 'I';
             document.getElementById('primaryStatCategory').value = technique.primaryStatCategory || 'other';
             document.getElementById('techniqueDescription').value = technique.description || '';
             document.getElementById('specialNotes').value = technique.specialNotes || '';
 
-            // Populate technical details
-            const detailsContainer = document.getElementById('technicalDetailsContainer');
-            detailsContainer.innerHTML = '';
+            // Populate technical details - SIMPLIFIED
             if (technique.technicalDetails && technique.technicalDetails.length > 0) {
                 technique.technicalDetails.forEach(detail => {
-                    addTechnicalDetail(detail);
+                    try {
+                        addTechnicalDetail(detail);
+                    } catch (error) {
+                        console.error('Error adding technical detail:', error);
+                    }
                 });
             } else {
-                addTechnicalDetail();
+                // Add default detail for editing
+                try {
+                    addTechnicalDetail();
+                } catch (error) {
+                    console.error('Error adding default detail:', error);
+                }
             }
 
-            // Populate additional sections
-            const sectionsContainer = document.getElementById('additionalSectionsContainer');
-            sectionsContainer.innerHTML = '';
+            // Populate additional sections - SIMPLIFIED  
             if (technique.additionalSections && technique.additionalSections.length > 0) {
                 technique.additionalSections.forEach(section => {
-                    addAdditionalSection(section);
+                    try {
+                        addAdditionalSection(section);
+                    } catch (error) {
+                        console.error('Error adding section:', error);
+                    }
                 });
             }
+            
+            console.log('Form populated successfully');
         }
 
         function addTechnicalDetail(existingDetail = null) {
