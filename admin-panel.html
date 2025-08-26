@@ -1383,15 +1383,15 @@
         </div>
     </div>
 
-    <!-- COMPLETELY REWRITTEN Technique Modal -->
+    <!-- Technique Modal - COPIED FROM WORKING editCharacterModal -->
     <div id="techniqueModal" class="modal">
-        <div class="modal-content" style="max-width: 900px; width: 90%;">
+        <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title" id="techniqueModalTitle">ADD NEW TECHNIQUE</div>
                 <button class="close" onclick="closeTechniqueModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <form id="techniqueForm">
+                <form id="techniqueForm" class="character-form">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="techniqueName" class="form-label">Technique Name *</label>
@@ -1406,48 +1406,48 @@
                                 <option value="III">III</option>
                                 <option value="IV">IV</option>
                                 <option value="V">V</option>
-                                <option value="VI">VI</option>
-                                <option value="VII">VII</option>
-                                <option value="VIII">VIII</option>
-                                <option value="IX">IX</option>
-                                <option value="X">X</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="primaryStatCategory" class="form-label">Primary Stat Category</label>
-                        <select id="primaryStatCategory" name="primaryStatCategory" class="form-select">
-                            <option value="other">Other/Mixed</option>
-                            <option value="strength">Strength</option>
-                            <option value="vitality">Vitality</option>
-                            <option value="speed">Speed</option>
-                            <option value="defense">Defense</option>
-                            <option value="reiatsu">Reiatsu</option>
-                            <option value="hakuda">Hakuda</option>
-                            <option value="weapon">Weapon Skill</option>
-                            <option value="tamashi">Tamashi Skill</option>
-                            <option value="magic">Magic Skill</option>
-                            <option value="nazo">Nazo</option>
-                        </select>
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label for="primaryStatCategory" class="form-label">Primary Stat Category</label>
+                            <select id="primaryStatCategory" name="primaryStatCategory" class="form-select">
+                                <option value="other">Other/Mixed</option>
+                                <option value="strength">Strength</option>
+                                <option value="vitality">Vitality</option>
+                                <option value="speed">Speed</option>
+                                <option value="defense">Defense</option>
+                                <option value="reiatsu">Reiatsu</option>
+                                <option value="hakuda">Hakuda</option>
+                                <option value="weapon">Weapon Skill</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="techniqueDescription" class="form-label">Description *</label>
-                        <textarea id="techniqueDescription" name="techniqueDescription" class="form-input" style="min-height: 120px;" required 
-                                  placeholder="Describe the technique and its effects. Use format: 0.5 x [Strength] for calculations."></textarea>
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label for="techniqueDescription" class="form-label">Description *</label>
+                            <textarea id="techniqueDescription" name="techniqueDescription" class="form-input" required 
+                                      placeholder="Describe the technique and its effects. Use format: 0.5 x [Strength] for calculations."></textarea>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="technicalDetails" class="form-label">Technical Details</label>
-                        <textarea id="technicalDetails" name="technicalDetails" class="form-input" style="min-height: 80px;" 
-                                  placeholder="Range, Duration, Requirements, etc. One detail per line."></textarea>
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label for="technicalDetails" class="form-label">Technical Details</label>
+                            <textarea id="technicalDetails" name="technicalDetails" class="form-input" 
+                                      placeholder="Range, Duration, Requirements, etc. One detail per line."></textarea>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="specialNotes" class="form-label">Special Notes</label>
-                        <textarea id="specialNotes" name="specialNotes" class="form-input" style="min-height: 60px;" 
-                                  placeholder="Race restrictions, special requirements, etc."></textarea>
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label for="specialNotes" class="form-label">Special Notes</label>
+                            <textarea id="specialNotes" name="specialNotes" class="form-input" 
+                                      placeholder="Race restrictions, special requirements, etc."></textarea>
+                        </div>
                     </div>
 
                     <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid rgba(71, 85, 105, 0.3);">
