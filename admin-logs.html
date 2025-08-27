@@ -360,6 +360,14 @@
                         <option value="technique_created">Technique Created</option>
                         <option value="technique_updated">Technique Updated</option>
                         <option value="technique_deleted">Technique Deleted</option>
+                        <option value="template_created">Template Created</option>
+                        <option value="template_updated">Template Updated</option>
+                        <option value="template_deleted">Template Deleted</option>
+                        <option value="template_assigned">Template Assigned</option>
+                        <option value="template_bank_cleared">Template Bank Cleared</option>
+                        <option value="icon_created">Icon Created</option>
+                        <option value="icon_deleted">Icon Deleted</option>
+                        <option value="icon_library_cleared">Icon Library Cleared</option>
                         <option value="stats_distributed">Stats Updated</option>
                         <option value="login">User Login</option>
                     </select>
@@ -556,9 +564,9 @@
         }
 
         function getActionBadgeClass(action) {
-            if (action.includes('create')) return 'action-create';
+            if (action.includes('create') || action.includes('assigned')) return 'action-create';
             if (action.includes('update') || action.includes('distribute')) return 'action-update';
-            if (action.includes('delete')) return 'action-delete';
+            if (action.includes('delete') || action.includes('cleared')) return 'action-delete';
             if (action.includes('login')) return 'action-login';
             return 'action-update';
         }

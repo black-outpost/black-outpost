@@ -165,6 +165,14 @@
             background: linear-gradient(90deg, #8b5cf6, #7c3aed);
         }
 
+        .admin-card.bank::before {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+        }
+
+        .admin-card.icons::before {
+            background: linear-gradient(90deg, #06b6d4, #0891b2);
+        }
+
         .admin-card.logs::before {
             background: linear-gradient(90deg, #f59e0b, #d97706);
         }
@@ -335,7 +343,7 @@
         </div>
 
         <div class="admin-grid">
-            <a href="admin-characters.html" class="admin-card characters">
+            <a class="admin-card characters">
                 <div class="card-icon">👥</div>
                 <div class="card-title">PERSONNEL MANAGEMENT</div>
                 <div class="card-description">
@@ -344,16 +352,34 @@
                 </div>
             </a>
 
-            <a href="admin-techniques.html" class="admin-card techniques">
+            <a class="admin-card techniques">
                 <div class="card-icon">⚡</div>
-                <div class="card-title">TECHNIQUES SYSTEM</div>
+                <div class="card-title">PLAYER TECHNIQUES</div>
                 <div class="card-description">
-                    Manage combat techniques database. 
-                    Create, edit and assign techniques to characters.
+                    Manage individual player techniques database. 
+                    Create, edit and assign techniques to specific characters.
                 </div>
             </a>
 
-            <a href="admin-logs.html" class="admin-card logs">
+            <a class="admin-card bank">
+                <div class="card-icon">🏛️</div>
+                <div class="card-title">TECHNIQUE BANK</div>
+                <div class="card-description">
+                    Manage universal technique templates.
+                    Create and assign reusable technique blueprints.
+                </div>
+            </a>
+
+            <a class="admin-card icons">
+                <div class="card-icon">🎨</div>
+                <div class="card-title">ICON LIBRARY</div>
+                <div class="card-description">
+                    Manage technique icons and visual assets.
+                    Upload and organize interface graphics.
+                </div>
+            </a>
+
+            <a class="admin-card logs">
                 <div class="card-icon">📋</div>
                 <div class="card-title">SYSTEM LOGS</div>
                 <div class="card-description">
@@ -483,11 +509,19 @@
 
                 document.getElementById('adminName').textContent = currentUser.name || login;
                 
-                // Update URLs to pass login parameter
-                document.querySelectorAll('.admin-card').forEach(card => {
-                    const href = card.getAttribute('href');
-                    if (href) {
-                        card.setAttribute('href', `${href}?login=${login}`);
+                // Update URLs to pass login parameter - FIXED: Remove onclick handlers
+                const links = [
+                    { selector: '.admin-card.characters', href: 'admin-characters.html' },
+                    { selector: '.admin-card.techniques', href: 'admin-techniques.html' },
+                    { selector: '.admin-card.bank', href: 'admin-technique-bank.html' },
+                    { selector: '.admin-card.icons', href: 'admin-icon-manager.html' },
+                    { selector: '.admin-card.logs', href: 'admin-logs.html' }
+                ];
+
+                links.forEach(({ selector, href }) => {
+                    const card = document.querySelector(selector);
+                    if (card) {
+                        card.href = `${href}?login=${login}`;
                     }
                 });
 

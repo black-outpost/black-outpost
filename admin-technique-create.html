@@ -793,8 +793,11 @@
         let targetCharacter = null;
         let currentEditor = null;
 
-        // Available icons
-        const availableIcons = [
+        // Dynamic icons from icon_library
+        let availableIcons = [];
+
+        // Fallback icons when database is empty
+        const fallbackIcons = [
             'https://cdn.discordapp.com/attachments/1408447648767414476/1409995495270777033/fairy-wand.png',
             'https://cdn.discordapp.com/attachments/1408447648767414476/1409995495543410708/flaming-trident.png',
             'https://cdn.discordapp.com/attachments/1408447648767414476/1409995495790608485/backstab.png',
@@ -813,6 +816,41 @@
             'https://cdn.discordapp.com/attachments/1408447648767414476/1409995519220121841/andromeda-chain.png',
             'https://cdn.discordapp.com/attachments/1408447648767414476/1409995519803134022/crystal-wand.png'
         ];
+
+        async function loadIconLibrary() {
+            try {
+                const iconLibraryRef = window.collection(window.db, 'icon_library');
+                const querySnapshot = await window.getDocs(iconLibraryRef);
+                
+                availableIcons = [];
+                querySnapshot.forEach(doc => {
+                    const iconData = doc.data();
+                    availableIcons.push(iconData.url);
+                });
+                
+                // Use fallback if library is empty
+                if (availableIcons.length === 0) {
+                    availableIcons = [...fallbackIcons];
+                }
+                
+            } catch (error) {
+                console.error('Error loading icon library:', error);
+                availableIcons = [...fallbackIcons];
+            }
+        }
+
+        function populateIconGrid() {
+            const iconGrid = document.getElementById('iconGrid');
+            iconGrid.innerHTML = '';
+            
+            availableIcons.forEach(iconUrl => {
+                const iconItem = document.createElement('div');
+                iconItem.className = 'icon-item';
+                iconItem.innerHTML = `<img src="${iconUrl}" alt="Icon">`;
+                iconItem.addEventListener('click', () => insertIcon(iconUrl));
+                iconGrid.appendChild(iconItem);
+            });
+        }
 
         function showError(message) {
             const errorDiv = document.createElement('div');
@@ -834,20 +872,6 @@
             setTimeout(() => {
                 successDiv.remove();
             }, 3000);
-        }
-
-        // Initialize icon grid
-        function initializeIconGrid() {
-            const iconGrid = document.getElementById('iconGrid');
-            iconGrid.innerHTML = '';
-            
-            availableIcons.forEach(iconUrl => {
-                const iconItem = document.createElement('div');
-                iconItem.className = 'icon-item';
-                iconItem.innerHTML = `<img src="${iconUrl}" alt="Icon">`;
-                iconItem.addEventListener('click', () => insertIcon(iconUrl));
-                iconGrid.appendChild(iconItem);
-            });
         }
 
         // Insert icon at cursor position
@@ -1147,9 +1171,10 @@
         document.getElementById('createTechniqueForm').addEventListener('submit', handleCreateTechnique);
 
         // Initialize page
-        window.addEventListener('load', function() {
-            loadUserData();
-            initializeIconGrid();
+        window.addEventListener('load', async function() {
+            await loadIconLibrary();
+            await loadUserData();
+            populateIconGrid();
         });
 
         // Warn about unsaved changes
