@@ -193,10 +193,249 @@
             background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(51,65,85,0.6) 100%);
         }
 
-        .form-input[type="textarea"], textarea.form-input {
-            min-height: 100px;
-            resize: vertical;
+        /* Rich Text Editor Styles */
+        .rich-editor {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .editor-toolbar {
+            background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(51,65,85,0.8) 100%);
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .toolbar-group {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            padding: 0 8px;
+            border-right: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .toolbar-group:last-child {
+            border-right: none;
+        }
+
+        .toolbar-btn {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.6) 0%, rgba(51, 65, 85, 0.7) 100%);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            color: #cbd5e1;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
             font-family: 'JetBrains Mono', monospace;
+        }
+
+        .toolbar-btn:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            border-color: rgba(148, 163, 184, 0.4);
+        }
+
+        .toolbar-btn.active {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
+            border-color: rgba(139, 92, 246, 0.4);
+            color: white;
+        }
+
+        .color-picker {
+            width: 32px;
+            height: 24px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 4px;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .gradient-picker {
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3, #54a0ff);
+            width: 60px;
+            height: 24px;
+            border-radius: 4px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            cursor: pointer;
+        }
+
+        .editor-content {
+            min-height: 200px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.4) 0%, rgba(51,65,85,0.3) 100%);
+            border: none;
+            outline: none;
+            color: #e2e8f0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            overflow-y: auto;
+        }
+
+        .editor-content[contenteditable="true"] {
+            cursor: text;
+        }
+
+        .editor-content::before {
+            content: attr(data-placeholder);
+            color: #64748b;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .editor-content:focus::before {
+            display: none;
+        }
+
+        .editor-content:not(:empty)::before {
+            display: none;
+        }
+
+        /* Icon Picker Modal */
+        .icon-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .icon-modal.active {
+            display: flex;
+        }
+
+        .icon-picker {
+            background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,41,59,0.9) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .icon-picker h3 {
+            color: #f1f5f9;
+            margin-bottom: 16px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .icon-item {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .icon-item:hover {
+            border-color: rgba(139, 92, 246, 0.5);
+            background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(51,65,85,0.6) 100%);
+            transform: scale(1.05);
+        }
+
+        .icon-item img {
+            width: 32px;
+            height: 32px;
+            filter: brightness(0.8);
+        }
+
+        /* Custom Text Styles */
+        .stat-highlight {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(124, 58, 237, 0.1) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #c4b5fd;
+        }
+
+        .damage-highlight {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.1) 100%);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #fca5a5;
+        }
+
+        .special-highlight {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.1) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #fcd34d;
+        }
+
+        .range-highlight {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #86efac;
+        }
+
+        .time-highlight {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.1) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #93c5fd;
+        }
+
+        /* Enhanced Technical Details */
+        .tech-detail-line {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.3) 0%, rgba(51,65,85,0.2) 100%);
+            border-radius: 8px;
+            border-left: 3px solid rgba(139, 92, 246, 0.5);
+        }
+
+        .tech-icon {
+            width: 24px;
+            height: 24px;
+            filter: brightness(0.8) contrast(1.2);
+        }
+
+        .tech-label {
+            font-weight: 600;
+            color: #e2e8f0;
+            min-width: 120px;
+        }
+
+        .tech-value {
+            flex: 1;
+            color: #cbd5e1;
         }
 
         .save-panel {
@@ -286,6 +525,11 @@
             .form-row {
                 grid-template-columns: 1fr;
             }
+
+            .toolbar-group {
+                border-right: none;
+                padding: 0 4px;
+            }
         }
     </style>
 </head>
@@ -321,7 +565,24 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="edit_techniqueName" class="form-label">Technique Name *</label>
-                            <input type="text" id="edit_techniqueName" class="form-input" required>
+                            <div class="rich-editor">
+                                <div class="editor-toolbar">
+                                    <div class="toolbar-group">
+                                        <button type="button" class="toolbar-btn" data-action="bold">B</button>
+                                        <button type="button" class="toolbar-btn" data-action="italic">I</button>
+                                        <button type="button" class="toolbar-btn" data-action="underline">U</button>
+                                    </div>
+                                    <div class="toolbar-group">
+                                        <input type="color" class="color-picker" data-action="color" value="#8b5cf6">
+                                        <div class="gradient-picker" data-action="gradient"></div>
+                                    </div>
+                                    <div class="toolbar-group">
+                                        <button type="button" class="toolbar-btn" data-action="stat-highlight">STAT</button>
+                                        <button type="button" class="toolbar-btn" data-action="special-highlight">SPEC</button>
+                                    </div>
+                                </div>
+                                <div class="editor-content" contenteditable="true" data-target="technique-name" data-placeholder="Enter technique name..."></div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="edit_threatLevel" class="form-label">Threat Level *</label>
@@ -369,8 +630,30 @@
                     <div class="form-row full">
                         <div class="form-group">
                             <label for="edit_techniqueDescription" class="form-label">Description *</label>
-                            <textarea id="edit_techniqueDescription" class="form-input" required 
-                                      placeholder="Describe the technique. Use format: 0.5 x [Strength] for calculations."></textarea>
+                            <div class="rich-editor">
+                                <div class="editor-toolbar">
+                                    <div class="toolbar-group">
+                                        <button type="button" class="toolbar-btn" data-action="bold">B</button>
+                                        <button type="button" class="toolbar-btn" data-action="italic">I</button>
+                                        <button type="button" class="toolbar-btn" data-action="underline">U</button>
+                                    </div>
+                                    <div class="toolbar-group">
+                                        <input type="color" class="color-picker" data-action="color" value="#cbd5e1">
+                                        <div class="gradient-picker" data-action="gradient"></div>
+                                    </div>
+                                    <div class="toolbar-group">
+                                        <button type="button" class="toolbar-btn" data-action="stat-highlight">STAT</button>
+                                        <button type="button" class="toolbar-btn" data-action="damage-highlight">DMG</button>
+                                        <button type="button" class="toolbar-btn" data-action="special-highlight">SPEC</button>
+                                        <button type="button" class="toolbar-btn" data-action="range-highlight">RANGE</button>
+                                        <button type="button" class="toolbar-btn" data-action="time-highlight">TIME</button>
+                                    </div>
+                                    <div class="toolbar-group">
+                                        <button type="button" class="toolbar-btn" data-action="line-break">BR</button>
+                                    </div>
+                                </div>
+                                <div class="editor-content" contenteditable="true" data-target="description" data-placeholder="Describe the technique. Use format: 0.5 x [Strength] for calculations."></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -384,8 +667,42 @@
                     <div class="form-row full">
                         <div class="form-group">
                             <label for="edit_technicalDetails" class="form-label">Technical Details</label>
-                            <textarea id="edit_technicalDetails" class="form-input" 
-                                      placeholder="Range, Duration, Requirements, etc. One detail per line."></textarea>
+                            <div class="rich-editor">
+                                <div class="editor-toolbar">
+                                    <div class="toolbar-group">
+                                        <button type="button" class="toolbar-btn" data-action="add-tech-line">+ ADD LINE</button>
+                                        <button type="button" class="toolbar-btn" data-action="icons">ICONS</button>
+                                    </div>
+                                    <div class="toolbar-group">
+                                        <input type="color" class="color-picker" data-action="color" value="#cbd5e1">
+                                        <div class="gradient-picker" data-action="gradient"></div>
+                                    </div>
+                                    <div class="toolbar-group">
+                                        <button type="button" class="toolbar-btn" data-action="stat-highlight">STAT</button>
+                                        <button type="button" class="toolbar-btn" data-action="damage-highlight">DMG</button>
+                                        <button type="button" class="toolbar-btn" data-action="range-highlight">RANGE</button>
+                                        <button type="button" class="toolbar-btn" data-action="time-highlight">TIME</button>
+                                    </div>
+                                </div>
+                                <div class="editor-content" contenteditable="true" data-target="technical-details" data-placeholder="Add technical details like range, duration, requirements..."></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="section-header">
+                    <div class="section-title">BACKGROUND IMAGE</div>
+                </div>
+                <div class="section-content">
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label for="edit_backgroundImageUrl" class="form-label">Background Image URL (Optional)</label>
+                            <input type="url" id="edit_backgroundImageUrl" class="form-input" placeholder="https://example.com/image.jpg">
+                            <small style="color: #94a3b8; font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 5px; display: block;">
+                                Image will be converted to grayscale and darkened for better readability
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -399,8 +716,24 @@
                     <div class="form-row full">
                         <div class="form-group">
                             <label for="edit_specialNotes" class="form-label">Special Notes</label>
-                            <textarea id="edit_specialNotes" class="form-input" 
-                                      placeholder="Race restrictions, special requirements, etc."></textarea>
+                            <div class="rich-editor">
+                                <div class="editor-toolbar">
+                                    <div class="toolbar-group">
+                                        <button type="button" class="toolbar-btn" data-action="bold">B</button>
+                                        <button type="button" class="toolbar-btn" data-action="italic">I</button>
+                                        <button type="button" class="toolbar-btn" data-action="underline">U</button>
+                                    </div>
+                                    <div class="toolbar-group">
+                                        <input type="color" class="color-picker" data-action="color" value="#fcd34d">
+                                        <div class="gradient-picker" data-action="gradient"></div>
+                                    </div>
+                                    <div class="toolbar-group">
+                                        <button type="button" class="toolbar-btn" data-action="special-highlight">HIGHLIGHT</button>
+                                        <button type="button" class="toolbar-btn" data-action="line-break">BR</button>
+                                    </div>
+                                </div>
+                                <div class="editor-content" contenteditable="true" data-target="special-notes" data-placeholder="Race restrictions, special requirements, etc."></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -411,6 +744,17 @@
                 <button type="submit" class="btn btn-success" style="padding: 16px 32px; font-size: 16px;">SAVE CHANGES</button>
             </div>
         </form>
+    </div>
+
+    <!-- Icon Picker Modal -->
+    <div class="icon-modal" id="iconModal">
+        <div class="icon-picker">
+            <h3>Choose Icon</h3>
+            <div class="icon-grid" id="iconGrid">
+                <!-- Icons will be populated here -->
+            </div>
+            <button class="btn" onclick="closeIconModal()">CLOSE</button>
+        </div>
     </div>
 
     <!-- Firebase SDK -->
@@ -443,6 +787,28 @@
         let currentUser = null;
         let targetCharacter = null;
         let currentTechnique = null;
+        let currentEditor = null;
+
+        // Available icons
+        const availableIcons = [
+            'https://cdn.discordapp.com/attachments/1408447648767414476/1409995495270777033/fairy-wand.png',
+            'https://cdn.discordapp.com/attachments/1408447648767414476/1409995495543410708/flaming-trident.png',
+            'https://cdn.discordapp.com/attachments/1408447648767414476/1409995495790608485/backstab.png',
+            'https://cdn.discordapp.com/attachments/1408447648767414476/1409995496105447675/grenade.png',
+            'https://cdn.discordapp.com/attachments/1408447648767414476/1409995496411500544/supersonic-bullet.png',
+            'https://cdn.discordapp.com/attachments/1408447648767414476/1409995496650707025/missile-swarm.png',
+            'https://cdn.discordapp.com/attachments/1408447648767414476/1409995496927399986/silver-bullet.png',
+            'https://cdn.discordapp.com/attachments/1408447648767414476/1409995497208545411/gladius.png',
+            'https://cdn.discordapp.com/attachments/1408447648767414476/1409995497497956483/scythe.png',
+            'https://cdn.discordapp.com/attachments/1408447648767414476/1409995497745289266/pocket-bow.png',
+            'https://cdn.discordapp.com/attachments/1408447648767414476/1409995517013786674/police-badge.png',
+            'https://cdn.discordapp.com/attachments/1408447648767414476/1409995517555114125/sparkling-sabre.png',
+            'https://cdn.discordapp.com/attachments/1408447648767414476/1409995517995257977/wave-strike.png',
+            'https://cdn.discordapp.com/attachments/1408447648767414476/1409995518385455144/quiver.png',
+            'https://cdn.discordapp.com/attachments/1408447648767414476/1409995518712615153/bow-arrow.png',
+            'https://cdn.discordapp.com/attachments/1408447648767414476/1409995519220121841/andromeda-chain.png',
+            'https://cdn.discordapp.com/attachments/1408447648767414476/1409995519803134022/crystal-wand.png'
+        ];
 
         function showError(message) {
             const errorDiv = document.createElement('div');
@@ -465,6 +831,183 @@
                 successDiv.remove();
             }, 3000);
         }
+
+        // Initialize icon grid
+        function initializeIconGrid() {
+            const iconGrid = document.getElementById('iconGrid');
+            iconGrid.innerHTML = '';
+            
+            availableIcons.forEach(iconUrl => {
+                const iconItem = document.createElement('div');
+                iconItem.className = 'icon-item';
+                iconItem.innerHTML = `<img src="${iconUrl}" alt="Icon">`;
+                iconItem.addEventListener('click', () => insertIcon(iconUrl));
+                iconGrid.appendChild(iconItem);
+            });
+        }
+
+        // Insert icon at cursor position
+        function insertIcon(iconUrl) {
+            if (currentEditor) {
+                const selection = window.getSelection();
+                const range = selection.getRangeAt(0);
+                
+                const img = document.createElement('img');
+                img.src = iconUrl;
+                img.style.width = '20px';
+                img.style.height = '20px';
+                img.style.display = 'inline-block';
+                img.style.margin = '0 4px';
+                img.style.filter = 'brightness(0.8)';
+                
+                range.insertNode(img);
+                range.setStartAfter(img);
+                range.setEndAfter(img);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+            closeIconModal();
+        }
+
+        function openIconModal() {
+            document.getElementById('iconModal').classList.add('active');
+        }
+
+        function closeIconModal() {
+            document.getElementById('iconModal').classList.remove('active');
+            currentEditor = null;
+        }
+
+        // Toolbar actions
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('toolbar-btn')) {
+                const action = e.target.getAttribute('data-action');
+                const editor = e.target.closest('.rich-editor').querySelector('.editor-content');
+                currentEditor = editor;
+                
+                handleToolbarAction(action, e.target);
+            }
+        });
+
+        function handleToolbarAction(action, button) {
+            const selection = window.getSelection();
+            
+            switch(action) {
+                case 'bold':
+                    document.execCommand('bold');
+                    button.classList.toggle('active');
+                    break;
+                case 'italic':
+                    document.execCommand('italic');
+                    button.classList.toggle('active');
+                    break;
+                case 'underline':
+                    document.execCommand('underline');
+                    button.classList.toggle('active');
+                    break;
+                case 'color':
+                    const color = button.value;
+                    document.execCommand('foreColor', false, color);
+                    break;
+                case 'gradient':
+                    applyGradientToSelection();
+                    break;
+                case 'stat-highlight':
+                    wrapSelection('stat-highlight');
+                    break;
+                case 'damage-highlight':
+                    wrapSelection('damage-highlight');
+                    break;
+                case 'special-highlight':
+                    wrapSelection('special-highlight');
+                    break;
+                case 'range-highlight':
+                    wrapSelection('range-highlight');
+                    break;
+                case 'time-highlight':
+                    wrapSelection('time-highlight');
+                    break;
+                case 'icons':
+                    openIconModal();
+                    break;
+                case 'line-break':
+                    document.execCommand('insertHTML', false, '<br><br>');
+                    break;
+                case 'add-tech-line':
+                    addTechnicalDetailLine();
+                    break;
+            }
+        }
+
+        function wrapSelection(className) {
+            const selection = window.getSelection();
+            if (selection.toString()) {
+                const span = document.createElement('span');
+                span.className = className;
+                
+                try {
+                    const range = selection.getRangeAt(0);
+                    range.surroundContents(span);
+                } catch(e) {
+                    span.innerHTML = selection.toString();
+                    const range = selection.getRangeAt(0);
+                    range.deleteContents();
+                    range.insertNode(span);
+                }
+            }
+        }
+
+        function applyGradientToSelection() {
+            const selection = window.getSelection();
+            if (selection.toString()) {
+                const span = document.createElement('span');
+                span.style.background = 'linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1)';
+                span.style.webkitBackgroundClip = 'text';
+                span.style.backgroundClip = 'text';
+                span.style.webkitTextFillColor = 'transparent';
+                span.style.fontWeight = 'bold';
+                
+                try {
+                    const range = selection.getRangeAt(0);
+                    range.surroundContents(span);
+                } catch(e) {
+                    span.innerHTML = selection.toString();
+                    const range = selection.getRangeAt(0);
+                    range.deleteContents();
+                    range.insertNode(span);
+                }
+            }
+        }
+
+        function addTechnicalDetailLine() {
+            if (currentEditor) {
+                const newLine = document.createElement('div');
+                newLine.className = 'tech-detail-line';
+                newLine.innerHTML = `
+                    <img src="${availableIcons[0]}" class="tech-icon">
+                    <div class="tech-label">New Field:</div>
+                    <div class="tech-value">Enter value here</div>
+                `;
+                newLine.contentEditable = true;
+                currentEditor.appendChild(newLine);
+                
+                // Make the new line editable
+                newLine.addEventListener('click', () => {
+                    newLine.focus();
+                });
+            }
+        }
+
+        // Color picker handling
+        document.addEventListener('change', (e) => {
+            if (e.target.classList.contains('color-picker')) {
+                const color = e.target.value;
+                const selection = window.getSelection();
+                if (selection.toString()) {
+                    document.execCommand('foreColor', false, color);
+                }
+            }
+        });
 
         async function loadUserData() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -524,7 +1067,7 @@
                 currentTechnique = { docId: techniqueDocId, ...techniqueDoc.data() };
 
                 // Update UI
-                document.getElementById('techniqueName').textContent = currentTechnique.name;
+                document.getElementById('techniqueName').innerHTML = currentTechnique.name || 'Untitled Technique';
                 document.getElementById('characterName').textContent = `${targetCharacter.firstName} ${targetCharacter.lastName}`;
                 
                 // Update navigation links
@@ -543,59 +1086,72 @@
         function populateForm() {
             if (!currentTechnique) return;
 
-            document.getElementById('edit_techniqueName').value = currentTechnique.name || '';
+            // Populate basic data
             document.getElementById('edit_threatLevel').value = currentTechnique.threatLevel || 'I';
             document.getElementById('edit_primaryStatCategory').value = currentTechnique.primaryStatCategory || 'other';
-            document.getElementById('edit_techniqueDescription').value = currentTechnique.description || '';
-            document.getElementById('edit_specialNotes').value = currentTechnique.specialNotes || '';
-            
-            // Convert technical details array back to text
-            let technicalText = '';
-            if (currentTechnique.technicalDetails && currentTechnique.technicalDetails.length > 0) {
-                currentTechnique.technicalDetails.forEach(detail => {
-                    if (detail.type === 'field' && detail.label) {
-                        technicalText += `${detail.label}: ${detail.content}\n`;
-                    } else {
-                        technicalText += `${detail.content}\n`;
-                    }
-                });
+            document.getElementById('edit_backgroundImageUrl').value = currentTechnique.backgroundImageUrl || '';
+
+            // Populate rich editors with existing content
+            const nameEditor = document.querySelector('[data-target="technique-name"]');
+            if (nameEditor) {
+                nameEditor.innerHTML = currentTechnique.name || '';
             }
-            document.getElementById('edit_technicalDetails').value = technicalText.trim();
+
+            const descEditor = document.querySelector('[data-target="description"]');
+            if (descEditor) {
+                descEditor.innerHTML = currentTechnique.description || '';
+            }
+
+            const techEditor = document.querySelector('[data-target="technical-details"]');
+            if (techEditor) {
+                techEditor.innerHTML = currentTechnique.technicalDetailsHtml || convertLegacyTechnicalDetails(currentTechnique.technicalDetails) || '';
+            }
+
+            const notesEditor = document.querySelector('[data-target="special-notes"]');
+            if (notesEditor) {
+                notesEditor.innerHTML = currentTechnique.specialNotes || '';
+            }
+        }
+
+        function convertLegacyTechnicalDetails(technicalDetails) {
+            if (!technicalDetails || !Array.isArray(technicalDetails)) return '';
+            
+            let html = '';
+            technicalDetails.forEach(detail => {
+                if (detail.type === 'field' && detail.label) {
+                    html += `
+                        <div class="tech-detail-line">
+                            <img src="${availableIcons[0]}" class="tech-icon">
+                            <div class="tech-label">${detail.label}:</div>
+                            <div class="tech-value">${detail.content}</div>
+                        </div>
+                    `;
+                } else {
+                    html += `<div>${detail.content}</div>`;
+                }
+            });
+            return html;
+        }
+
+        function getEditorContent(targetName) {
+            const editor = document.querySelector(`[data-target="${targetName}"]`);
+            return editor ? editor.innerHTML : '';
         }
 
         async function handleEditTechnique(e) {
             e.preventDefault();
 
-            const name = document.getElementById('edit_techniqueName').value.trim();
+            const name = getEditorContent('technique-name') || currentTechnique.name || 'Untitled Technique';
             const threatLevel = document.getElementById('edit_threatLevel').value;
             const primaryStatCategory = document.getElementById('edit_primaryStatCategory').value;
-            const description = document.getElementById('edit_techniqueDescription').value.trim();
-            const specialNotes = document.getElementById('edit_specialNotes').value.trim();
-            const technicalDetailsText = document.getElementById('edit_technicalDetails').value.trim();
+            const description = getEditorContent('description');
+            const technicalDetailsHtml = getEditorContent('technical-details');
+            const specialNotes = getEditorContent('special-notes');
+            const backgroundImageUrl = document.getElementById('edit_backgroundImageUrl').value.trim();
 
-            if (!name || !description) {
-                showError('NAME AND DESCRIPTION ARE REQUIRED');
+            if (!description.trim()) {
+                showError('DESCRIPTION IS REQUIRED');
                 return;
-            }
-
-            const technicalDetails = [];
-            if (technicalDetailsText) {
-                const lines = technicalDetailsText.split('\n').filter(line => line.trim());
-                lines.forEach(line => {
-                    if (line.includes(':')) {
-                        const [label, content] = line.split(':');
-                        technicalDetails.push({
-                            type: 'field',
-                            label: label.trim(),
-                            content: content.trim()
-                        });
-                    } else {
-                        technicalDetails.push({
-                            type: 'text',
-                            content: line.trim()
-                        });
-                    }
-                });
             }
 
             const updateData = {
@@ -603,8 +1159,9 @@
                 threatLevel: threatLevel,
                 primaryStatCategory: primaryStatCategory,
                 description: description,
-                technicalDetails: technicalDetails,
+                technicalDetailsHtml: technicalDetailsHtml,
                 specialNotes: specialNotes,
+                backgroundImageUrl: backgroundImageUrl,
                 lastEditedAt: new Date().toISOString(),
                 lastEditedBy: currentUser.login
             };
@@ -648,6 +1205,7 @@
         // Initialize page
         window.addEventListener('load', async function() {
             await loadUserData();
+            initializeIconGrid();
             
             setTimeout(() => {
                 document.getElementById('loadingScreen').style.opacity = '0';

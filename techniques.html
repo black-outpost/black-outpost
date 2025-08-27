@@ -209,6 +209,7 @@
             overflow: hidden;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .technique-card:hover {
@@ -217,11 +218,34 @@
             box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
         }
 
+        .technique-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(100%) brightness(0.3);
+            z-index: 1;
+        }
+
+        .technique-bg::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(15,23,42,0.8) 0%, rgba(30,41,59,0.7) 100%);
+        }
+
         .technique-header {
             background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(51,65,85,0.8) 100%);
             padding: 20px 24px;
             border-bottom: 1px solid rgba(71, 85, 105, 0.4);
             position: relative;
+            z-index: 2;
         }
 
         .technique-title {
@@ -266,6 +290,8 @@
 
         .technique-content {
             padding: 24px;
+            position: relative;
+            z-index: 2;
         }
 
         .technique-description {
@@ -345,6 +371,28 @@
         .stat-calculation:hover {
             background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(124, 58, 237, 0.2) 100%);
             border-color: rgba(139, 92, 246, 0.5);
+        }
+
+        .stat-calculation.calculable {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+        }
+
+        .stat-calculation.calculable:hover {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(5, 150, 105, 0.2) 100%);
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+
+        .stat-calculation.not-calculable {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.1) 100%);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        .stat-calculation.not-calculable:hover {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.3) 0%, rgba(220, 38, 38, 0.2) 100%);
+            border-color: rgba(239, 68, 68, 0.5);
         }
 
         .tooltip {
@@ -468,6 +516,81 @@
             background: linear-gradient(135deg, rgba(5, 150, 105, 0.9) 0%, rgba(16, 185, 129, 0.8) 100%);
             color: #a7f3d0;
             border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        /* Enhanced technical details styling */
+        .tech-detail-line {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.3) 0%, rgba(51,65,85,0.2) 100%);
+            border-radius: 8px;
+            border-left: 3px solid rgba(139, 92, 246, 0.5);
+        }
+
+        .tech-icon {
+            width: 24px;
+            height: 24px;
+            filter: brightness(0.8) contrast(1.2);
+        }
+
+        .tech-label {
+            font-weight: 600;
+            color: #e2e8f0;
+            min-width: 120px;
+        }
+
+        .tech-value {
+            flex: 1;
+            color: #cbd5e1;
+        }
+
+        /* Custom highlight styles */
+        .stat-highlight {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(124, 58, 237, 0.1) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #c4b5fd;
+        }
+
+        .damage-highlight {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.1) 100%);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #fca5a5;
+        }
+
+        .special-highlight {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.1) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #fcd34d;
+        }
+
+        .range-highlight {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #86efac;
+        }
+
+        .time-highlight {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.1) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #93c5fd;
         }
 
         @media (max-width: 768px) {
@@ -817,13 +940,29 @@
             const categories = getTechniqueCategories(technique);
             const categoriesHtml = categories.map(cat => `<span class="technique-category">${cat}</span>`).join('');
             
+            // Handle background image
+            let backgroundHtml = '';
+            if (technique.backgroundImageUrl) {
+                backgroundHtml = `<div class="technique-bg" style="background-image: url('${technique.backgroundImageUrl}');"></div>`;
+            }
+
+            // Handle technical details (both new HTML format and legacy format)
             let technicalDetailsHtml = '';
-            if (technique.technicalDetails && technique.technicalDetails.length > 0) {
+            if (technique.technicalDetailsHtml) {
                 technicalDetailsHtml = `
                     <div class="technique-section">
                         <div class="section-title">TECHNICAL DETAILS</div>
                         <div class="technical-details">
-                            ${technique.technicalDetails.map(detail => generateDetailItem(detail)).join('')}
+                            ${processContentWithCalculations(technique.technicalDetailsHtml)}
+                        </div>
+                    </div>
+                `;
+            } else if (technique.technicalDetails && technique.technicalDetails.length > 0) {
+                technicalDetailsHtml = `
+                    <div class="technique-section">
+                        <div class="section-title">TECHNICAL DETAILS</div>
+                        <div class="technical-details">
+                            ${technique.technicalDetails.map(detail => generateLegacyDetailItem(detail)).join('')}
                         </div>
                     </div>
                 `;
@@ -844,20 +983,21 @@
                 specialNotesHtml = `
                     <div class="special-notes">
                         <div class="special-notes-title">SPECIAL NOTES</div>
-                        <div class="special-notes-content">${technique.specialNotes}</div>
+                        <div class="special-notes-content">${processContentWithCalculations(technique.specialNotes)}</div>
                     </div>
                 `;
             }
 
             return `
                 <div class="technique-card">
+                    ${backgroundHtml}
                     <div class="technique-header">
-                        <div class="technique-title">${technique.name}</div>
+                        <div class="technique-title">${technique.name || 'Untitled Technique'}</div>
                         <div class="technique-threat-level">THREAT: ${technique.threatLevel || 'I'}</div>
                         <div class="technique-categories">${categoriesHtml}</div>
                     </div>
                     <div class="technique-content">
-                        <div class="technique-description">${processContentWithCalculations(technique.description)}</div>
+                        <div class="technique-description">${processContentWithCalculations(technique.description || '')}</div>
                         
                         ${technicalDetailsHtml}
                         ${additionalSectionsHtml}
@@ -867,7 +1007,7 @@
             `;
         }
 
-        function generateDetailItem(detail) {
+        function generateLegacyDetailItem(detail) {
             if (detail.type === 'text') {
                 return `<div class="detail-item">${processContentWithCalculations(detail.content)}</div>`;
             } else if (detail.type === 'field') {
@@ -890,13 +1030,13 @@
                 const formula = `${multiplier}×[${statName}]`;
                 
                 if (calculation.calculable) {
-                    return `<span class="stat-calculation" title="${formula} = ${calculation.value}">
+                    return `<span class="stat-calculation calculable" title="${formula} = ${calculation.value}">
                         ${calculation.value}
                         <div class="tooltip">${formula} = ${calculation.value}</div>
                     </span>`;
                 } else {
-                    return `<span class="stat-calculation" title="${formula}">
-                        "${formula}"
+                    return `<span class="stat-calculation not-calculable" title="${formula}">
+                        ${formula}
                         <div class="tooltip">Not calculable: ${calculation.reason}</div>
                     </span>`;
                 }
@@ -908,46 +1048,62 @@
                 return { calculable: false, reason: 'No character data' };
             }
 
-            // Map stat names to character properties
+            // COMPLETE stat mapping including all variants - FIXED
             const statMapping = {
+                // Basic stats
                 'Strength': 'strength',
                 'Vitality': 'vitality',
                 'Speed': 'speed',
                 'Defense': 'defense',
                 'Reiatsu': 'reiatsu',
+                
+                // Hakuda (same for all races)
                 'Hakuda': 'hakuda',
+                'Bujutsu': 'hakuda',
+                
+                // Weapon skills (race-specific)
                 'Zanjutsu': 'weaponship',
                 'Ojigi': 'weaponship',
                 'Weaponship': 'weaponship',
+                'Bukijutsu': 'weaponship',
+                'Weapon Skill': 'weaponship',
+                'Weapon Mastery': 'weaponship',
+                
+                // Tamashi (race-specific)
                 'Zanpakuto Mastery': 'tamashi',
                 'Blood Legacy': 'tamashi',
                 'Fullbring Mastery': 'tamashi',
+                'Tamashi': 'tamashi',
+                
+                // Magic/Reiryoku (race-specific) - FIXED: Added missing mappings
                 'Kido Mastery': 'magic',
                 'Primal Reiryoku': 'magic',
                 'Ginto Mastery': 'magic',
-                'Soul Manipulation': 'magic'
+                'Soul Manipulation': 'magic',
+                'Reiryoku': 'magic',  // FIXED: Added missing mapping
+                'Magic': 'magic'      // FIXED: Added missing mapping
             };
 
-            // Check if it's the unique Nazo stat
-            if (statName === currentCharacter.nazoName) {
-                const value = Math.round((currentCharacter.nazo || 0) * multiplier);
+            // Check if it's the character's unique Nazo stat
+            if (statName === currentCharacter.nazoName || statName === 'Nazo') {
+                const value = parseFloat(((currentCharacter.nazo || 0) * multiplier).toFixed(1));
                 return { calculable: true, value: value };
             }
 
             // Check mapped stats
             const statKey = statMapping[statName];
             if (statKey && currentCharacter[statKey] !== undefined) {
-                const value = Math.round((currentCharacter[statKey] || 0) * multiplier);
+                const value = parseFloat(((currentCharacter[statKey] || 0) * multiplier).toFixed(1));
                 return { calculable: true, value: value };
             }
 
-            // Handle special cases that can't be calculated
-            const nonCalculableStats = ['Wydane Reiatsu', 'Current HP', 'Remaining Actions'];
-            if (nonCalculableStats.some(special => statName.includes(special))) {
+            // Handle special cases that depend on game state
+            const gameStateStats = ['Wydane Reiatsu', 'Current HP', 'Remaining Actions', 'Max HP', 'Obecne HP'];
+            if (gameStateStats.some(special => statName.includes(special))) {
                 return { calculable: false, reason: 'Depends on current game state' };
             }
 
-            return { calculable: false, reason: 'Unknown stat: ' + statName };
+            return { calculable: false, reason: `Unknown stat: ${statName}` };
         }
 
         function getTechniqueCategories(technique) {

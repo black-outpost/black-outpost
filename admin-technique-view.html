@@ -105,6 +105,29 @@
             margin-bottom: 30px;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
             position: relative;
+            overflow: hidden;
+        }
+
+        .technique-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(100%) brightness(0.3);
+            z-index: -1;
+        }
+
+        .technique-bg::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(15,23,42,0.8) 0%, rgba(30,41,59,0.7) 100%);
         }
 
         .technique-header::before {
@@ -116,6 +139,12 @@
             height: 4px;
             background: linear-gradient(90deg, #8b5cf6, #3b82f6);
             border-radius: 16px 16px 0 0;
+            z-index: 1;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
         }
 
         .technique-title {
@@ -393,6 +422,81 @@
             border-color: rgba(16, 185, 129, 0.3);
         }
 
+        /* Enhanced technical details styling */
+        .tech-detail-line {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.3) 0%, rgba(51,65,85,0.2) 100%);
+            border-radius: 8px;
+            border-left: 3px solid rgba(139, 92, 246, 0.5);
+        }
+
+        .tech-icon {
+            width: 24px;
+            height: 24px;
+            filter: brightness(0.8) contrast(1.2);
+        }
+
+        .tech-label {
+            font-weight: 600;
+            color: #e2e8f0;
+            min-width: 120px;
+        }
+
+        .tech-value {
+            flex: 1;
+            color: #cbd5e1;
+        }
+
+        /* Custom highlight styles */
+        .stat-highlight {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(124, 58, 237, 0.1) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #c4b5fd;
+        }
+
+        .damage-highlight {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.1) 100%);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #fca5a5;
+        }
+
+        .special-highlight {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.1) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #fcd34d;
+        }
+
+        .range-highlight {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #86efac;
+        }
+
+        .time-highlight {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.1) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #93c5fd;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -441,12 +545,15 @@
         </nav>
 
         <div class="technique-header">
-            <div class="technique-title" id="techniqueName">LOADING...</div>
-            <div class="technique-meta">
-                <div class="threat-badge" id="threatLevel">THREAT: I</div>
-                <div class="category-badge" id="categoryBadge">OTHER</div>
-                <div class="character-info">
-                    Character: <span id="characterName">...</span>
+            <div class="technique-bg" id="techniqueBg"></div>
+            <div class="header-content">
+                <div class="technique-title" id="techniqueName">LOADING...</div>
+                <div class="technique-meta">
+                    <div class="threat-badge" id="threatLevel">THREAT: I</div>
+                    <div class="category-badge" id="categoryBadge">OTHER</div>
+                    <div class="character-info">
+                        Character: <span id="characterName">...</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -518,30 +625,6 @@
         let currentUser = null;
         let targetCharacter = null;
         let currentTechnique = null;
-
-        // Race-specific skill names for stat mapping
-        const raceSkillNames = {
-            'Soul-Reaper': {
-                weapon: 'Zanjutsu',
-                tamashi: 'Zanpakuto Mastery',
-                magic: 'Kido Mastery'
-            },
-            'Arrancar': {
-                weapon: 'Zanjutsu',
-                tamashi: 'Zanpakuto Mastery',
-                magic: 'Primal Reiryoku'
-            },
-            'Quincy': {
-                weapon: 'Ojigi',
-                tamashi: 'Blood Legacy',
-                magic: 'Ginto Mastery'
-            },
-            'Fullbringer': {
-                weapon: 'Weapon Mastery',
-                tamashi: 'Fullbring Mastery',
-                magic: 'Soul Manipulation'
-            }
-        };
 
         function showError(message) {
             const errorDiv = document.createElement('div');
@@ -639,28 +722,43 @@
             if (!currentTechnique || !targetCharacter) return;
 
             // Update header
-            document.getElementById('techniqueName').textContent = currentTechnique.name;
+            document.getElementById('techniqueName').innerHTML = currentTechnique.name || 'Untitled Technique';
             document.getElementById('threatLevel').textContent = `THREAT: ${currentTechnique.threatLevel || 'I'}`;
             document.getElementById('categoryBadge').textContent = (currentTechnique.primaryStatCategory || 'other').toUpperCase();
             document.getElementById('characterName').textContent = `${targetCharacter.firstName} ${targetCharacter.lastName}`;
+
+            // Set background image if available
+            if (currentTechnique.backgroundImageUrl) {
+                const bgElement = document.getElementById('techniqueBg');
+                bgElement.style.backgroundImage = `url(${currentTechnique.backgroundImageUrl})`;
+                bgElement.style.display = 'block';
+            }
 
             // Update description with calculations
             document.getElementById('techniqueDescription').innerHTML = processContentWithCalculations(currentTechnique.description || '');
 
             // Display technical details if available
-            if (currentTechnique.technicalDetails && currentTechnique.technicalDetails.length > 0) {
+            if (currentTechnique.technicalDetailsHtml) {
                 displayTechnicalDetails();
+                document.getElementById('technicalDetailsSection').style.display = 'block';
+            } else if (currentTechnique.technicalDetails && currentTechnique.technicalDetails.length > 0) {
+                displayLegacyTechnicalDetails();
                 document.getElementById('technicalDetailsSection').style.display = 'block';
             }
 
             // Display special notes if available
             if (currentTechnique.specialNotes) {
-                document.getElementById('specialNotesContent').textContent = currentTechnique.specialNotes;
+                document.getElementById('specialNotesContent').innerHTML = processContentWithCalculations(currentTechnique.specialNotes);
                 document.getElementById('specialNotesSection').style.display = 'block';
             }
         }
 
         function displayTechnicalDetails() {
+            const container = document.getElementById('technicalDetailsContent');
+            container.innerHTML = processContentWithCalculations(currentTechnique.technicalDetailsHtml);
+        }
+
+        function displayLegacyTechnicalDetails() {
             const container = document.getElementById('technicalDetailsContent');
             let html = '';
 
@@ -687,7 +785,7 @@
         function processContentWithCalculations(content) {
             if (!content) return '';
             
-            // Replace stat calculations with interactive elements showing actual values
+            // Replace stat calculations with interactive elements showing actual values from target character
             return content.replace(/(\d+(?:\.\d+)?)\s*x\s*\[([^\]]+)\]/g, (match, multiplier, statName) => {
                 const calculation = calculateStatValue(parseFloat(multiplier), statName);
                 const formula = `${multiplier}×[${statName}]`;
@@ -707,35 +805,45 @@
         }
 
         function calculateStatValue(multiplier, statName) {
+            // FIXED: Use targetCharacter (the character whose technique this is) instead of currentUser
             if (!targetCharacter) {
                 return { calculable: false, reason: 'No character data' };
             }
 
-            // Map stat names to character properties
+            // COMPLETE stat mapping including all variants - FIXED
             const statMapping = {
+                // Basic stats
                 'Strength': 'strength',
                 'Vitality': 'vitality',
                 'Speed': 'speed',
                 'Defense': 'defense',
                 'Reiatsu': 'reiatsu',
+                
+                // Hakuda (same for all races)
                 'Hakuda': 'hakuda',
                 'Bujutsu': 'hakuda',
+                
+                // Weapon skills (race-specific)
                 'Zanjutsu': 'weaponship',
                 'Ojigi': 'weaponship',
                 'Weaponship': 'weaponship',
                 'Bukijutsu': 'weaponship',
                 'Weapon Skill': 'weaponship',
                 'Weapon Mastery': 'weaponship',
+                
+                // Tamashi (race-specific)
                 'Zanpakuto Mastery': 'tamashi',
                 'Blood Legacy': 'tamashi',
                 'Fullbring Mastery': 'tamashi',
                 'Tamashi': 'tamashi',
+                
+                // Magic/Reiryoku (race-specific) - FIXED: Added missing mappings
                 'Kido Mastery': 'magic',
                 'Primal Reiryoku': 'magic',
                 'Ginto Mastery': 'magic',
                 'Soul Manipulation': 'magic',
-                'Reiryoku': 'magic',
-                'Magic': 'magic'
+                'Reiryoku': 'magic',  // FIXED: Added missing mapping
+                'Magic': 'magic'      // FIXED: Added missing mapping
             };
 
             // Check if it's the character's unique Nazo stat
@@ -752,7 +860,7 @@
             }
 
             // Handle special cases that depend on game state
-            const gameStateStats = ['Wydane Reiatsu', 'Current HP', 'Remaining Actions', 'Max HP'];
+            const gameStateStats = ['Wydane Reiatsu', 'Current HP', 'Remaining Actions', 'Max HP', 'Obecne HP'];
             if (gameStateStats.some(special => statName.includes(special))) {
                 return { calculable: false, reason: 'Depends on current game state' };
             }
