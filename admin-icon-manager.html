@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icon Manager - Black Outpost Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(20,20,30,0.9) 100%), 
+                        url('https://cdn.discordapp.com/attachments/1408447648767414476/1408592371725242478/image_1.png?ex=68aa4d5f&is=68a8fbdf&hm=3c8442351405014db57137c5664aada195f2e2573e8ffc25ecf22b5b97814cc7&');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e0e6ed;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-bar {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-title::before {
+            content: "🖼";
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+            border-color: rgba(148, 163, 184, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.8) 0%, rgba(5, 150, 105, 0.9) 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.9) 100%);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .section-content {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(51,65,85,0.8) 100%);
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            letter-spacing: 0.5px;
+        }
+
+        .section-body {
+            padding: 24px;
+        }
+
+        .add-icon-form {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+            align-items: end;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        .form-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input::placeholder {
+            color: #64748b;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(51,65,85,0.6) 100%);
+        }
+
+        .icon-preview {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .icon-preview img {
+            max-width: 32px;
+            max-height: 32px;
+            filter: brightness(0.8);
+        }
+
+        .icon-preview.empty {
+            color: #64748b;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .icons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 16px;
+        }
+
+        .icon-item {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .icon-item:hover {
+            border-color: rgba(148, 163, 184, 0.4);
+            background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(51,65,85,0.6) 100%);
+            transform: translateY(-2px);
+        }
+
+        .icon-item img {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 12px;
+            filter: brightness(0.8);
+        }
+
+        .icon-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+            word-break: break-word;
+        }
+
+        .icon-url {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: #64748b;
+            word-break: break-all;
+            margin-bottom: 12px;
+        }
+
+        .icon-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .btn-small {
+            padding: 4px 8px;
+            font-size: 11px;
+            border-radius: 4px;
+        }
+
+        .stats-section {
+            background: linear-gradient(135deg, rgba(30,41,59,0.4) 0%, rgba(51,65,85,0.3) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 24px;
+            text-align: center;
+        }
+
+        .stat-item {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 40px;
+            color: #64748b;
+        }
+
+        .empty-state h3 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #94a3b8;
+        }
+
+        .error-message, .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 1001;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, rgba(153, 27, 27, 0.9) 0%, rgba(127, 29, 29, 0.8) 100%);
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.9) 0%, rgba(16, 185, 129, 0.8) 100%);
+            color: #a7f3d0;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .nav-bar {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .icon-preview {
+                margin-top: 0;
+            }
+
+            .icons-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav-bar">
+            <div class="nav-title">
+                ICON LIBRARY MANAGER
+            </div>
+            <div class="nav-actions">
+                <a href="admin-dashboard.html" class="btn" id="backToDashboard">DASHBOARD</a>
+                <a href="index.html" class="btn btn-danger" onclick="logout()">LOGOUT</a>
+            </div>
+        </nav>
+
+        <div class="section-content">
+            <div class="section-header">
+                <div class="section-title">LIBRARY STATISTICS</div>
+            </div>
+            <div class="section-body">
+                <div class="stats-section">
+                    <div class="stats-row">
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalIcons">0</div>
+                            <div class="stat-label">Total Icons</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="recentlyAdded">0</div>
+                            <div class="stat-label">Added Today</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="popularIcons">0</div>
+                            <div class="stat-label">Most Used</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-content">
+            <div class="section-header">
+                <div class="section-title">ADD NEW ICON</div>
+            </div>
+            <div class="section-body">
+                <form id="addIconForm" class="add-icon-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="iconName" class="form-label">Icon Name *</label>
+                            <input type="text" id="iconName" class="form-input" placeholder="e.g., Lightning Bolt, Fire Sword..." required>
+                        </div>
+                        <div class="form-group">
+                            <label for="iconUrl" class="form-label">Icon URL *</label>
+                            <input type="url" id="iconUrl" class="form-input" placeholder="https://example.com/icon.png" required>
+                        </div>
+                        <div class="icon-preview" id="iconPreview">
+                            <div class="empty">NO PREVIEW</div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="iconCategory" class="form-label">Category (Optional)</label>
+                            <input type="text" id="iconCategory" class="form-input" placeholder="e.g., Weapons, Magic, Elements...">
+                        </div>
+                        <div class="form-group">
+                            <label for="iconDescription" class="form-label">Description (Optional)</label>
+                            <input type="text" id="iconDescription" class="form-input" placeholder="Brief description of the icon...">
+                        </div>
+                        <button type="submit" class="btn btn-success">ADD ICON</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="section-content">
+            <div class="section-header">
+                <div class="section-title">ICON LIBRARY</div>
+                <button class="btn btn-danger" onclick="clearAllIcons()">CLEAR ALL</button>
+            </div>
+            <div class="section-body">
+                <div id="iconsContainer">
+                    <div class="loading-state">
+                        LOADING ICON LIBRARY...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, deleteDoc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
+            authDomain: "bleach-black-outpost.firebaseapp.com",
+            projectId: "bleach-black-outpost",
+            storageBucket: "bleach-black-outpost.firebasestorage.app",
+            messagingSenderId: "201204368777",
+            appId: "1:201204368777:web:c2a34d61acb46e7b494d58",
+            measurementId: "G-SBD3766NQ6"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        window.db = db;
+        window.getDoc = getDoc;
+        window.doc = doc;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.getDocs = getDocs;
+        window.deleteDoc = deleteDoc;
+        window.query = query;
+        window.orderBy = orderBy;
+        window.where = where;
+    </script>
+
+    <script>
+        let currentUser = null;
+        let allIcons = [];
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
+
+        async function loadUserData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const login = urlParams.get('login') || localStorage.getItem('currentUser');
+            
+            if (!login) {
+                showError('NO USER SESSION FOUND');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+
+            try {
+                const userDoc = await window.getDoc(window.doc(window.db, 'users', login));
+                if (!userDoc.exists()) {
+                    showError('USER DATA NOT FOUND');
+                    return;
+                }
+
+                currentUser = { login, ...userDoc.data() };
+
+                if (currentUser.role !== 'admin') {
+                    showError('INSUFFICIENT PRIVILEGES');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                    return;
+                }
+
+                // Update navigation links
+                document.getElementById('backToDashboard').href = `admin-dashboard.html?login=${login}`;
+
+                await loadIcons();
+                updateStats();
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('DATABASE CONNECTION ERROR');
+            }
+        }
+
+        async function loadIcons() {
+            try {
+                const iconsRef = window.collection(window.db, 'icon_library');
+                const q = window.query(iconsRef, window.orderBy('createdAt', 'desc'));
+                const querySnapshot = await window.getDocs(q);
+                
+                allIcons = [];
+                querySnapshot.forEach(doc => {
+                    allIcons.push({ 
+                        docId: doc.id, 
+                        ...doc.data() 
+                    });
+                });
+                
+                displayIcons();
+
+            } catch (error) {
+                console.error('Error loading icons:', error);
+                document.getElementById('iconsContainer').innerHTML = `
+                    <div class="empty-state">
+                        <h3>ERROR LOADING ICONS</h3>
+                        <p>Unable to load icon library</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayIcons() {
+            const container = document.getElementById('iconsContainer');
+            
+            if (allIcons.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>NO ICONS IN LIBRARY</h3>
+                        <p>Add your first icon using the form above</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="icons-grid">';
+            allIcons.forEach(icon => {
+                html += `
+                    <div class="icon-item">
+                        <img src="${icon.url}" alt="${icon.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiM2NDc0OGIiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnptLTIgMTVsLTUtNSAxLjQxLTEuNDFMMTAgMTQuMTdsNy41OS03LjU5TDE5IDhsLTkgOXoiLz48L3N2Zz4=';">
+                        <div class="icon-name">${icon.name}</div>
+                        <div class="icon-url">${icon.url.substring(0, 30)}...</div>
+                        <div class="icon-actions">
+                            <button class="btn btn-small" onclick="copyIconUrl('${icon.url}')">COPY URL</button>
+                            <button class="btn btn-small btn-danger" onclick="deleteIcon('${icon.docId}', '${icon.name}')">DELETE</button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            container.innerHTML = html;
+        }
+
+        function updateStats() {
+            document.getElementById('totalIcons').textContent = allIcons.length;
+            
+            // Count icons added today
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            const addedToday = allIcons.filter(icon => {
+                return icon.createdAt && icon.createdAt.startsWith(todayStr);
+            }).length;
+            document.getElementById('recentlyAdded').textContent = addedToday;
+            
+            // For now, just show total as "most used"
+            document.getElementById('popularIcons').textContent = Math.min(allIcons.length, 5);
+        }
+
+        // Preview icon when URL changes
+        document.getElementById('iconUrl').addEventListener('input', function(e) {
+            const url = e.target.value.trim();
+            const preview = document.getElementById('iconPreview');
+            
+            if (url) {
+                preview.innerHTML = `<img src="${url}" alt="Preview" onerror="this.parentNode.innerHTML='<div class=\\'empty\\'>INVALID URL</div>'">`;
+            } else {
+                preview.innerHTML = '<div class="empty">NO PREVIEW</div>';
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('addIconForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('iconName').value.trim();
+            const url = document.getElementById('iconUrl').value.trim();
+            const category = document.getElementById('iconCategory').value.trim();
+            const description = document.getElementById('iconDescription').value.trim();
+            
+            if (!name || !url) {
+                showError('NAME AND URL ARE REQUIRED');
+                return;
+            }
+
+            // Check if icon already exists
+            const existingIcon = allIcons.find(icon => icon.url === url || icon.name.toLowerCase() === name.toLowerCase());
+            if (existingIcon) {
+                showError('ICON WITH THIS NAME OR URL ALREADY EXISTS');
+                return;
+            }
+
+            const iconData = {
+                name: name,
+                url: url,
+                category: category || 'General',
+                description: description || '',
+                createdAt: new Date().toISOString(),
+                createdBy: currentUser.login,
+                usageCount: 0
+            };
+
+            try {
+                await window.addDoc(window.collection(window.db, 'icon_library'), iconData);
+                
+                // Create log
+                await window.addDoc(window.collection(window.db, 'logs'), {
+                    action: 'icon_created',
+                    actorLogin: currentUser.login,
+                    actorRole: 'admin',
+                    targetId: null,
+                    targetName: name,
+                    details: `Administrator added new icon: ${name}`,
+                    timestamp: new Date().toISOString()
+                });
+
+                showSuccess('ICON ADDED SUCCESSFULLY');
+                
+                // Reset form
+                document.getElementById('addIconForm').reset();
+                document.getElementById('iconPreview').innerHTML = '<div class="empty">NO PREVIEW</div>';
+                
+                // Reload icons
+                await loadIcons();
+                updateStats();
+
+            } catch (error) {
+                console.error('Error adding icon:', error);
+                showError('FAILED TO ADD ICON');
+            }
+        });
+
+        async function deleteIcon(docId, name) {
+            if (!confirm(`Are you sure you want to DELETE icon "${name}"?\n\nThis action CANNOT be undone!`)) {
+                return;
+            }
+
+            try {
+                await window.deleteDoc(window.doc(window.db, 'icon_library', docId));
+                
+                // Create log
+                await window.addDoc(window.collection(window.db, 'logs'), {
+                    action: 'icon_deleted',
+                    actorLogin: currentUser.login,
+                    actorRole: 'admin',
+                    targetId: null,
+                    targetName: name,
+                    details: `Administrator deleted icon: ${name}`,
+                    timestamp: new Date().toISOString()
+                });
+
+                showSuccess(`ICON "${name}" DELETED`);
+                
+                // Reload icons
+                await loadIcons();
+                updateStats();
+
+            } catch (error) {
+                console.error('Error deleting icon:', error);
+                showError('FAILED TO DELETE ICON');
+            }
+        }
+
+        async function clearAllIcons() {
+            if (!confirm('Are you sure you want to DELETE ALL ICONS?\n\nThis action CANNOT be undone!')) {
+                return;
+            }
+
+            if (!confirm('This will permanently delete all icons from the library.\n\nAre you absolutely sure?')) {
+                return;
+            }
+
+            try {
+                const deletePromises = allIcons.map(icon => 
+                    window.deleteDoc(window.doc(window.db, 'icon_library', icon.docId))
+                );
+                
+                await Promise.all(deletePromises);
+                
+                // Create log
+                await window.addDoc(window.collection(window.db, 'logs'), {
+                    action: 'icon_library_cleared',
+                    actorLogin: currentUser.login,
+                    actorRole: 'admin',
+                    targetId: null,
+                    targetName: null,
+                    details: `Administrator cleared entire icon library (${allIcons.length} icons deleted)`,
+                    timestamp: new Date().toISOString()
+                });
+
+                showSuccess('ALL ICONS DELETED');
+                
+                // Reload icons
+                await loadIcons();
+                updateStats();
+
+            } catch (error) {
+                console.error('Error clearing icons:', error);
+                showError('FAILED TO CLEAR ICON LIBRARY');
+            }
+        }
+
+        function copyIconUrl(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                showSuccess('ICON URL COPIED TO CLIPBOARD');
+            }).catch(() => {
+                showError('FAILED TO COPY URL');
+            });
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Initialize page
+        window.addEventListener('load', function() {
+            loadUserData();
+        });
+    </script>
+</body>
+</html>

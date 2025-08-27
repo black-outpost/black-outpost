@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Template - Technique Bank</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(20,20,30,0.9) 100%), 
+                        url('https://cdn.discordapp.com/attachments/1408447648767414476/1408592371725242478/image_1.png?ex=68aa4d5f&is=68a8fbdf&hm=3c8442351405014db57137c5664aada195f2e2573e8ffc25ecf22b5b97814cc7&');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e0e6ed;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-bar {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-title::before {
+            content: "👁";
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+            border-color: rgba(148, 163, 184, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(37, 99, 235, 0.9) 100%);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.9) 100%);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .template-header {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .template-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(70%) brightness(0.6);
+            z-index: -1;
+        }
+
+        .template-bg::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(15,23,42,0.6) 0%, rgba(30,41,59,0.5) 100%);
+        }
+
+        .template-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #8b5cf6, #3b82f6);
+            border-radius: 16px 16px 0 0;
+            z-index: 1;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .template-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .template-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .threat-badge {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .category-badge {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.6) 0%, rgba(51, 65, 85, 0.7) 100%);
+            color: #cbd5e1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .template-info {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .template-stats {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .stat-value {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .template-content {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+        }
+
+        .content-header {
+            background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(51,65,85,0.8) 100%);
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+        }
+
+        .content-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            letter-spacing: 0.5px;
+        }
+
+        .content-body {
+            padding: 24px;
+        }
+
+        .description {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #cbd5e1;
+            margin-bottom: 24px;
+        }
+
+        .technical-section {
+            margin-bottom: 24px;
+        }
+
+        .technical-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .technical-details {
+            background: linear-gradient(135deg, rgba(30,41,59,0.4) 0%, rgba(51,65,85,0.3) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .special-notes {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.05) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .special-notes-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fbbf24;
+            margin-bottom: 8px;
+        }
+
+        .special-notes-content {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: #fcd34d;
+            line-height: 1.5;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.98) 0%, rgba(15,23,42,0.95) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(71, 85, 105, 0.3);
+            border-top: 3px solid #8b5cf6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #64748b;
+            letter-spacing: 0.5px;
+        }
+
+        /* Enhanced technical details styling */
+        .tech-detail-line {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.3) 0%, rgba(51,65,85,0.2) 100%);
+            border-radius: 8px;
+            border-left: 3px solid rgba(139, 92, 246, 0.5);
+        }
+
+        .tech-icon {
+            width: 24px;
+            height: 24px;
+            filter: brightness(0.8) contrast(1.2);
+        }
+
+        .tech-label {
+            font-weight: 600;
+            color: #e2e8f0;
+            min-width: 120px;
+        }
+
+        .tech-value {
+            flex: 1;
+            color: #cbd5e1;
+        }
+
+        /* Custom highlight styles */
+        .stat-highlight {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(124, 58, 237, 0.1) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #c4b5fd;
+        }
+
+        .damage-highlight {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.1) 100%);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #fca5a5;
+        }
+
+        .special-highlight {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.1) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #fcd34d;
+        }
+
+        .range-highlight {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #86efac;
+        }
+
+        .time-highlight {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.1) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #93c5fd;
+        }
+
+        .error-message, .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 1001;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, rgba(153, 27, 27, 0.9) 0%, rgba(127, 29, 29, 0.8) 100%);
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.9) 0%, rgba(16, 185, 129, 0.8) 100%);
+            color: #a7f3d0;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .nav-bar {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .template-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .stats-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">LOADING TEMPLATE DATA...</div>
+    </div>
+
+    <div class="container">
+        <nav class="nav-bar">
+            <div class="nav-title">
+                TEMPLATE DETAILS
+            </div>
+            <div class="nav-actions">
+                <a href="admin-technique-bank.html" class="btn" id="backToBank">BACK TO BANK</a>
+                <a href="#" class="btn btn-primary" id="editTemplateBtn">EDIT TEMPLATE</a>
+                <button class="btn btn-danger" onclick="deleteTemplate()">DELETE</button>
+                <a href="admin-dashboard.html" class="btn" id="backToDashboard">DASHBOARD</a>
+            </div>
+        </nav>
+
+        <div class="template-header">
+            <div class="template-bg" id="templateBg"></div>
+            <div class="header-content">
+                <div class="template-title" id="templateName">LOADING...</div>
+                <div class="template-meta">
+                    <div class="threat-badge" id="threatLevel">THREAT: I</div>
+                    <div class="category-badge" id="categoryBadge">OTHER</div>
+                    <div class="template-info">
+                        Template Type: <span style="color: #10b981;">UNIVERSAL</span>
+                    </div>
+                </div>
+                <div class="template-stats">
+                    <div class="stats-row">
+                        <div class="stat-item">ASSIGNED: <span class="stat-value" id="timesAssigned">0</span> times</div>
+                        <div class="stat-item">CREATED BY: <span class="stat-value" id="createdBy">...</span></div>
+                        <div class="stat-item">CREATED: <span class="stat-value" id="createdAt">...</span></div>
+                        <div class="stat-item">LAST EDIT: <span class="stat-value" id="lastEditedAt">...</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-content">
+            <div class="content-header">
+                <div class="content-title">TEMPLATE DESCRIPTION</div>
+            </div>
+            <div class="content-body">
+                <div class="description" id="templateDescription">
+                    Loading description...
+                </div>
+            </div>
+        </div>
+
+        <div class="template-content" id="technicalDetailsSection" style="display: none;">
+            <div class="content-header">
+                <div class="content-title">TECHNICAL DETAILS</div>
+            </div>
+            <div class="content-body">
+                <div class="technical-details" id="technicalDetailsContent">
+                    <!-- Technical details will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="template-content" id="specialNotesSection" style="display: none;">
+            <div class="content-header">
+                <div class="content-title">SPECIAL NOTES</div>
+            </div>
+            <div class="content-body">
+                <div class="special-notes">
+                    <div class="special-notes-title">IMPORTANT INFORMATION</div>
+                    <div class="special-notes-content" id="specialNotesContent">
+                        <!-- Special notes will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
+            authDomain: "bleach-black-outpost.firebaseapp.com",
+            projectId: "bleach-black-outpost",
+            storageBucket: "bleach-black-outpost.firebasestorage.app",
+            messagingSenderId: "201204368777",
+            appId: "1:201204368777:web:c2a34d61acb46e7b494d58",
+            measurementId: "G-SBD3766NQ6"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        window.db = db;
+        window.getDoc = getDoc;
+        window.doc = doc;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.deleteDoc = deleteDoc;
+    </script>
+
+    <script>
+        let currentUser = null;
+        let currentTemplate = null;
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
+
+        async function loadUserData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const login = urlParams.get('login') || localStorage.getItem('currentUser');
+            const templateId = urlParams.get('template');
+            
+            if (!login) {
+                showError('NO USER SESSION FOUND');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+
+            if (!templateId) {
+                showError('MISSING TEMPLATE ID');
+                setTimeout(() => {
+                    window.location.href = `admin-technique-bank.html?login=${login}`;
+                }, 2000);
+                return;
+            }
+
+            try {
+                const userDoc = await window.getDoc(window.doc(window.db, 'users', login));
+                if (!userDoc.exists()) {
+                    showError('USER DATA NOT FOUND');
+                    return;
+                }
+
+                currentUser = { login, ...userDoc.data() };
+
+                if (currentUser.role !== 'admin') {
+                    showError('INSUFFICIENT PRIVILEGES');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                    return;
+                }
+
+                // Get template data
+                const templateDoc = await window.getDoc(window.doc(window.db, 'technique_templates', templateId));
+                if (!templateDoc.exists()) {
+                    showError('TEMPLATE NOT FOUND');
+                    return;
+                }
+
+                currentTemplate = { docId: templateId, ...templateDoc.data() };
+
+                // Update navigation links
+                document.getElementById('backToBank').href = `admin-technique-bank.html?login=${login}`;
+                document.getElementById('editTemplateBtn').href = `admin-technique-bank-edit.html?login=${login}&template=${templateId}`;
+                document.getElementById('backToDashboard').href = `admin-dashboard.html?login=${login}`;
+
+                displayTemplate();
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('DATABASE CONNECTION ERROR');
+            }
+        }
+
+        function displayTemplate() {
+            if (!currentTemplate) return;
+
+            // Update header
+            document.getElementById('templateName').innerHTML = currentTemplate.name || 'Untitled Template';
+            document.getElementById('threatLevel').textContent = `THREAT: ${currentTemplate.threatLevel || 'I'}`;
+            document.getElementById('categoryBadge').textContent = (currentTemplate.primaryStatCategory || 'other').toUpperCase();
+
+            // Update stats
+            document.getElementById('timesAssigned').textContent = currentTemplate.timesAssigned || 0;
+            document.getElementById('createdBy').textContent = currentTemplate.createdBy;
+            document.getElementById('createdAt').textContent = new Date(currentTemplate.createdAt).toLocaleDateString();
+            document.getElementById('lastEditedAt').textContent = new Date(currentTemplate.lastEditedAt || currentTemplate.createdAt).toLocaleDateString();
+
+            // Set background image if available
+            if (currentTemplate.backgroundImageUrl) {
+                const bgElement = document.getElementById('templateBg');
+                bgElement.style.backgroundImage = `url(${currentTemplate.backgroundImageUrl})`;
+                bgElement.style.display = 'block';
+            }
+
+            // Update description
+            document.getElementById('templateDescription').innerHTML = currentTemplate.description || '';
+
+            // Display technical details if available
+            if (currentTemplate.technicalDetailsHtml) {
+                document.getElementById('technicalDetailsContent').innerHTML = currentTemplate.technicalDetailsHtml;
+                document.getElementById('technicalDetailsSection').style.display = 'block';
+            }
+
+            // Display special notes if available
+            if (currentTemplate.specialNotes) {
+                document.getElementById('specialNotesContent').innerHTML = currentTemplate.specialNotes;
+                document.getElementById('specialNotesSection').style.display = 'block';
+            }
+        }
+
+        async function deleteTemplate() {
+            if (!confirm(`Are you sure you want to DELETE template "${currentTemplate.name}"?\n\nThis action CANNOT be undone!`)) {
+                return;
+            }
+
+            try {
+                await window.deleteDoc(window.doc(window.db, 'technique_templates', currentTemplate.docId));
+                
+                // Create log
+                await window.addDoc(window.collection(window.db, 'logs'), {
+                    action: 'template_deleted',
+                    actorLogin: currentUser.login,
+                    actorRole: 'admin',
+                    targetId: null,
+                    targetName: currentTemplate.name,
+                    details: `Administrator deleted technique template: ${currentTemplate.name}`,
+                    timestamp: new Date().toISOString()
+                });
+
+                showSuccess(`TEMPLATE "${currentTemplate.name}" DELETED`);
+
+                setTimeout(() => {
+                    window.location.href = `admin-technique-bank.html?login=${currentUser.login}`;
+                }, 1500);
+
+            } catch (error) {
+                console.error('Error deleting template:', error);
+                showError('FAILED TO DELETE TEMPLATE');
+            }
+        }
+
+        // Initialize page
+        window.addEventListener('load', async function() {
+            await loadUserData();
+            
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technique Bank - Black Outpost Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(20,20,30,0.9) 100%), 
+                        url('https://cdn.discordapp.com/attachments/1408447648767414476/1408592371725242478/image_1.png?ex=68aa4d5f&is=68a8fbdf&hm=3c8442351405014db57137c5664aada195f2e2573e8ffc25ecf22b5b97814cc7&');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e0e6ed;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-bar {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-title::before {
+            content: "🏦";
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+            border-color: rgba(148, 163, 184, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.8) 0%, rgba(5, 150, 105, 0.9) 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.9) 100%);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(37, 99, 235, 0.9) 100%);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+
+        .section-content {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(51,65,85,0.8) 100%);
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            letter-spacing: 0.5px;
+        }
+
+        .section-body {
+            padding: 24px;
+        }
+
+        .stats-section {
+            background: linear-gradient(135deg, rgba(30,41,59,0.4) 0%, rgba(51,65,85,0.3) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 24px;
+            text-align: center;
+        }
+
+        .stat-item {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            color: #8b5cf6;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .filters-section {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .filters-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: #64748b;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
+
+        .filter-categories {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-category {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #cbd5e1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .filter-category:hover {
+            border-color: rgba(139, 92, 246, 0.5);
+            background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(51,65,85,0.6) 100%);
+        }
+
+        .filter-category.active {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
+            border-color: rgba(139, 92, 246, 0.4);
+            color: #ffffff;
+        }
+
+        .templates-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .template-card {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .template-card:hover {
+            border-color: rgba(139, 92, 246, 0.4);
+            background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(51,65,85,0.6) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .template-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(70%) brightness(0.4);
+            z-index: 1;
+        }
+
+        .template-bg::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(15,23,42,0.7) 0%, rgba(30,41,59,0.6) 100%);
+        }
+
+        .template-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .template-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .template-info h4 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .template-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .template-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .template-description {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: #cbd5e1;
+            margin: 12px 0;
+            line-height: 1.5;
+        }
+
+        .template-stats {
+            background: linear-gradient(135deg, rgba(15,23,42,0.6) 0%, rgba(30,41,59,0.5) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 16px;
+        }
+
+        .template-stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .template-stat {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .assign-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .assign-modal.active {
+            display: flex;
+        }
+
+        .assign-modal-content {
+            background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,41,59,0.9) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            width: 90%;
+        }
+
+        .assign-modal h3 {
+            color: #f1f5f9;
+            margin-bottom: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+        }
+
+        .characters-list {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .character-item {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .character-item:hover {
+            border-color: rgba(139, 92, 246, 0.5);
+            background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(51,65,85,0.6) 100%);
+        }
+
+        .character-item.selected {
+            border-color: rgba(16, 185, 129, 0.5);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%);
+        }
+
+        .character-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .character-details {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 40px;
+            color: #64748b;
+        }
+
+        .empty-state h3 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #94a3b8;
+        }
+
+        .error-message, .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 1001;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, rgba(153, 27, 27, 0.9) 0%, rgba(127, 29, 29, 0.8) 100%);
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.9) 0%, rgba(16, 185, 129, 0.8) 100%);
+            color: #a7f3d0;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .nav-bar {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .filters-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-input {
+                min-width: auto;
+            }
+
+            .filter-categories {
+                justify-content: center;
+            }
+
+            .template-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .template-actions {
+                justify-content: center;
+            }
+
+            .stats-row {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav-bar">
+            <div class="nav-title">
+                TECHNIQUE BANK
+            </div>
+            <div class="nav-actions">
+                <a href="admin-techniques.html" class="btn" id="backToTechniques">PLAYER TECHNIQUES</a>
+                <button class="btn btn-success" onclick="createNewTemplate()">NEW TEMPLATE</button>
+                <a href="admin-dashboard.html" class="btn" id="backToDashboard">DASHBOARD</a>
+                <a href="index.html" class="btn btn-danger" onclick="logout()">LOGOUT</a>
+            </div>
+        </nav>
+
+        <div class="section-content">
+            <div class="section-header">
+                <div class="section-title">BANK STATISTICS</div>
+            </div>
+            <div class="section-body">
+                <div class="stats-section">
+                    <div class="stats-row">
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalTemplates">0</div>
+                            <div class="stat-label">Total Templates</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="timesAssigned">0</div>
+                            <div class="stat-label">Times Assigned</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="popularTemplates">0</div>
+                            <div class="stat-label">Popular Templates</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="recentTemplates">0</div>
+                            <div class="stat-label">Added This Week</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-content">
+            <div class="section-header">
+                <div class="section-title">TECHNIQUE TEMPLATES</div>
+                <button class="btn btn-danger" onclick="clearAllTemplates()">CLEAR BANK</button>
+            </div>
+            <div class="section-body">
+                <div class="filters-section">
+                    <div class="filters-row">
+                        <input type="text" class="search-input" id="searchInput" placeholder="Search templates...">
+                        <div class="filter-categories" id="filterCategories">
+                            <div class="filter-category active" data-category="all">ALL</div>
+                            <div class="filter-category" data-category="strength">STRENGTH</div>
+                            <div class="filter-category" data-category="vitality">VITALITY</div>
+                            <div class="filter-category" data-category="speed">SPEED</div>
+                            <div class="filter-category" data-category="defense">DEFENSE</div>
+                            <div class="filter-category" data-category="reiatsu">REIATSU</div>
+                            <div class="filter-category" data-category="hakuda">HAKUDA</div>
+                            <div class="filter-category" data-category="weapon">WEAPONSHIP</div>
+                            <div class="filter-category" data-category="tamashi">TAMASHI</div>
+                            <div class="filter-category" data-category="magic">MAGIC</div>
+                            <div class="filter-category" data-category="nazo">NAZO</div>
+                            <div class="filter-category" data-category="other">OTHER</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="templatesContainer">
+                    <div class="loading-state">
+                        LOADING TECHNIQUE BANK...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Template Modal -->
+    <div class="assign-modal" id="assignModal">
+        <div class="assign-modal-content">
+            <h3>Assign Template to Character</h3>
+            <p style="color: #94a3b8; font-family: 'JetBrains Mono', monospace; font-size: 13px; margin-bottom: 16px;">
+                Select a character to receive this technique template:
+            </p>
+            
+            <div class="characters-list" id="charactersList">
+                <div class="loading-state">Loading characters...</div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn" onclick="closeAssignModal()">CANCEL</button>
+                <button class="btn btn-success" id="confirmAssignBtn" onclick="confirmAssignment()" disabled>ASSIGN TEMPLATE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, deleteDoc, updateDoc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
+            authDomain: "bleach-black-outpost.firebaseapp.com",
+            projectId: "bleach-black-outpost",
+            storageBucket: "bleach-black-outpost.firebasestorage.app",
+            messagingSenderId: "201204368777",
+            appId: "1:201204368777:web:c2a34d61acb46e7b494d58",
+            measurementId: "G-SBD3766NQ6"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        window.db = db;
+        window.getDoc = getDoc;
+        window.doc = doc;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.getDocs = getDocs;
+        window.deleteDoc = deleteDoc;
+        window.updateDoc = updateDoc;
+        window.query = query;
+        window.orderBy = orderBy;
+        window.where = where;
+    </script>
+
+    <script>
+        let currentUser = null;
+        let allTemplates = [];
+        let filteredTemplates = [];
+        let allCharacters = [];
+        let currentFilter = 'all';
+        let searchTerm = '';
+        let selectedTemplate = null;
+        let selectedCharacter = null;
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
+
+        async function loadUserData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const login = urlParams.get('login') || localStorage.getItem('currentUser');
+            
+            if (!login) {
+                showError('NO USER SESSION FOUND');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+
+            try {
+                const userDoc = await window.getDoc(window.doc(window.db, 'users', login));
+                if (!userDoc.exists()) {
+                    showError('USER DATA NOT FOUND');
+                    return;
+                }
+
+                currentUser = { login, ...userDoc.data() };
+
+                if (currentUser.role !== 'admin') {
+                    showError('INSUFFICIENT PRIVILEGES');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                    return;
+                }
+
+                // Update navigation links
+                document.getElementById('backToTechniques').href = `admin-techniques.html?login=${login}`;
+                document.getElementById('backToDashboard').href = `admin-dashboard.html?login=${login}`;
+
+                await loadTemplates();
+                await loadCharacters();
+                updateStats();
+                setupEventListeners();
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('DATABASE CONNECTION ERROR');
+            }
+        }
+
+        async function loadTemplates() {
+            try {
+                const templatesRef = window.collection(window.db, 'technique_templates');
+                const q = window.query(templatesRef, window.orderBy('createdAt', 'desc'));
+                const querySnapshot = await window.getDocs(q);
+                
+                allTemplates = [];
+                querySnapshot.forEach(doc => {
+                    allTemplates.push({ 
+                        docId: doc.id, 
+                        ...doc.data() 
+                    });
+                });
+                
+                filteredTemplates = [...allTemplates];
+                displayTemplates();
+
+            } catch (error) {
+                console.error('Error loading templates:', error);
+                document.getElementById('templatesContainer').innerHTML = `
+                    <div class="empty-state">
+                        <h3>ERROR LOADING TEMPLATES</h3>
+                        <p>Unable to load technique bank</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadCharacters() {
+            try {
+                const charactersRef = window.collection(window.db, 'characters');
+                const q = window.query(charactersRef, window.orderBy('createdAt', 'desc'));
+                const querySnapshot = await window.getDocs(q);
+                
+                allCharacters = [];
+                querySnapshot.forEach(doc => {
+                    allCharacters.push({ 
+                        docId: doc.id, 
+                        ...doc.data() 
+                    });
+                });
+
+            } catch (error) {
+                console.error('Error loading characters:', error);
+            }
+        }
+
+        function displayTemplates() {
+            const container = document.getElementById('templatesContainer');
+            
+            if (filteredTemplates.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>NO TECHNIQUE TEMPLATES</h3>
+                        <p>${allTemplates.length === 0 ? 
+                            'Create your first technique template to start building a library.' : 
+                            'No templates match your current filters.'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="templates-grid">';
+            filteredTemplates.forEach(template => {
+                html += generateTemplateCard(template);
+            });
+            html += '</div>';
+            
+            container.innerHTML = html;
+        }
+
+        function generateTemplateCard(template) {
+            // Handle background image
+            let backgroundHtml = '';
+            if (template.backgroundImageUrl) {
+                backgroundHtml = `<div class="template-bg" style="background-image: url('${template.backgroundImageUrl}');"></div>`;
+            }
+
+            return `
+                <div class="template-card">
+                    ${backgroundHtml}
+                    <div class="template-content">
+                        <div class="template-header">
+                            <div class="template-info">
+                                <h4>${template.name || 'Untitled Template'}</h4>
+                                <div class="template-meta">
+                                    THREAT: ${template.threatLevel || 'I'} | 
+                                    CATEGORY: ${(template.primaryStatCategory || 'other').toUpperCase()} |
+                                    CREATED: ${new Date(template.createdAt).toLocaleDateString()}
+                                </div>
+                            </div>
+                            <div class="template-actions">
+                                <button class="btn btn-small" onclick="viewTemplate('${template.docId}')">VIEW</button>
+                                <button class="btn btn-small" onclick="editTemplate('${template.docId}')">EDIT</button>
+                                <button class="btn btn-small btn-primary" onclick="assignTemplate('${template.docId}')">ASSIGN</button>
+                                <button class="btn btn-small btn-danger" onclick="deleteTemplate('${template.docId}', '${template.name}')">DELETE</button>
+                            </div>
+                        </div>
+                        <div class="template-description">
+                            ${(template.description || '').substring(0, 150)}${template.description && template.description.length > 150 ? '...' : ''}
+                        </div>
+                        <div class="template-stats">
+                            <div class="template-stats-row">
+                                <div class="template-stat">ASSIGNED: ${template.timesAssigned || 0} times</div>
+                                <div class="template-stat">CREATED BY: ${template.createdBy}</div>
+                                <div class="template-stat">LAST MODIFIED: ${new Date(template.lastEditedAt || template.createdAt).toLocaleDateString()}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function setupEventListeners() {
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                searchTerm = e.target.value.toLowerCase();
+                applyFilters();
+            });
+
+            // Filter categories
+            document.querySelectorAll('.filter-category').forEach(category => {
+                category.addEventListener('click', function(e) {
+                    // Update active state
+                    document.querySelectorAll('.filter-category').forEach(cat => {
+                        cat.classList.remove('active');
+                    });
+                    e.currentTarget.classList.add('active');
+                    
+                    currentFilter = e.currentTarget.getAttribute('data-category');
+                    applyFilters();
+                });
+            });
+        }
+
+        function applyFilters() {
+            filteredTemplates = allTemplates.filter(template => {
+                // Apply search filter
+                const matchesSearch = !searchTerm || 
+                    template.name.toLowerCase().includes(searchTerm) ||
+                    template.description.toLowerCase().includes(searchTerm) ||
+                    (template.specialNotes && template.specialNotes.toLowerCase().includes(searchTerm));
+                
+                // Apply category filter
+                const matchesCategory = currentFilter === 'all' || 
+                    template.primaryStatCategory === currentFilter;
+                
+                return matchesSearch && matchesCategory;
+            });
+            
+            displayTemplates();
+        }
+
+        function updateStats() {
+            document.getElementById('totalTemplates').textContent = allTemplates.length;
+            
+            // Calculate total assignments
+            const totalAssigned = allTemplates.reduce((sum, template) => sum + (template.timesAssigned || 0), 0);
+            document.getElementById('timesAssigned').textContent = totalAssigned;
+            
+            // Count popular templates (assigned more than once)
+            const popularCount = allTemplates.filter(template => (template.timesAssigned || 0) > 1).length;
+            document.getElementById('popularTemplates').textContent = popularCount;
+            
+            // Count templates added this week
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            const recentCount = allTemplates.filter(template => {
+                return template.createdAt && new Date(template.createdAt) > weekAgo;
+            }).length;
+            document.getElementById('recentTemplates').textContent = recentCount;
+        }
+
+        function createNewTemplate() {
+            const login = currentUser.login;
+            window.location.href = `admin-technique-bank-create.html?login=${login}`;
+        }
+
+        function viewTemplate(templateId) {
+            const login = currentUser.login;
+            window.location.href = `admin-technique-bank-view.html?login=${login}&template=${templateId}`;
+        }
+
+        function editTemplate(templateId) {
+            const login = currentUser.login;
+            window.location.href = `admin-technique-bank-edit.html?login=${login}&template=${templateId}`;
+        }
+
+        function assignTemplate(templateId) {
+            selectedTemplate = allTemplates.find(t => t.docId === templateId);
+            if (!selectedTemplate) {
+                showError('TEMPLATE NOT FOUND');
+                return;
+            }
+
+            if (allCharacters.length === 0) {
+                showError('NO CHARACTERS AVAILABLE');
+                return;
+            }
+
+            populateCharactersList();
+            document.getElementById('assignModal').classList.add('active');
+        }
+
+        function populateCharactersList() {
+            const container = document.getElementById('charactersList');
+            
+            let html = '';
+            allCharacters.forEach(character => {
+                html += `
+                    <div class="character-item" data-character-id="${character.docId}" onclick="selectCharacter('${character.docId}')">
+                        <div class="character-name">${character.firstName} ${character.lastName}</div>
+                        <div class="character-details">ID: ${character.id} | RACE: ${character.race} | RANK: ${character.rank || 'I'}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function selectCharacter(characterId) {
+            // Update visual selection
+            document.querySelectorAll('.character-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            document.querySelector(`[data-character-id="${characterId}"]`).classList.add('selected');
+            
+            selectedCharacter = allCharacters.find(c => c.docId === characterId);
+            document.getElementById('confirmAssignBtn').disabled = false;
+        }
+
+        async function confirmAssignment() {
+            if (!selectedTemplate || !selectedCharacter) {
+                showError('TEMPLATE OR CHARACTER NOT SELECTED');
+                return;
+            }
+
+            try {
+                // Create a copy of the template as a technique for the character
+                const techniqueData = {
+                    name: selectedTemplate.name,
+                    threatLevel: selectedTemplate.threatLevel,
+                    primaryStatCategory: selectedTemplate.primaryStatCategory,
+                    description: selectedTemplate.description,
+                    technicalDetailsHtml: selectedTemplate.technicalDetailsHtml,
+                    specialNotes: selectedTemplate.specialNotes,
+                    backgroundImageUrl: selectedTemplate.backgroundImageUrl,
+                    characterId: selectedCharacter.id,
+                    characterName: `${selectedCharacter.firstName} ${selectedCharacter.lastName}`,
+                    createdAt: new Date().toISOString(),
+                    createdBy: currentUser.login,
+                    lastEditedAt: new Date().toISOString(),
+                    lastEditedBy: currentUser.login,
+                    sourceTemplate: selectedTemplate.docId // Track where it came from
+                };
+
+                await window.addDoc(window.collection(window.db, 'techniques'), techniqueData);
+
+                // Update template assignment count
+                const newCount = (selectedTemplate.timesAssigned || 0) + 1;
+                await window.updateDoc(window.doc(window.db, 'technique_templates', selectedTemplate.docId), {
+                    timesAssigned: newCount,
+                    lastAssignedAt: new Date().toISOString(),
+                    lastAssignedTo: selectedCharacter.id
+                });
+
+                // Create log
+                await window.addDoc(window.collection(window.db, 'logs'), {
+                    action: 'template_assigned',
+                    actorLogin: currentUser.login,
+                    actorRole: 'admin',
+                    targetId: selectedCharacter.id,
+                    targetName: `${selectedCharacter.firstName} ${selectedCharacter.lastName}`,
+                    details: `Administrator assigned template "${selectedTemplate.name}" to character`,
+                    timestamp: new Date().toISOString()
+                });
+
+                showSuccess(`TEMPLATE ASSIGNED TO ${selectedCharacter.firstName} ${selectedCharacter.lastName}`);
+                
+                closeAssignModal();
+                await loadTemplates(); // Reload to update assignment counts
+                updateStats();
+
+            } catch (error) {
+                console.error('Error assigning template:', error);
+                showError('FAILED TO ASSIGN TEMPLATE');
+            }
+        }
+
+        function closeAssignModal() {
+            document.getElementById('assignModal').classList.remove('active');
+            selectedTemplate = null;
+            selectedCharacter = null;
+            document.getElementById('confirmAssignBtn').disabled = true;
+        }
+
+        async function deleteTemplate(docId, templateName) {
+            if (!confirm(`Are you sure you want to DELETE template "${templateName}"?\n\nThis action CANNOT be undone!`)) {
+                return;
+            }
+
+            try {
+                await window.deleteDoc(window.doc(window.db, 'technique_templates', docId));
+                
+                // Create log
+                await window.addDoc(window.collection(window.db, 'logs'), {
+                    action: 'template_deleted',
+                    actorLogin: currentUser.login,
+                    actorRole: 'admin',
+                    targetId: null,
+                    targetName: templateName,
+                    details: `Administrator deleted technique template: ${templateName}`,
+                    timestamp: new Date().toISOString()
+                });
+
+                showSuccess(`TEMPLATE "${templateName}" DELETED`);
+                await loadTemplates();
+                updateStats();
+
+            } catch (error) {
+                console.error('Error deleting template:', error);
+                showError('FAILED TO DELETE TEMPLATE');
+            }
+        }
+
+        async function clearAllTemplates() {
+            if (!confirm('Are you sure you want to DELETE ALL TEMPLATES?\n\nThis action CANNOT be undone!')) {
+                return;
+            }
+
+            if (!confirm('This will permanently delete the entire technique bank.\n\nAre you absolutely sure?')) {
+                return;
+            }
+
+            try {
+                const deletePromises = allTemplates.map(template => 
+                    window.deleteDoc(window.doc(window.db, 'technique_templates', template.docId))
+                );
+                
+                await Promise.all(deletePromises);
+                
+                // Create log
+                await window.addDoc(window.collection(window.db, 'logs'), {
+                    action: 'template_bank_cleared',
+                    actorLogin: currentUser.login,
+                    actorRole: 'admin',
+                    targetId: null,
+                    targetName: null,
+                    details: `Administrator cleared entire technique bank (${allTemplates.length} templates deleted)`,
+                    timestamp: new Date().toISOString()
+                });
+
+                showSuccess('TECHNIQUE BANK CLEARED');
+                await loadTemplates();
+                updateStats();
+
+            } catch (error) {
+                console.error('Error clearing templates:', error);
+                showError('FAILED TO CLEAR TECHNIQUE BANK');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Initialize page
+        window.addEventListener('load', function() {
+            loadUserData();
+        });
+    </script>
+</body>
+</html>
