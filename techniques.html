@@ -593,6 +593,68 @@
             color: #93c5fd;
         }
 
+        /* New Formatting Styles */
+        .text-list {
+            margin: 12px 0;
+        }
+
+        .text-list-item {
+            margin: 6px 0;
+            padding-left: 20px;
+            position: relative;
+            color: #cbd5e1;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .text-list-item.dash::before {
+            content: "−";
+            position: absolute;
+            left: 0;
+            color: #8b5cf6;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .text-list-item.bullet::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #8b5cf6;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .text-box {
+            border: 2px solid rgba(139, 92, 246, 0.4);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(124, 58, 237, 0.05) 100%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #e2e8f0;
+        }
+
+        .text-separator {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.5), transparent);
+            margin: 20px 0;
+            border-radius: 2px;
+        }
+
+        .text-indented {
+            margin-left: 32px;
+            border-left: 2px solid rgba(139, 92, 246, 0.3);
+            padding-left: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -627,6 +689,15 @@
 
             .technique-content {
                 padding: 20px;
+            }
+
+            .text-list-item {
+                padding-left: 16px;
+            }
+
+            .text-indented {
+                margin-left: 16px;
+                padding-left: 12px;
             }
         }
 
@@ -1048,7 +1119,7 @@
                 return { calculable: false, reason: 'No character data' };
             }
 
-            // COMPLETE stat mapping including all variants - FIXED
+            // Complete stat mapping including all variants
             const statMapping = {
                 // Basic stats
                 'Strength': 'strength',
@@ -1075,13 +1146,13 @@
                 'Fullbring Mastery': 'tamashi',
                 'Tamashi': 'tamashi',
                 
-                // Magic/Reiryoku (race-specific) - FIXED: Added missing mappings
+                // Magic/Reiryoku (race-specific)
                 'Kido Mastery': 'magic',
                 'Primal Reiryoku': 'magic',
                 'Ginto Mastery': 'magic',
                 'Soul Manipulation': 'magic',
-                'Reiryoku': 'magic',  // FIXED: Added missing mapping
-                'Magic': 'magic'      // FIXED: Added missing mapping
+                'Reiryoku': 'magic',
+                'Magic': 'magic'
             };
 
             // Check if it's the character's unique Nazo stat

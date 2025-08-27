@@ -425,6 +425,15 @@
             width: 24px;
             height: 24px;
             filter: brightness(0.8) contrast(1.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+            padding: 2px;
+        }
+
+        .tech-icon:hover {
+            background: rgba(139, 92, 246, 0.2);
+            transform: scale(1.1);
         }
 
         .tech-label {
@@ -438,32 +447,49 @@
             color: #cbd5e1;
         }
 
-        /* Background Image Support */
-        .technique-card-with-bg {
+        /* New Formatting Styles */
+        .bullet-list {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .bullet-item {
+            margin: 4px 0;
             position: relative;
-            overflow: hidden;
         }
 
-        .technique-bg {
+        .bullet-item::before {
+            content: "•";
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            filter: grayscale(100%) brightness(0.3);
-            z-index: -1;
+            left: -15px;
+            color: #8b5cf6;
+            font-weight: bold;
         }
 
-        .technique-bg::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(15,23,42,0.8) 0%, rgba(30,41,59,0.7) 100%);
+        .dash-item::before {
+            content: "—";
+            left: -20px;
+        }
+
+        .text-box {
+            background: linear-gradient(135deg, rgba(30,41,59,0.4) 0%, rgba(51,65,85,0.3) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+
+        .separator-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.5), transparent);
+            margin: 16px 0;
+            border-radius: 1px;
+        }
+
+        .indented-text {
+            margin-left: 30px;
+            border-left: 2px solid rgba(139, 92, 246, 0.3);
+            padding-left: 15px;
         }
 
         .save-panel {
@@ -652,6 +678,11 @@
                                         <button type="button" class="toolbar-btn" data-action="time-highlight">TIME</button>
                                     </div>
                                     <div class="toolbar-group">
+                                        <button type="button" class="toolbar-btn" data-action="bullet-list">• LIST</button>
+                                        <button type="button" class="toolbar-btn" data-action="dash-list">— LIST</button>
+                                        <button type="button" class="toolbar-btn" data-action="text-box">BOX</button>
+                                        <button type="button" class="toolbar-btn" data-action="separator">LINE</button>
+                                        <button type="button" class="toolbar-btn" data-action="indent">INDENT</button>
                                         <button type="button" class="toolbar-btn" data-action="line-break">BR</button>
                                     </div>
                                 </div>
@@ -685,6 +716,12 @@
                                         <button type="button" class="toolbar-btn" data-action="damage-highlight">DMG</button>
                                         <button type="button" class="toolbar-btn" data-action="range-highlight">RANGE</button>
                                         <button type="button" class="toolbar-btn" data-action="time-highlight">TIME</button>
+                                    </div>
+                                    <div class="toolbar-group">
+                                        <button type="button" class="toolbar-btn" data-action="bullet-list">• LIST</button>
+                                        <button type="button" class="toolbar-btn" data-action="text-box">BOX</button>
+                                        <button type="button" class="toolbar-btn" data-action="separator">LINE</button>
+                                        <button type="button" class="toolbar-btn" data-action="indent">INDENT</button>
                                     </div>
                                 </div>
                                 <div class="editor-content" contenteditable="true" data-target="technical-details" data-placeholder="Add technical details like range, duration, requirements..."></div>
@@ -732,6 +769,8 @@
                                     </div>
                                     <div class="toolbar-group">
                                         <button type="button" class="toolbar-btn" data-action="special-highlight">HIGHLIGHT</button>
+                                        <button type="button" class="toolbar-btn" data-action="text-box">BOX</button>
+                                        <button type="button" class="toolbar-btn" data-action="separator">LINE</button>
                                         <button type="button" class="toolbar-btn" data-action="line-break">BR</button>
                                     </div>
                                 </div>
@@ -792,6 +831,7 @@
         let currentUser = null;
         let targetCharacter = null;
         let currentEditor = null;
+        let targetIconElement = null; // For icon replacement
 
         // Dynamic icons from icon_library
         let availableIcons = [];
@@ -847,7 +887,7 @@
                 const iconItem = document.createElement('div');
                 iconItem.className = 'icon-item';
                 iconItem.innerHTML = `<img src="${iconUrl}" alt="Icon">`;
-                iconItem.addEventListener('click', () => insertIcon(iconUrl));
+                iconItem.addEventListener('click', () => selectIcon(iconUrl));
                 iconGrid.appendChild(iconItem);
             });
         }
@@ -874,7 +914,19 @@
             }, 3000);
         }
 
-        // Insert icon at cursor position
+        // FIXED: Better icon handling
+        function selectIcon(iconUrl) {
+            if (targetIconElement) {
+                // Replace existing icon
+                targetIconElement.src = iconUrl;
+                targetIconElement = null;
+            } else if (currentEditor) {
+                // Insert new icon
+                insertIcon(iconUrl);
+            }
+            closeIconModal();
+        }
+
         function insertIcon(iconUrl) {
             if (currentEditor) {
                 const selection = window.getSelection();
@@ -894,19 +946,21 @@
                 selection.removeAllRanges();
                 selection.addRange(range);
             }
-            closeIconModal();
         }
 
-        function openIconModal() {
+        function openIconModal(forIconReplacement = false, targetIcon = null) {
+            currentEditor = document.querySelector('.rich-editor .editor-content[contenteditable="true"]:focus') || currentEditor;
+            targetIconElement = targetIcon;
             document.getElementById('iconModal').classList.add('active');
         }
 
         function closeIconModal() {
             document.getElementById('iconModal').classList.remove('active');
             currentEditor = null;
+            targetIconElement = null;
         }
 
-        // Toolbar actions
+        // FIXED: Enhanced toolbar actions with new formatting
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('toolbar-btn')) {
                 const action = e.target.getAttribute('data-action');
@@ -955,6 +1009,21 @@
                 case 'time-highlight':
                     wrapSelection('time-highlight');
                     break;
+                case 'bullet-list':
+                    createBulletList();
+                    break;
+                case 'dash-list':
+                    createDashList();
+                    break;
+                case 'text-box':
+                    wrapSelection('text-box');
+                    break;
+                case 'separator':
+                    insertSeparator();
+                    break;
+                case 'indent':
+                    wrapSelection('indented-text');
+                    break;
                 case 'icons':
                     openIconModal();
                     break;
@@ -967,21 +1036,67 @@
             }
         }
 
+        // NEW: Bullet list creation
+        function createBulletList() {
+            const selectedText = window.getSelection().toString();
+            if (selectedText) {
+                const lines = selectedText.split('\n').filter(line => line.trim());
+                let html = '<div class="bullet-list">';
+                lines.forEach(line => {
+                    html += `<div class="bullet-item">${line.trim()}</div>`;
+                });
+                html += '</div>';
+                document.execCommand('insertHTML', false, html);
+            } else {
+                const html = '<div class="bullet-list"><div class="bullet-item">New bullet point</div></div>';
+                document.execCommand('insertHTML', false, html);
+            }
+        }
+
+        // NEW: Dash list creation  
+        function createDashList() {
+            const selectedText = window.getSelection().toString();
+            if (selectedText) {
+                const lines = selectedText.split('\n').filter(line => line.trim());
+                let html = '<div class="bullet-list">';
+                lines.forEach(line => {
+                    html += `<div class="bullet-item dash-item">${line.trim()}</div>`;
+                });
+                html += '</div>';
+                document.execCommand('insertHTML', false, html);
+            } else {
+                const html = '<div class="bullet-list"><div class="bullet-item dash-item">New dash point</div></div>';
+                document.execCommand('insertHTML', false, html);
+            }
+        }
+
+        // NEW: Separator insertion
+        function insertSeparator() {
+            document.execCommand('insertHTML', false, '<div class="separator-line"></div>');
+        }
+
         function wrapSelection(className) {
             const selection = window.getSelection();
             if (selection.toString()) {
-                const span = document.createElement('span');
+                const span = document.createElement('div');
                 span.className = className;
                 
                 try {
                     const range = selection.getRangeAt(0);
-                    range.surroundContents(span);
+                    span.innerHTML = range.extractContents().textContent || selection.toString();
+                    range.insertNode(span);
                 } catch(e) {
                     span.innerHTML = selection.toString();
                     const range = selection.getRangeAt(0);
                     range.deleteContents();
                     range.insertNode(span);
                 }
+            } else if (className === 'text-box' || className === 'indented-text') {
+                // Insert empty styled container
+                const div = document.createElement('div');
+                div.className = className;
+                div.innerHTML = 'Click to edit...';
+                document.execCommand('insertHTML', false, div.outerHTML);
             }
         }
 
@@ -1009,16 +1124,25 @@
 
         function addTechnicalDetailLine() {
             if (currentEditor) {
+                const defaultIconUrl = availableIcons.length > 0 ? availableIcons[0] : fallbackIcons[0];
+                
                 const newLine = document.createElement('div');
                 newLine.className = 'tech-detail-line';
                 newLine.innerHTML = `
-                    <img src="${availableIcons[0]}" class="tech-icon">
+                    <img src="${defaultIconUrl}" class="tech-icon">
                     <div class="tech-label">New Field:</div>
                     <div class="tech-value">Enter value here</div>
                 `;
                 newLine.contentEditable = true;
                 currentEditor.appendChild(newLine);
                 
+                // FIXED: Make tech icon clickable
+                const techIcon = newLine.querySelector('.tech-icon');
+                techIcon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openIconModal(true, techIcon);
+                });
+
                 // Make the new line editable
                 newLine.addEventListener('click', () => {
                     newLine.focus();
@@ -1026,12 +1150,19 @@
             }
         }
 
-        // Color picker handling
+        // FIXED: Color picker handling - apply to selected text
         document.addEventListener('change', (e) => {
             if (e.target.classList.contains('color-picker')) {
                 const color = e.target.value;
+                
+                // Save current selection
                 const selection = window.getSelection();
-                if (selection.toString()) {
+                if (selection.rangeCount > 0 && selection.toString()) {
+                    document.execCommand('foreColor', false, color);
+                } else {
+                    // If no selection, set as next text color
+                    const editor = e.target.closest('.rich-editor').querySelector('.editor-content');
+                    editor.focus();
                     document.execCommand('foreColor', false, color);
                 }
             }
