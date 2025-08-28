@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rewards Manager - Black Outpost Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(20,20,30,0.9) 100%), 
+                        url('https://cdn.discordapp.com/attachments/1408447648767414476/1408592371725242478/image_1.png?ex=68aa4d5f&is=68a8fbdf&hm=3c8442351405014db57137c5664aada195f2e2573e8ffc25ecf22b5b97814cc7&');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e0e6ed;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-bar {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-title::before {
+            content: "🎁";
+            color: #f59e0b;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+            border-color: rgba(148, 163, 184, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.8) 0%, rgba(5, 150, 105, 0.9) 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.9) 100%);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+        }
+
+        .players-section {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(51,65,85,0.8) 100%);
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+        }
+
+        .section-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            color: #f1f5f9;
+            letter-spacing: 0.5px;
+        }
+
+        .search-box {
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: #64748b;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+
+        .players-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .player-item {
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .player-item:hover {
+            background: linear-gradient(135deg, rgba(30,41,59,0.4) 0%, rgba(51,65,85,0.3) 100%);
+        }
+
+        .player-item.selected {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%);
+            border-left: 4px solid #10b981;
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+        }
+
+        .player-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .player-checkbox {
+            width: 18px;
+            height: 18px;
+            appearance: none;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .player-checkbox:checked {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.8) 0%, rgba(5, 150, 105, 0.9) 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .player-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .rewards-panel {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            height: fit-content;
+        }
+
+        .rewards-content {
+            padding: 24px;
+        }
+
+        .stat-group {
+            margin-bottom: 20px;
+        }
+
+        .stat-group-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 8px;
+        }
+
+        .stat-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+            min-width: 80px;
+        }
+
+        .stat-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .operation-select {
+            padding: 6px 8px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 4px;
+            color: #f1f5f9;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+        }
+
+        .stat-input {
+            width: 80px;
+            padding: 6px 8px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 4px;
+            color: #f1f5f9;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .stat-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .selected-count {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(37, 99, 235, 0.9) 100%);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .apply-panel {
+            padding: 20px 24px;
+            border-top: 1px solid rgba(71, 85, 105, 0.3);
+            text-align: center;
+        }
+
+        .error-message, .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 1001;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, rgba(153, 27, 27, 0.9) 0%, rgba(127, 29, 29, 0.8) 100%);
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.9) 0%, rgba(16, 185, 129, 0.8) 100%);
+            color: #a7f3d0;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .nav-bar {
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stat-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            .stat-controls {
+                justify-content: center;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(30,41,59,0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav-bar">
+            <div class="nav-title">
+                REWARDS DISTRIBUTION SYSTEM
+            </div>
+            <div class="nav-actions">
+                <a href="admin-dashboard.html" class="btn" id="backToDashboard">DASHBOARD</a>
+                <a href="index.html" class="btn btn-danger" onclick="logout()">LOGOUT</a>
+            </div>
+        </nav>
+
+        <div class="main-layout">
+            <div class="players-section">
+                <div class="section-header">
+                    <div class="section-title">SELECT PERSONNEL</div>
+                </div>
+                <div class="search-box">
+                    <input type="text" class="search-input" id="playerSearch" placeholder="Search by character name...">
+                </div>
+                <div class="players-list" id="playersList">
+                    <!-- Players will be loaded here -->
+                </div>
+            </div>
+
+            <div class="rewards-panel">
+                <div class="section-header">
+                    <div class="section-title">REWARDS & MODIFICATIONS</div>
+                </div>
+                <div class="rewards-content">
+                    <div class="selected-count" id="selectedCount">0 PERSONNEL SELECTED</div>
+
+                    <div class="stat-group">
+                        <div class="stat-group-title">COMBAT STATS</div>
+                        <div class="stat-item">
+                            <div class="stat-label">STRENGTH</div>
+                            <div class="stat-controls">
+                                <select class="operation-select" id="strengthOp">
+                                    <option value="add">+</option>
+                                    <option value="subtract">-</option>
+                                    <option value="set">=</option>
+                                </select>
+                                <input type="number" class="stat-input" id="strengthValue" value="0">
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">VITALITY</div>
+                            <div class="stat-controls">
+                                <select class="operation-select" id="vitalityOp">
+                                    <option value="add">+</option>
+                                    <option value="subtract">-</option>
+                                    <option value="set">=</option>
+                                </select>
+                                <input type="number" class="stat-input" id="vitalityValue" value="0">
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">SPEED</div>
+                            <div class="stat-controls">
+                                <select class="operation-select" id="speedOp">
+                                    <option value="add">+</option>
+                                    <option value="subtract">-</option>
+                                    <option value="set">=</option>
+                                </select>
+                                <input type="number" class="stat-input" id="speedValue" value="0">
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">DEFENSE</div>
+                            <div class="stat-controls">
+                                <select class="operation-select" id="defenseOp">
+                                    <option value="add">+</option>
+                                    <option value="subtract">-</option>
+                                    <option value="set">=</option>
+                                </select>
+                                <input type="number" class="stat-input" id="defenseValue" value="0">
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">REIATSU</div>
+                            <div class="stat-controls">
+                                <select class="operation-select" id="reiatsuOp">
+                                    <option value="add">+</option>
+                                    <option value="subtract">-</option>
+                                    <option value="set">=</option>
+                                </select>
+                                <input type="number" class="stat-input" id="reiatsuValue" value="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-group">
+                        <div class="stat-group-title">SKILLS</div>
+                        <div class="stat-item">
+                            <div class="stat-label">HAKUDA</div>
+                            <div class="stat-controls">
+                                <select class="operation-select" id="hakudaOp">
+                                    <option value="add">+</option>
+                                    <option value="subtract">-</option>
+                                    <option value="set">=</option>
+                                </select>
+                                <input type="number" class="stat-input" id="hakudaValue" value="0">
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">WEAPONSHIP</div>
+                            <div class="stat-controls">
+                                <select class="operation-select" id="weaponshipOp">
+                                    <option value="add">+</option>
+                                    <option value="subtract">-</option>
+                                    <option value="set">=</option>
+                                </select>
+                                <input type="number" class="stat-input" id="weaponshipValue" value="0">
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">TAMASHI</div>
+                            <div class="stat-controls">
+                                <select class="operation-select" id="tamashiOp">
+                                    <option value="add">+</option>
+                                    <option value="subtract">-</option>
+                                    <option value="set">=</option>
+                                </select>
+                                <input type="number" class="stat-input" id="tamashiValue" value="0">
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">MAGIC</div>
+                            <div class="stat-controls">
+                                <select class="operation-select" id="magicOp">
+                                    <option value="add">+</option>
+                                    <option value="subtract">-</option>
+                                    <option value="set">=</option>
+                                </select>
+                                <input type="number" class="stat-input" id="magicValue" value="0">
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">NAZO</div>
+                            <div class="stat-controls">
+                                <select class="operation-select" id="nazoOp">
+                                    <option value="add">+</option>
+                                    <option value="subtract">-</option>
+                                    <option value="set">=</option>
+                                </select>
+                                <input type="number" class="stat-input" id="nazoValue" value="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-group">
+                        <div class="stat-group-title">RESOURCES</div>
+                        <div class="stat-item">
+                            <div class="stat-label">POINTS</div>
+                            <div class="stat-controls">
+                                <select class="operation-select" id="pointsOp">
+                                    <option value="add">+</option>
+                                    <option value="subtract">-</option>
+                                    <option value="set">=</option>
+                                </select>
+                                <input type="number" class="stat-input" id="pointsValue" value="0">
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">NODES</div>
+                            <div class="stat-controls">
+                                <select class="operation-select" id="nodePointsOp">
+                                    <option value="add">+</option>
+                                    <option value="subtract">-</option>
+                                    <option value="set">=</option>
+                                </select>
+                                <input type="number" class="stat-input" id="nodePointsValue" value="0">
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">YEN</div>
+                            <div class="stat-controls">
+                                <select class="operation-select" id="yenOp">
+                                    <option value="add">+</option>
+                                    <option value="subtract">-</option>
+                                    <option value="set">=</option>
+                                </select>
+                                <input type="number" class="stat-input" id="yenValue" value="0">
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">REISEN</div>
+                            <div class="stat-controls">
+                                <select class="operation-select" id="reisenOp">
+                                    <option value="add">+</option>
+                                    <option value="subtract">-</option>
+                                    <option value="set">=</option>
+                                </select>
+                                <input type="number" class="stat-input" id="reisenValue" value="0">
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">LOYALTY</div>
+                            <div class="stat-controls">
+                                <select class="operation-select" id="loyaltyOp">
+                                    <option value="add">+</option>
+                                    <option value="subtract">-</option>
+                                    <option value="set">=</option>
+                                </select>
+                                <input type="number" class="stat-input" id="loyaltyValue" value="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="apply-panel">
+                    <button class="btn btn-success" onclick="applyRewards()" style="padding: 12px 24px; font-size: 14px;" id="applyBtn">
+                        DISTRIBUTE REWARDS
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, updateDoc, addDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
+            authDomain: "bleach-black-outpost.firebaseapp.com",
+            projectId: "bleach-black-outpost",
+            storageBucket: "bleach-black-outpost.firebasestorage.app",
+            messagingSenderId: "201204368777",
+            appId: "1:201204368777:web:c2a34d61acb46e7b494d58",
+            measurementId: "G-SBD3766NQ6"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        window.db = db;
+        window.getDoc = getDoc;
+        window.doc = doc;
+        window.collection = collection;
+        window.getDocs = getDocs;
+        window.updateDoc = updateDoc;
+        window.addDoc = addDoc;
+        window.query = query;
+        window.orderBy = orderBy;
+    </script>
+
+    <script>
+        let currentUser = null;
+        let allPlayers = [];
+        let filteredPlayers = [];
+        let selectedPlayers = new Set();
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
+
+        async function loadUserData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const login = urlParams.get('login') || localStorage.getItem('currentUser');
+            
+            if (!login) {
+                showError('NO USER SESSION FOUND');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+
+            try {
+                const userDoc = await window.getDoc(window.doc(window.db, 'users', login));
+                if (!userDoc.exists()) {
+                    showError('USER DATA NOT FOUND');
+                    return;
+                }
+
+                currentUser = { login, ...userDoc.data() };
+
+                if (currentUser.role !== 'admin') {
+                    showError('INSUFFICIENT PRIVILEGES');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                    return;
+                }
+
+                // Update navigation links
+                document.getElementById('backToDashboard').href = `admin-dashboard.html?login=${login}`;
+
+                await loadAllPlayers();
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('DATABASE CONNECTION ERROR');
+            }
+        }
+
+        async function loadAllPlayers() {
+            try {
+                const charactersRef = window.collection(window.db, 'characters');
+                const q = window.query(charactersRef, window.orderBy('firstName', 'asc'));
+                const querySnapshot = await window.getDocs(q);
+                
+                allPlayers = [];
+                querySnapshot.forEach(doc => {
+                    allPlayers.push({ 
+                        docId: doc.id, 
+                        ...doc.data() 
+                    });
+                });
+                
+                filteredPlayers = [...allPlayers];
+                displayPlayers();
+
+            } catch (error) {
+                console.error('Error loading players:', error);
+                document.getElementById('playersList').innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: #64748b;">
+                        ERROR LOADING PLAYERS
+                    </div>
+                `;
+            }
+        }
+
+        function displayPlayers() {
+            const container = document.getElementById('playersList');
+            
+            if (filteredPlayers.length === 0) {
+                container.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: #64748b;">
+                        NO PLAYERS FOUND
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filteredPlayers.forEach(player => {
+                const isSelected = selectedPlayers.has(player.docId);
+                
+                html += `
+                    <div class="player-item ${isSelected ? 'selected' : ''}" onclick="togglePlayer('${player.docId}')">
+                        <div class="player-info">
+                            <div class="player-name">${player.firstName} ${player.lastName}</div>
+                            <div class="player-meta">ID: ${player.id} | RACE: ${player.race} | RANK: ${player.rank || 'I'}</div>
+                        </div>
+                        <input type="checkbox" class="player-checkbox" ${isSelected ? 'checked' : ''} 
+                               onchange="event.stopPropagation(); togglePlayer('${player.docId}')">
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function togglePlayer(playerId) {
+            if (selectedPlayers.has(playerId)) {
+                selectedPlayers.delete(playerId);
+            } else {
+                selectedPlayers.add(playerId);
+            }
+            
+            updateSelectedCount();
+            displayPlayers();
+        }
+
+        function updateSelectedCount() {
+            const count = selectedPlayers.size;
+            document.getElementById('selectedCount').textContent = `${count} PERSONNEL SELECTED`;
+        }
+
+        function handleSearch() {
+            const searchTerm = document.getElementById('playerSearch').value.toLowerCase();
+            
+            filteredPlayers = allPlayers.filter(player => {
+                return (
+                    player.firstName.toLowerCase().includes(searchTerm) ||
+                    player.lastName.toLowerCase().includes(searchTerm) ||
+                    player.id.toLowerCase().includes(searchTerm)
+                );
+            });
+            
+            displayPlayers();
+        }
+
+        function applyValue(currentValue, operation, value) {
+            currentValue = currentValue || 0;
+            value = parseInt(value) || 0;
+
+            switch (operation) {
+                case 'add':
+                    return Math.max(0, currentValue + value);
+                case 'subtract':
+                    return Math.max(0, currentValue - value);
+                case 'set':
+                    return Math.max(0, value);
+                default:
+                    return currentValue;
+            }
+        }
+
+        async function applyRewards() {
+            if (selectedPlayers.size === 0) {
+                showError('NO PLAYERS SELECTED');
+                return;
+            }
+
+            // Get all the stat values and operations
+            const stats = [
+                'strength', 'vitality', 'speed', 'defense', 'reiatsu',
+                'hakuda', 'weaponship', 'tamashi', 'magic', 'nazo',
+                'points', 'nodePoints', 'yen', 'reisen', 'loyalty'
+            ];
+
+            const changes = {};
+            let hasChanges = false;
+
+            stats.forEach(stat => {
+                const operation = document.getElementById(`${stat}Op`).value;
+                const value = parseInt(document.getElementById(`${stat}Value`).value) || 0;
+                
+                if (value !== 0) {
+                    changes[stat] = { operation, value };
+                    hasChanges = true;
+                }
+            });
+
+            if (!hasChanges) {
+                showError('NO CHANGES SPECIFIED');
+                return;
+            }
+
+            try {
+                const applyBtn = document.getElementById('applyBtn');
+                applyBtn.disabled = true;
+                applyBtn.textContent = 'PROCESSING...';
+
+                let successCount = 0;
+                const selectedPlayersList = Array.from(selectedPlayers);
+
+                for (const playerId of selectedPlayersList) {
+                    const player = allPlayers.find(p => p.docId === playerId);
+                    if (!player) continue;
+
+                    const updateData = {};
+                    const changeDetails = [];
+
+                    // Apply stat changes
+                    Object.entries(changes).forEach(([stat, change]) => {
+                        let currentValue;
+                        let fieldName;
+
+                        // Map stat names to database field names
+                        switch (stat) {
+                            case 'points':
+                                fieldName = 'pointsToDistribute';
+                                currentValue = player.pointsToDistribute;
+                                break;
+                            case 'nodePoints':
+                                fieldName = 'nodePointsToDistribute';
+                                currentValue = player.nodePointsToDistribute;
+                                break;
+                            case 'yen':
+                                fieldName = 'yenInHand';
+                                currentValue = player.yenInHand;
+                                break;
+                            case 'reisen':
+                                fieldName = 'reisenInHand';
+                                currentValue = player.reisenInHand;
+                                break;
+                            case 'loyalty':
+                                fieldName = 'loyaltyLeft';
+                                currentValue = player.loyaltyLeft;
+                                break;
+                            default:
+                                fieldName = stat;
+                                currentValue = player[stat];
+                        }
+
+                        const newValue = applyValue(currentValue, change.operation, change.value);
+                        updateData[fieldName] = newValue;
+                        
+                        const opSymbol = change.operation === 'add' ? '+' : change.operation === 'subtract' ? '-' : '=';
+                        changeDetails.push(`${stat.toUpperCase()}: ${opSymbol}${change.value} (${currentValue || 0} → ${newValue})`);
+                    });
+
+                    // Add metadata
+                    updateData.lastEditedAt = new Date().toISOString();
+                    updateData.lastEditedBy = currentUser.login;
+
+                    // Update character
+                    await window.updateDoc(window.doc(window.db, 'characters', playerId), updateData);
+                    
+                    // Create log
+                    await window.addDoc(window.collection(window.db, 'logs'), {
+                        action: 'rewards_distributed',
+                        actorLogin: currentUser.login,
+                        actorRole: 'admin',
+                        targetId: player.id,
+                        targetName: `${player.firstName} ${player.lastName}`,
+                        details: `Administrator distributed rewards: ${changeDetails.join(', ')}`,
+                        timestamp: new Date().toISOString()
+                    });
+
+                    successCount++;
+                }
+
+                // Reset form
+                stats.forEach(stat => {
+                    document.getElementById(`${stat}Value`).value = 0;
+                    document.getElementById(`${stat}Op`).value = 'add';
+                });
+
+                selectedPlayers.clear();
+                updateSelectedCount();
+                displayPlayers();
+
+                showSuccess(`REWARDS DISTRIBUTED TO ${successCount} PERSONNEL`);
+
+            } catch (error) {
+                console.error('Error applying rewards:', error);
+                showError('DISTRIBUTION FAILED');
+            } finally {
+                const applyBtn = document.getElementById('applyBtn');
+                applyBtn.disabled = false;
+                applyBtn.textContent = 'DISTRIBUTE REWARDS';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Event listeners
+        document.getElementById('playerSearch').addEventListener('input', handleSearch);
+
+        // Initialize page
+        window.addEventListener('load', function() {
+            loadUserData();
+        });
+    </script>
+</body>
+</html>

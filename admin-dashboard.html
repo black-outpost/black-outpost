@@ -161,6 +161,10 @@
             background: linear-gradient(90deg, #10b981, #059669);
         }
 
+        .admin-card.rewards::before {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+        }
+
         .admin-card.techniques::before {
             background: linear-gradient(90deg, #8b5cf6, #7c3aed);
         }
@@ -352,6 +356,15 @@
                 </div>
             </a>
 
+            <a class="admin-card rewards">
+                <div class="card-icon">🎁</div>
+                <div class="card-title">REWARDS SYSTEM</div>
+                <div class="card-description">
+                    Quick distribution of rewards and stat modifications.
+                    Apply changes to multiple personnel simultaneously.
+                </div>
+            </a>
+
             <a class="admin-card techniques">
                 <div class="card-icon">⚡</div>
                 <div class="card-title">PLAYER TECHNIQUES</div>
@@ -509,9 +522,10 @@
 
                 document.getElementById('adminName').textContent = currentUser.name || login;
                 
-                // Update URLs to pass login parameter - FIXED: Remove onclick handlers
+                // Update URLs to pass login parameter
                 const links = [
                     { selector: '.admin-card.characters', href: 'admin-characters.html' },
+                    { selector: '.admin-card.rewards', href: 'admin-rewards.html' },
                     { selector: '.admin-card.techniques', href: 'admin-techniques.html' },
                     { selector: '.admin-card.bank', href: 'admin-technique-bank.html' },
                     { selector: '.admin-card.icons', href: 'admin-icon-manager.html' },
