@@ -169,6 +169,10 @@
             background: linear-gradient(90deg, #8b5cf6, #7c3aed);
         }
 
+        .admin-card.items::before {
+            background: linear-gradient(90deg, #06b6d4, #0891b2);
+        }
+
         .admin-card.bank::before {
             background: linear-gradient(90deg, #f59e0b, #d97706);
         }
@@ -179,10 +183,6 @@
 
         .admin-card.logs::before {
             background: linear-gradient(90deg, #f59e0b, #d97706);
-        }
-
-        .admin-card.settings::before {
-            background: linear-gradient(90deg, #3b82f6, #2563eb);
         }
 
         .card-icon {
@@ -360,7 +360,7 @@
                 <div class="card-icon">🎁</div>
                 <div class="card-title">REWARDS SYSTEM</div>
                 <div class="card-description">
-                    Quick distribution of rewards and stat modifications.
+                    Quick distribution of rewards, stat modifications and items.
                     Apply changes to multiple personnel simultaneously.
                 </div>
             </a>
@@ -371,6 +371,15 @@
                 <div class="card-description">
                     Manage individual player techniques database. 
                     Create, edit and assign techniques to specific characters.
+                </div>
+            </a>
+
+            <a class="admin-card items">
+                <div class="card-icon">📦</div>
+                <div class="card-title">PLAYER EQUIPMENT</div>
+                <div class="card-description">
+                    Manage player inventories and equipment.
+                    Create, assign and modify items for characters.
                 </div>
             </a>
 
@@ -400,15 +409,6 @@
                     Review audit trails and security events.
                 </div>
             </a>
-
-            <div class="admin-card settings" onclick="showComingSoon()">
-                <div class="card-icon">⚙️</div>
-                <div class="card-title">SYSTEM SETTINGS</div>
-                <div class="card-description">
-                    Configure system parameters and global settings.
-                    Advanced administrative options.
-                </div>
-            </div>
         </div>
 
         <div class="stats-section">
@@ -425,6 +425,10 @@
                 <div class="stat-item">
                     <div class="stat-label">Total Techniques</div>
                     <div class="stat-value" id="totalTechniques">-</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Total Items</div>
+                    <div class="stat-value" id="totalItems">-</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-label">Recent Actions</div>
@@ -487,10 +491,6 @@
             }, 3000);
         }
 
-        function showComingSoon() {
-            showSuccess('SYSTEM SETTINGS PANEL COMING SOON');
-        }
-
         async function loadUserData() {
             const urlParams = new URLSearchParams(window.location.search);
             const login = urlParams.get('login') || localStorage.getItem('currentUser');
@@ -527,6 +527,7 @@
                     { selector: '.admin-card.characters', href: 'admin-characters.html' },
                     { selector: '.admin-card.rewards', href: 'admin-rewards.html' },
                     { selector: '.admin-card.techniques', href: 'admin-techniques.html' },
+                    { selector: '.admin-card.items', href: 'admin-items.html' },
                     { selector: '.admin-card.bank', href: 'admin-technique-bank.html' },
                     { selector: '.admin-card.icons', href: 'admin-icon-manager.html' },
                     { selector: '.admin-card.logs', href: 'admin-logs.html' }
@@ -564,6 +565,11 @@
                 const techniquesSnapshot = await window.getDocs(techniquesRef);
                 document.getElementById('totalTechniques').textContent = techniquesSnapshot.size;
 
+                // Load items count
+                const itemsRef = window.collection(window.db, 'items');
+                const itemsSnapshot = await window.getDocs(itemsRef);
+                document.getElementById('totalItems').textContent = itemsSnapshot.size;
+
                 // Load recent actions count
                 const logsRef = window.collection(window.db, 'logs');
                 const recentLogsQuery = window.query(logsRef, window.orderBy('timestamp', 'desc'), window.limit(10));
@@ -576,6 +582,7 @@
                 document.getElementById('totalCharacters').textContent = '0';
                 document.getElementById('activeUsers').textContent = '0';
                 document.getElementById('totalTechniques').textContent = '0';
+                document.getElementById('totalItems').textContent = '0';
                 document.getElementById('recentActions').textContent = '0';
             }
         }

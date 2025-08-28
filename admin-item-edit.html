@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Item - Black Outpost Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(20,20,30,0.9) 100%), 
+                        url('https://cdn.discordapp.com/attachments/1408447648767414476/1408592371725242478/image_1.png?ex=68aa4d5f&is=68a8fbdf&hm=3c8442351405014db57137c5664aada195f2e2573e8ffc25ecf22b5b97814cc7&');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e0e6ed;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-bar {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-title::before {
+            content: "✏️";
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+            border-color: rgba(148, 163, 184, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.8) 0%, rgba(5, 150, 105, 0.9) 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .item-info {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .item-info h2 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 8px;
+        }
+
+        .item-info p {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .form-section {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(51,65,85,0.8) 100%);
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+        }
+
+        .section-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            letter-spacing: 0.5px;
+        }
+
+        .section-content {
+            padding: 24px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input::placeholder {
+            color: #64748b;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(51,65,85,0.6) 100%);
+        }
+
+        /* Rich Text Editor Styles */
+        .rich-editor {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .editor-toolbar {
+            background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(51,65,85,0.8) 100%);
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .toolbar-group {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            padding: 0 8px;
+            border-right: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .toolbar-group:last-child {
+            border-right: none;
+        }
+
+        .toolbar-btn {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.6) 0%, rgba(51, 65, 85, 0.7) 100%);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            color: #cbd5e1;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .toolbar-btn:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            border-color: rgba(148, 163, 184, 0.4);
+        }
+
+        .color-picker {
+            width: 32px;
+            height: 24px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 4px;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .editor-content {
+            min-height: 150px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.4) 0%, rgba(51,65,85,0.3) 100%);
+            border: none;
+            outline: none;
+            color: #e2e8f0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            overflow-y: auto;
+        }
+
+        .editor-content[contenteditable="true"] {
+            cursor: text;
+        }
+
+        .editor-content::before {
+            content: attr(data-placeholder);
+            color: #64748b;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .editor-content:focus::before {
+            display: none;
+        }
+
+        .editor-content:not(:empty)::before {
+            display: none;
+        }
+
+        .save-panel {
+            text-align: center;
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.98) 0%, rgba(15,23,42,0.95) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(71, 85, 105, 0.3);
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #64748b;
+            letter-spacing: 0.5px;
+        }
+
+        .error-message, .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 1001;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, rgba(153, 27, 27, 0.9) 0%, rgba(127, 29, 29, 0.8) 100%);
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.9) 0%, rgba(16, 185, 129, 0.8) 100%);
+            color: #a7f3d0;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .nav-bar {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .toolbar-group {
+                border-right: none;
+                padding: 0 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">LOADING ITEM DATA...</div>
+    </div>
+
+    <div class="container">
+        <nav class="nav-bar">
+            <div class="nav-title">
+                EDIT EQUIPMENT
+            </div>
+            <div class="nav-actions">
+                <a href="admin-items.html" class="btn" id="backToItems">BACK TO EQUIPMENT</a>
+                <a href="#" class="btn" id="viewItemBtn">VIEW ITEM</a>
+                <a href="admin-dashboard.html" class="btn" id="backToDashboard">DASHBOARD</a>
+            </div>
+        </nav>
+
+        <div class="item-info">
+            <h2 id="itemName">LOADING...</h2>
+            <p>Editing item for <span id="characterName">...</span></p>
+        </div>
+
+        <form id="editItemForm">
+            <div class="form-section">
+                <div class="section-header">
+                    <div class="section-title">BASIC ITEM DATA</div>
+                </div>
+                <div class="section-content">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_itemName" class="form-label">Item Name *</label>
+                            <div class="rich-editor">
+                                <div class="editor-toolbar">
+                                    <div class="toolbar-group">
+                                        <button type="button" class="toolbar-btn" data-action="bold">B</button>
+                                        <button type="button" class="toolbar-btn" data-action="italic">I</button>
+                                        <button type="button" class="toolbar-btn" data-action="underline">U</button>
+                                    </div>
+                                    <div class="toolbar-group">
+                                        <input type="color" class="color-picker" data-action="color" value="#f1f5f9">
+                                    </div>
+                                </div>
+                                <div class="editor-content" contenteditable="true" data-target="item-name" data-placeholder="Enter item name..."></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_itemCategory" class="form-label">Category *</label>
+                            <select id="edit_itemCategory" class="form-select" required>
+                                <option value="consumable">Consumable</option>
+                                <option value="equipment">Equipment</option>
+                                <option value="material">Material</option>
+                                <option value="misc">Miscellaneous</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_itemQuantity" class="form-label">Quantity *</label>
+                            <input type="number" id="edit_itemQuantity" class="form-input" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_itemImageUrl" class="form-label">Image URL (Optional)</label>
+                            <input type="url" id="edit_itemImageUrl" class="form-input" placeholder="https://example.com/image.png">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="section-header">
+                    <div class="section-title">ITEM DESCRIPTION</div>
+                </div>
+                <div class="section-content">
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label for="edit_itemDescription" class="form-label">Description *</label>
+                            <div class="rich-editor">
+                                <div class="editor-toolbar">
+                                    <div class="toolbar-group">
+                                        <button type="button" class="toolbar-btn" data-action="bold">B</button>
+                                        <button type="button" class="toolbar-btn" data-action="italic">I</button>
+                                        <button type="button" class="toolbar-btn" data-action="underline">U</button>
+                                    </div>
+                                    <div class="toolbar-group">
+                                        <input type="color" class="color-picker" data-action="color" value="#cbd5e1">
+                                    </div>
+                                    <div class="toolbar-group">
+                                        <button type="button" class="toolbar-btn" data-action="line-break">BR</button>
+                                    </div>
+                                </div>
+                                <div class="editor-content" contenteditable="true" data-target="description" data-placeholder="Describe the item's properties, effects, or purpose..."></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="save-panel">
+                <button type="button" class="btn" onclick="goBack()" style="margin-right: 15px;">CANCEL</button>
+                <button type="submit" class="btn btn-success" style="padding: 16px 32px; font-size: 16px;">SAVE CHANGES</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
+            authDomain: "bleach-black-outpost.firebaseapp.com",
+            projectId: "bleach-black-outpost",
+            storageBucket: "bleach-black-outpost.firebasestorage.app",
+            messagingSenderId: "201204368777",
+            appId: "1:201204368777:web:c2a34d61acb46e7b494d58",
+            measurementId: "G-SBD3766NQ6"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        window.db = db;
+        window.getDoc = getDoc;
+        window.doc = doc;
+        window.collection = collection;
+        window.updateDoc = updateDoc;
+        window.addDoc = addDoc;
+    </script>
+
+    <script>
+        let currentUser = null;
+        let targetCharacter = null;
+        let currentItem = null;
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
+
+        // Toolbar actions
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('toolbar-btn')) {
+                const action = e.target.getAttribute('data-action');
+                handleToolbarAction(action, e.target);
+            }
+        });
+
+        function handleToolbarAction(action, button) {
+            switch(action) {
+                case 'bold':
+                    document.execCommand('bold');
+                    break;
+                case 'italic':
+                    document.execCommand('italic');
+                    break;
+                case 'underline':
+                    document.execCommand('underline');
+                    break;
+                case 'color':
+                    const color = button.value;
+                    document.execCommand('foreColor', false, color);
+                    break;
+                case 'line-break':
+                    document.execCommand('insertHTML', false, '<br><br>');
+                    break;
+            }
+        }
+
+        // Color picker handling
+        document.addEventListener('change', (e) => {
+            if (e.target.classList.contains('color-picker')) {
+                const color = e.target.value;
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0 && selection.toString()) {
+                    document.execCommand('foreColor', false, color);
+                }
+            }
+        });
+
+        async function loadUserData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const login = urlParams.get('login') || localStorage.getItem('currentUser');
+            const characterDocId = urlParams.get('character');
+            const itemDocId = urlParams.get('item');
+            
+            if (!login) {
+                showError('NO USER SESSION FOUND');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+
+            if (!characterDocId || !itemDocId) {
+                showError('MISSING PARAMETERS');
+                setTimeout(() => {
+                    window.location.href = `admin-items.html?login=${login}`;
+                }, 2000);
+                return;
+            }
+
+            try {
+                const userDoc = await window.getDoc(window.doc(window.db, 'users', login));
+                if (!userDoc.exists()) {
+                    showError('USER DATA NOT FOUND');
+                    return;
+                }
+
+                currentUser = { login, ...userDoc.data() };
+
+                if (currentUser.role !== 'admin') {
+                    showError('INSUFFICIENT PRIVILEGES');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                    return;
+                }
+
+                // Get character data
+                const characterDoc = await window.getDoc(window.doc(window.db, 'characters', characterDocId));
+                if (!characterDoc.exists()) {
+                    showError('CHARACTER NOT FOUND');
+                    return;
+                }
+
+                targetCharacter = { docId: characterDocId, ...characterDoc.data() };
+
+                // Get item data
+                const itemDoc = await window.getDoc(window.doc(window.db, 'items', itemDocId));
+                if (!itemDoc.exists()) {
+                    showError('ITEM NOT FOUND');
+                    return;
+                }
+
+                currentItem = { docId: itemDocId, ...itemDoc.data() };
+
+                // Update UI
+                document.getElementById('itemName').innerHTML = currentItem.name || 'Untitled Item';
+                document.getElementById('characterName').textContent = `${targetCharacter.firstName} ${targetCharacter.lastName}`;
+                
+                // Update navigation links
+                document.getElementById('backToItems').href = `admin-items.html?login=${login}`;
+                document.getElementById('viewItemBtn').href = `admin-item-view.html?login=${login}&character=${characterDocId}&item=${itemDocId}`;
+                document.getElementById('backToDashboard').href = `admin-dashboard.html?login=${login}`;
+
+                populateForm();
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('DATABASE CONNECTION ERROR');
+            }
+        }
+
+        function populateForm() {
+            if (!currentItem) return;
+
+            // Populate basic data
+            document.getElementById('edit_itemCategory').value = currentItem.category || 'misc';
+            document.getElementById('edit_itemQuantity').value = currentItem.quantity || 1;
+            document.getElementById('edit_itemImageUrl').value = currentItem.imageUrl || '';
+
+            // Populate rich editors with existing content
+            const nameEditor = document.querySelector('[data-target="item-name"]');
+            if (nameEditor) {
+                nameEditor.innerHTML = currentItem.name || '';
+            }
+
+            const descEditor = document.querySelector('[data-target="description"]');
+            if (descEditor) {
+                descEditor.innerHTML = currentItem.description || '';
+            }
+        }
+
+        function getEditorContent(targetName) {
+            const editor = document.querySelector(`[data-target="${targetName}"]`);
+            return editor ? editor.innerHTML : '';
+        }
+
+        async function handleEditItem(e) {
+            e.preventDefault();
+
+            const name = getEditorContent('item-name') || currentItem.name || 'Untitled Item';
+            const category = document.getElementById('edit_itemCategory').value;
+            const quantity = parseInt(document.getElementById('edit_itemQuantity').value) || 0;
+            const imageUrl = document.getElementById('edit_itemImageUrl').value.trim();
+            const description = getEditorContent('description');
+
+            if (!description.trim()) {
+                showError('DESCRIPTION IS REQUIRED');
+                return;
+            }
+
+            if (quantity < 0) {
+                showError('QUANTITY CANNOT BE NEGATIVE');
+                return;
+            }
+
+            const updateData = {
+                name: name,
+                description: description,
+                category: category,
+                quantity: quantity,
+                imageUrl: imageUrl,
+                lastEditedAt: new Date().toISOString(),
+                lastEditedBy: currentUser.login
+            };
+
+            try {
+                await window.updateDoc(window.doc(window.db, 'items', currentItem.docId), updateData);
+                
+                // Create log
+                await window.addDoc(window.collection(window.db, 'logs'), {
+                    action: 'item_updated',
+                    actorLogin: currentUser.login,
+                    actorRole: 'admin',
+                    targetId: targetCharacter.id,
+                    targetName: `${targetCharacter.firstName} ${targetCharacter.lastName}`,
+                    details: `Administrator updated item: ${name} (${category}) x${quantity}`,
+                    timestamp: new Date().toISOString()
+                });
+
+                showSuccess('ITEM UPDATED SUCCESSFULLY');
+
+                // Update current item data
+                Object.assign(currentItem, updateData);
+
+                setTimeout(() => {
+                    window.location.href = `admin-item-view.html?login=${currentUser.login}&character=${targetCharacter.docId}&item=${currentItem.docId}`;
+                }, 1500);
+
+            } catch (error) {
+                console.error('Error updating item:', error);
+                showError('FAILED TO UPDATE ITEM');
+            }
+        }
+
+        function goBack() {
+            window.location.href = `admin-item-view.html?login=${currentUser.login}&character=${targetCharacter.docId}&item=${currentItem.docId}`;
+        }
+
+        // Form submission
+        document.getElementById('editItemForm').addEventListener('submit', handleEditItem);
+
+        // Initialize page
+        window.addEventListener('load', async function() {
+            await loadUserData();
+            
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+
+        // Warn about unsaved changes
+        window.addEventListener('beforeunload', function(e) {
+            e.preventDefault();
+            e.returnValue = '';
+        });
+    </script>
+</body>
+</html>
