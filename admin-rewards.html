@@ -25,7 +25,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             padding: 20px;
             position: relative;
@@ -97,9 +97,15 @@
             border-color: rgba(239, 68, 68, 0.3);
         }
 
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+
         .main-layout {
             display: grid;
-            grid-template-columns: 1fr 400px;
+            grid-template-columns: 300px 1fr;
             gap: 30px;
         }
 
@@ -110,36 +116,37 @@
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            height: fit-content;
         }
 
         .section-header {
             background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(51,65,85,0.8) 100%);
-            padding: 16px 24px;
+            padding: 16px 20px;
             border-bottom: 1px solid rgba(71, 85, 105, 0.4);
         }
 
         .section-title {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             color: #f1f5f9;
             letter-spacing: 0.5px;
         }
 
         .search-box {
-            padding: 16px 24px;
+            padding: 12px 16px;
             border-bottom: 1px solid rgba(71, 85, 105, 0.2);
         }
 
         .search-input {
             width: 100%;
-            padding: 12px 16px;
+            padding: 10px 12px;
             background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
             border: 1px solid rgba(71, 85, 105, 0.4);
             border-radius: 8px;
             color: #f1f5f9;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 14px;
+            font-size: 12px;
             transition: all 0.3s ease;
         }
 
@@ -154,13 +161,13 @@
         }
 
         .players-list {
-            max-height: 500px;
+            max-height: 400px;
             overflow-y: auto;
         }
 
         .player-item {
-            padding: 16px 24px;
-            border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.15);
             transition: all 0.3s ease;
             cursor: pointer;
             display: flex;
@@ -174,7 +181,7 @@
 
         .player-item.selected {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%);
-            border-left: 4px solid #10b981;
+            border-left: 3px solid #10b981;
         }
 
         .player-info {
@@ -183,25 +190,25 @@
 
         .player-name {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             color: #f1f5f9;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .player-meta {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
+            font-size: 10px;
             color: #94a3b8;
         }
 
         .player-checkbox {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             appearance: none;
             background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
             border: 1px solid rgba(71, 85, 105, 0.4);
-            border-radius: 4px;
+            border-radius: 3px;
             cursor: pointer;
             position: relative;
         }
@@ -218,7 +225,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             color: white;
-            font-size: 12px;
+            font-size: 10px;
             font-weight: bold;
         }
 
@@ -229,11 +236,47 @@
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-            height: fit-content;
         }
 
         .rewards-content {
             padding: 24px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .rewards-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .tab-btn {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.6) 0%, rgba(51, 65, 85, 0.7) 100%);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            color: #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+        }
+
+        .tab-btn:hover, .tab-btn.active {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
+            border-color: rgba(139, 92, 246, 0.4);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .stat-group {
@@ -296,7 +339,7 @@
             text-align: center;
         }
 
-        .stat-input:focus {
+        .stat-input:focus, .operation-select:focus {
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
@@ -314,10 +357,199 @@
             text-align: center;
         }
 
+        /* Item Management Styles */
+        .items-section {
+            margin-bottom: 20px;
+        }
+
+        .item-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.4) 0%, rgba(51,65,85,0.3) 100%);
+        }
+
+        .item-entry {
+            padding: 16px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+            position: relative;
+        }
+
+        .item-entry:last-child {
+            border-bottom: none;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .item-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 120px 80px;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .form-input, .form-select {
+            padding: 8px 12px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 6px;
+            color: #f1f5f9;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input::placeholder {
+            color: #64748b;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+        }
+
+        /* Rich Text Editor Styles for Items */
+        .rich-editor {
+            background: linear-gradient(135deg, rgba(15,23,42,0.8) 0%, rgba(30,41,59,0.7) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .editor-toolbar {
+            background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(51,65,85,0.7) 100%);
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .toolbar-group {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            padding: 0 6px;
+            border-right: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .toolbar-group:last-child {
+            border-right: none;
+        }
+
+        .toolbar-btn {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.6) 0%, rgba(51, 65, 85, 0.7) 100%);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            color: #cbd5e1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .toolbar-btn:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            border-color: rgba(148, 163, 184, 0.4);
+        }
+
+        .color-picker {
+            width: 24px;
+            height: 20px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 3px;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .editor-content {
+            min-height: 80px;
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.4) 0%, rgba(51,65,85,0.3) 100%);
+            border: none;
+            outline: none;
+            color: #e2e8f0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            resize: vertical;
+            overflow-y: auto;
+        }
+
+        .editor-content[contenteditable="true"] {
+            cursor: text;
+        }
+
+        .editor-content::before {
+            content: attr(data-placeholder);
+            color: #64748b;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .editor-content:focus::before {
+            display: none;
+        }
+
+        .editor-content:not(:empty)::before {
+            display: none;
+        }
+
+        .add-item-btn {
+            width: 100%;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.6) 0%, rgba(5, 150, 105, 0.7) 100%);
+            border: 1px dashed rgba(16, 185, 129, 0.4);
+            color: #10b981;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .add-item-btn:hover {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.8) 0%, rgba(5, 150, 105, 0.9) 100%);
+            border-style: solid;
+            color: white;
+        }
+
         .apply-panel {
             padding: 20px 24px;
             border-top: 1px solid rgba(71, 85, 105, 0.3);
             text-align: center;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.5) 100%);
         }
 
         .error-message, .success-message {
@@ -361,9 +593,17 @@
                 flex-direction: column;
                 gap: 16px;
             }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 768px) {
+            .rewards-tabs {
+                flex-direction: column;
+            }
+
             .stat-item {
                 flex-direction: column;
                 align-items: stretch;
@@ -377,7 +617,7 @@
 
         /* Scrollbar styling */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
 
         ::-webkit-scrollbar-track {
@@ -386,7 +626,7 @@
 
         ::-webkit-scrollbar-thumb {
             background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
-            border-radius: 4px;
+            border-radius: 3px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
@@ -412,7 +652,7 @@
                     <div class="section-title">SELECT PERSONNEL</div>
                 </div>
                 <div class="search-box">
-                    <input type="text" class="search-input" id="playerSearch" placeholder="Search by character name...">
+                    <input type="text" class="search-input" id="playerSearch" placeholder="Search characters...">
                 </div>
                 <div class="players-list" id="playersList">
                     <!-- Players will be loaded here -->
@@ -426,180 +666,203 @@
                 <div class="rewards-content">
                     <div class="selected-count" id="selectedCount">0 PERSONNEL SELECTED</div>
 
-                    <div class="stat-group">
-                        <div class="stat-group-title">COMBAT STATS</div>
-                        <div class="stat-item">
-                            <div class="stat-label">STRENGTH</div>
-                            <div class="stat-controls">
-                                <select class="operation-select" id="strengthOp">
-                                    <option value="add">+</option>
-                                    <option value="subtract">-</option>
-                                    <option value="set">=</option>
-                                </select>
-                                <input type="number" class="stat-input" id="strengthValue" value="0">
+                    <div class="rewards-tabs">
+                        <button class="tab-btn active" data-tab="stats">STATS</button>
+                        <button class="tab-btn" data-tab="resources">RESOURCES</button>
+                        <button class="tab-btn" data-tab="items">ITEMS</button>
+                    </div>
+
+                    <!-- Stats Tab -->
+                    <div class="tab-content active" id="statsTab">
+                        <div class="stat-group">
+                            <div class="stat-group-title">COMBAT STATS</div>
+                            <div class="stat-item">
+                                <div class="stat-label">STRENGTH</div>
+                                <div class="stat-controls">
+                                    <select class="operation-select" id="strengthOp">
+                                        <option value="add">+</option>
+                                        <option value="subtract">-</option>
+                                        <option value="set">=</option>
+                                    </select>
+                                    <input type="number" class="stat-input" id="strengthValue" value="0">
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">VITALITY</div>
+                                <div class="stat-controls">
+                                    <select class="operation-select" id="vitalityOp">
+                                        <option value="add">+</option>
+                                        <option value="subtract">-</option>
+                                        <option value="set">=</option>
+                                    </select>
+                                    <input type="number" class="stat-input" id="vitalityValue" value="0">
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">SPEED</div>
+                                <div class="stat-controls">
+                                    <select class="operation-select" id="speedOp">
+                                        <option value="add">+</option>
+                                        <option value="subtract">-</option>
+                                        <option value="set">=</option>
+                                    </select>
+                                    <input type="number" class="stat-input" id="speedValue" value="0">
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">DEFENSE</div>
+                                <div class="stat-controls">
+                                    <select class="operation-select" id="defenseOp">
+                                        <option value="add">+</option>
+                                        <option value="subtract">-</option>
+                                        <option value="set">=</option>
+                                    </select>
+                                    <input type="number" class="stat-input" id="defenseValue" value="0">
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">REIATSU</div>
+                                <div class="stat-controls">
+                                    <select class="operation-select" id="reiatsuOp">
+                                        <option value="add">+</option>
+                                        <option value="subtract">-</option>
+                                        <option value="set">=</option>
+                                    </select>
+                                    <input type="number" class="stat-input" id="reiatsuValue" value="0">
+                                </div>
                             </div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-label">VITALITY</div>
-                            <div class="stat-controls">
-                                <select class="operation-select" id="vitalityOp">
-                                    <option value="add">+</option>
-                                    <option value="subtract">-</option>
-                                    <option value="set">=</option>
-                                </select>
-                                <input type="number" class="stat-input" id="vitalityValue" value="0">
+
+                        <div class="stat-group">
+                            <div class="stat-group-title">SKILLS</div>
+                            <div class="stat-item">
+                                <div class="stat-label">HAKUDA</div>
+                                <div class="stat-controls">
+                                    <select class="operation-select" id="hakudaOp">
+                                        <option value="add">+</option>
+                                        <option value="subtract">-</option>
+                                        <option value="set">=</option>
+                                    </select>
+                                    <input type="number" class="stat-input" id="hakudaValue" value="0">
+                                </div>
                             </div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">SPEED</div>
-                            <div class="stat-controls">
-                                <select class="operation-select" id="speedOp">
-                                    <option value="add">+</option>
-                                    <option value="subtract">-</option>
-                                    <option value="set">=</option>
-                                </select>
-                                <input type="number" class="stat-input" id="speedValue" value="0">
+                            <div class="stat-item">
+                                <div class="stat-label">WEAPONSHIP</div>
+                                <div class="stat-controls">
+                                    <select class="operation-select" id="weaponshipOp">
+                                        <option value="add">+</option>
+                                        <option value="subtract">-</option>
+                                        <option value="set">=</option>
+                                    </select>
+                                    <input type="number" class="stat-input" id="weaponshipValue" value="0">
+                                </div>
                             </div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">DEFENSE</div>
-                            <div class="stat-controls">
-                                <select class="operation-select" id="defenseOp">
-                                    <option value="add">+</option>
-                                    <option value="subtract">-</option>
-                                    <option value="set">=</option>
-                                </select>
-                                <input type="number" class="stat-input" id="defenseValue" value="0">
+                            <div class="stat-item">
+                                <div class="stat-label">TAMASHI</div>
+                                <div class="stat-controls">
+                                    <select class="operation-select" id="tamashiOp">
+                                        <option value="add">+</option>
+                                        <option value="subtract">-</option>
+                                        <option value="set">=</option>
+                                    </select>
+                                    <input type="number" class="stat-input" id="tamashiValue" value="0">
+                                </div>
                             </div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">REIATSU</div>
-                            <div class="stat-controls">
-                                <select class="operation-select" id="reiatsuOp">
-                                    <option value="add">+</option>
-                                    <option value="subtract">-</option>
-                                    <option value="set">=</option>
-                                </select>
-                                <input type="number" class="stat-input" id="reiatsuValue" value="0">
+                            <div class="stat-item">
+                                <div class="stat-label">MAGIC</div>
+                                <div class="stat-controls">
+                                    <select class="operation-select" id="magicOp">
+                                        <option value="add">+</option>
+                                        <option value="subtract">-</option>
+                                        <option value="set">=</option>
+                                    </select>
+                                    <input type="number" class="stat-input" id="magicValue" value="0">
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">NAZO</div>
+                                <div class="stat-controls">
+                                    <select class="operation-select" id="nazoOp">
+                                        <option value="add">+</option>
+                                        <option value="subtract">-</option>
+                                        <option value="set">=</option>
+                                    </select>
+                                    <input type="number" class="stat-input" id="nazoValue" value="0">
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="stat-group">
-                        <div class="stat-group-title">SKILLS</div>
-                        <div class="stat-item">
-                            <div class="stat-label">HAKUDA</div>
-                            <div class="stat-controls">
-                                <select class="operation-select" id="hakudaOp">
-                                    <option value="add">+</option>
-                                    <option value="subtract">-</option>
-                                    <option value="set">=</option>
-                                </select>
-                                <input type="number" class="stat-input" id="hakudaValue" value="0">
+                    <!-- Resources Tab -->
+                    <div class="tab-content" id="resourcesTab">
+                        <div class="stat-group">
+                            <div class="stat-group-title">RESOURCES</div>
+                            <div class="stat-item">
+                                <div class="stat-label">POINTS</div>
+                                <div class="stat-controls">
+                                    <select class="operation-select" id="pointsOp">
+                                        <option value="add">+</option>
+                                        <option value="subtract">-</option>
+                                        <option value="set">=</option>
+                                    </select>
+                                    <input type="number" class="stat-input" id="pointsValue" value="0">
+                                </div>
                             </div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">WEAPONSHIP</div>
-                            <div class="stat-controls">
-                                <select class="operation-select" id="weaponshipOp">
-                                    <option value="add">+</option>
-                                    <option value="subtract">-</option>
-                                    <option value="set">=</option>
-                                </select>
-                                <input type="number" class="stat-input" id="weaponshipValue" value="0">
+                            <div class="stat-item">
+                                <div class="stat-label">NODES</div>
+                                <div class="stat-controls">
+                                    <select class="operation-select" id="nodePointsOp">
+                                        <option value="add">+</option>
+                                        <option value="subtract">-</option>
+                                        <option value="set">=</option>
+                                    </select>
+                                    <input type="number" class="stat-input" id="nodePointsValue" value="0">
+                                </div>
                             </div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">TAMASHI</div>
-                            <div class="stat-controls">
-                                <select class="operation-select" id="tamashiOp">
-                                    <option value="add">+</option>
-                                    <option value="subtract">-</option>
-                                    <option value="set">=</option>
-                                </select>
-                                <input type="number" class="stat-input" id="tamashiValue" value="0">
+                            <div class="stat-item">
+                                <div class="stat-label">YEN</div>
+                                <div class="stat-controls">
+                                    <select class="operation-select" id="yenOp">
+                                        <option value="add">+</option>
+                                        <option value="subtract">-</option>
+                                        <option value="set">=</option>
+                                    </select>
+                                    <input type="number" class="stat-input" id="yenValue" value="0">
+                                </div>
                             </div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">MAGIC</div>
-                            <div class="stat-controls">
-                                <select class="operation-select" id="magicOp">
-                                    <option value="add">+</option>
-                                    <option value="subtract">-</option>
-                                    <option value="set">=</option>
-                                </select>
-                                <input type="number" class="stat-input" id="magicValue" value="0">
+                            <div class="stat-item">
+                                <div class="stat-label">REISEN</div>
+                                <div class="stat-controls">
+                                    <select class="operation-select" id="reisenOp">
+                                        <option value="add">+</option>
+                                        <option value="subtract">-</option>
+                                        <option value="set">=</option>
+                                    </select>
+                                    <input type="number" class="stat-input" id="reisenValue" value="0">
+                                </div>
                             </div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">NAZO</div>
-                            <div class="stat-controls">
-                                <select class="operation-select" id="nazoOp">
-                                    <option value="add">+</option>
-                                    <option value="subtract">-</option>
-                                    <option value="set">=</option>
-                                </select>
-                                <input type="number" class="stat-input" id="nazoValue" value="0">
+                            <div class="stat-item">
+                                <div class="stat-label">LOYALTY</div>
+                                <div class="stat-controls">
+                                    <select class="operation-select" id="loyaltyOp">
+                                        <option value="add">+</option>
+                                        <option value="subtract">-</option>
+                                        <option value="set">=</option>
+                                    </select>
+                                    <input type="number" class="stat-input" id="loyaltyValue" value="0">
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="stat-group">
-                        <div class="stat-group-title">RESOURCES</div>
-                        <div class="stat-item">
-                            <div class="stat-label">POINTS</div>
-                            <div class="stat-controls">
-                                <select class="operation-select" id="pointsOp">
-                                    <option value="add">+</option>
-                                    <option value="subtract">-</option>
-                                    <option value="set">=</option>
-                                </select>
-                                <input type="number" class="stat-input" id="pointsValue" value="0">
+                    <!-- Items Tab -->
+                    <div class="tab-content" id="itemsTab">
+                        <div class="items-section">
+                            <div class="stat-group-title">EQUIPMENT DISTRIBUTION</div>
+                            <div class="item-list" id="itemsList">
+                                <!-- Items will be added here dynamically -->
                             </div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">NODES</div>
-                            <div class="stat-controls">
-                                <select class="operation-select" id="nodePointsOp">
-                                    <option value="add">+</option>
-                                    <option value="subtract">-</option>
-                                    <option value="set">=</option>
-                                </select>
-                                <input type="number" class="stat-input" id="nodePointsValue" value="0">
-                            </div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">YEN</div>
-                            <div class="stat-controls">
-                                <select class="operation-select" id="yenOp">
-                                    <option value="add">+</option>
-                                    <option value="subtract">-</option>
-                                    <option value="set">=</option>
-                                </select>
-                                <input type="number" class="stat-input" id="yenValue" value="0">
-                            </div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">REISEN</div>
-                            <div class="stat-controls">
-                                <select class="operation-select" id="reisenOp">
-                                    <option value="add">+</option>
-                                    <option value="subtract">-</option>
-                                    <option value="set">=</option>
-                                </select>
-                                <input type="number" class="stat-input" id="reisenValue" value="0">
-                            </div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">LOYALTY</div>
-                            <div class="stat-controls">
-                                <select class="operation-select" id="loyaltyOp">
-                                    <option value="add">+</option>
-                                    <option value="subtract">-</option>
-                                    <option value="set">=</option>
-                                </select>
-                                <input type="number" class="stat-input" id="loyaltyValue" value="0">
-                            </div>
+                            <button class="add-item-btn" onclick="addNewItem()">+ ADD NEW ITEM</button>
                         </div>
                     </div>
                 </div>
@@ -647,6 +910,7 @@
         let allPlayers = [];
         let filteredPlayers = [];
         let selectedPlayers = new Set();
+        let itemCounter = 0;
 
         function showError(message) {
             const errorDiv = document.createElement('div');
@@ -757,7 +1021,7 @@
                     <div class="player-item ${isSelected ? 'selected' : ''}" onclick="togglePlayer('${player.docId}')">
                         <div class="player-info">
                             <div class="player-name">${player.firstName} ${player.lastName}</div>
-                            <div class="player-meta">ID: ${player.id} | RACE: ${player.race} | RANK: ${player.rank || 'I'}</div>
+                            <div class="player-meta">${player.id} | ${player.race}</div>
                         </div>
                         <input type="checkbox" class="player-checkbox" ${isSelected ? 'checked' : ''} 
                                onchange="event.stopPropagation(); togglePlayer('${player.docId}')">
@@ -798,6 +1062,151 @@
             displayPlayers();
         }
 
+        // Tab functionality
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('tab-btn')) {
+                const tabName = e.target.getAttribute('data-tab');
+                switchTab(tabName);
+            }
+        });
+
+        function switchTab(tabName) {
+            // Update buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabName}Tab`).classList.add('active');
+        }
+
+        // Item management functions
+        function addNewItem() {
+            itemCounter++;
+            const itemId = `item_${itemCounter}`;
+            
+            const itemHTML = `
+                <div class="item-entry" id="${itemId}">
+                    <div class="item-header">
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #cbd5e1; font-weight: 600;">
+                            ITEM #${itemCounter}
+                        </div>
+                        <div class="item-controls">
+                            <button class="btn btn-small btn-danger" onclick="removeItem('${itemId}')">REMOVE</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Item Name *</label>
+                            <div class="rich-editor">
+                                <div class="editor-toolbar">
+                                    <div class="toolbar-group">
+                                        <button type="button" class="toolbar-btn" data-action="bold">B</button>
+                                        <button type="button" class="toolbar-btn" data-action="italic">I</button>
+                                        <button type="button" class="toolbar-btn" data-action="underline">U</button>
+                                    </div>
+                                    <div class="toolbar-group">
+                                        <input type="color" class="color-picker" data-action="color" value="#f1f5f9">
+                                    </div>
+                                </div>
+                                <div class="editor-content" contenteditable="true" data-target="item-name-${itemCounter}" data-placeholder="Enter item name..."></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Category *</label>
+                            <select class="form-select" data-field="category">
+                                <option value="consumable">Consumable</option>
+                                <option value="equipment">Equipment</option>
+                                <option value="material">Material</option>
+                                <option value="misc">Miscellaneous</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Quantity *</label>
+                            <input type="number" class="form-input" data-field="quantity" min="1" value="1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Image URL (Optional)</label>
+                        <input type="url" class="form-input" data-field="imageUrl" placeholder="https://example.com/image.png">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Description *</label>
+                        <div class="rich-editor">
+                            <div class="editor-toolbar">
+                                <div class="toolbar-group">
+                                    <button type="button" class="toolbar-btn" data-action="bold">B</button>
+                                    <button type="button" class="toolbar-btn" data-action="italic">I</button>
+                                    <button type="button" class="toolbar-btn" data-action="underline">U</button>
+                                </div>
+                                <div class="toolbar-group">
+                                    <input type="color" class="color-picker" data-action="color" value="#cbd5e1">
+                                </div>
+                                <div class="toolbar-group">
+                                    <button type="button" class="toolbar-btn" data-action="line-break">BR</button>
+                                </div>
+                            </div>
+                            <div class="editor-content" contenteditable="true" data-target="description-${itemCounter}" data-placeholder="Describe the item..."></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('itemsList').insertAdjacentHTML('beforeend', itemHTML);
+        }
+
+        function removeItem(itemId) {
+            document.getElementById(itemId).remove();
+        }
+
+        // Rich text editor functionality
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('toolbar-btn')) {
+                const action = e.target.getAttribute('data-action');
+                handleToolbarAction(action, e.target);
+            }
+        });
+
+        function handleToolbarAction(action, button) {
+            switch(action) {
+                case 'bold':
+                    document.execCommand('bold');
+                    break;
+                case 'italic':
+                    document.execCommand('italic');
+                    break;
+                case 'underline':
+                    document.execCommand('underline');
+                    break;
+                case 'color':
+                    const color = button.value;
+                    document.execCommand('foreColor', false, color);
+                    break;
+                case 'line-break':
+                    document.execCommand('insertHTML', false, '<br><br>');
+                    break;
+            }
+        }
+
+        // Color picker handling
+        document.addEventListener('change', (e) => {
+            if (e.target.classList.contains('color-picker')) {
+                const color = e.target.value;
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0 && selection.toString()) {
+                    document.execCommand('foreColor', false, color);
+                }
+            }
+        });
+
+        function getEditorContent(targetName) {
+            const editor = document.querySelector(`[data-target="${targetName}"]`);
+            return editor ? editor.innerHTML : '';
+        }
+
         function applyValue(currentValue, operation, value) {
             currentValue = currentValue || 0;
             value = parseInt(value) || 0;
@@ -828,7 +1237,7 @@
             ];
 
             const changes = {};
-            let hasChanges = false;
+            let hasStatChanges = false;
 
             stats.forEach(stat => {
                 const operation = document.getElementById(`${stat}Op`).value;
@@ -836,12 +1245,32 @@
                 
                 if (value !== 0) {
                     changes[stat] = { operation, value };
-                    hasChanges = true;
+                    hasStatChanges = true;
                 }
             });
 
-            if (!hasChanges) {
-                showError('NO CHANGES SPECIFIED');
+            // Get items to distribute
+            const items = [];
+            document.querySelectorAll('.item-entry').forEach(entry => {
+                const name = getEditorContent(entry.querySelector('[data-target^="item-name"]').getAttribute('data-target'));
+                const description = getEditorContent(entry.querySelector('[data-target^="description"]').getAttribute('data-target'));
+                const category = entry.querySelector('[data-field="category"]').value;
+                const quantity = parseInt(entry.querySelector('[data-field="quantity"]').value) || 1;
+                const imageUrl = entry.querySelector('[data-field="imageUrl"]').value.trim();
+
+                if (name.trim() && description.trim()) {
+                    items.push({
+                        name: name,
+                        description: description,
+                        category: category,
+                        quantity: quantity,
+                        imageUrl: imageUrl
+                    });
+                }
+            });
+
+            if (!hasStatChanges && items.length === 0) {
+                showError('NO CHANGES OR ITEMS SPECIFIED');
                 return;
             }
 
@@ -857,65 +1286,85 @@
                     const player = allPlayers.find(p => p.docId === playerId);
                     if (!player) continue;
 
-                    const updateData = {};
                     const changeDetails = [];
 
                     // Apply stat changes
-                    Object.entries(changes).forEach(([stat, change]) => {
-                        let currentValue;
-                        let fieldName;
+                    if (hasStatChanges) {
+                        const updateData = {};
+                        Object.entries(changes).forEach(([stat, change]) => {
+                            let currentValue;
+                            let fieldName;
 
-                        // Map stat names to database field names
-                        switch (stat) {
-                            case 'points':
-                                fieldName = 'pointsToDistribute';
-                                currentValue = player.pointsToDistribute;
-                                break;
-                            case 'nodePoints':
-                                fieldName = 'nodePointsToDistribute';
-                                currentValue = player.nodePointsToDistribute;
-                                break;
-                            case 'yen':
-                                fieldName = 'yenInHand';
-                                currentValue = player.yenInHand;
-                                break;
-                            case 'reisen':
-                                fieldName = 'reisenInHand';
-                                currentValue = player.reisenInHand;
-                                break;
-                            case 'loyalty':
-                                fieldName = 'loyaltyLeft';
-                                currentValue = player.loyaltyLeft;
-                                break;
-                            default:
-                                fieldName = stat;
-                                currentValue = player[stat];
-                        }
+                            // Map stat names to database field names
+                            switch (stat) {
+                                case 'points':
+                                    fieldName = 'pointsToDistribute';
+                                    currentValue = player.pointsToDistribute;
+                                    break;
+                                case 'nodePoints':
+                                    fieldName = 'nodePointsToDistribute';
+                                    currentValue = player.nodePointsToDistribute;
+                                    break;
+                                case 'yen':
+                                    fieldName = 'yenInHand';
+                                    currentValue = player.yenInHand;
+                                    break;
+                                case 'reisen':
+                                    fieldName = 'reisenInHand';
+                                    currentValue = player.reisenInHand;
+                                    break;
+                                case 'loyalty':
+                                    fieldName = 'loyaltyLeft';
+                                    currentValue = player.loyaltyLeft;
+                                    break;
+                                default:
+                                    fieldName = stat;
+                                    currentValue = player[stat];
+                            }
 
-                        const newValue = applyValue(currentValue, change.operation, change.value);
-                        updateData[fieldName] = newValue;
-                        
-                        const opSymbol = change.operation === 'add' ? '+' : change.operation === 'subtract' ? '-' : '=';
-                        changeDetails.push(`${stat.toUpperCase()}: ${opSymbol}${change.value} (${currentValue || 0} → ${newValue})`);
-                    });
+                            const newValue = applyValue(currentValue, change.operation, change.value);
+                            updateData[fieldName] = newValue;
+                            
+                            const opSymbol = change.operation === 'add' ? '+' : change.operation === 'subtract' ? '-' : '=';
+                            changeDetails.push(`${stat.toUpperCase()}: ${opSymbol}${change.value} (${currentValue || 0} → ${newValue})`);
+                        });
 
-                    // Add metadata
-                    updateData.lastEditedAt = new Date().toISOString();
-                    updateData.lastEditedBy = currentUser.login;
+                        // Add metadata
+                        updateData.lastEditedAt = new Date().toISOString();
+                        updateData.lastEditedBy = currentUser.login;
 
-                    // Update character
-                    await window.updateDoc(window.doc(window.db, 'characters', playerId), updateData);
+                        // Update character
+                        await window.updateDoc(window.doc(window.db, 'characters', playerId), updateData);
+                    }
+
+                    // Add items
+                    for (const item of items) {
+                        const itemData = {
+                            ...item,
+                            characterId: player.id,
+                            characterName: `${player.firstName} ${player.lastName}`,
+                            createdAt: new Date().toISOString(),
+                            createdBy: currentUser.login,
+                            lastEditedAt: new Date().toISOString(),
+                            lastEditedBy: currentUser.login
+                        };
+
+                        await window.addDoc(window.collection(window.db, 'items'), itemData);
+                        changeDetails.push(`ITEM: ${item.name} x${item.quantity}`);
+                    }
                     
                     // Create log
-                    await window.addDoc(window.collection(window.db, 'logs'), {
-                        action: 'rewards_distributed',
-                        actorLogin: currentUser.login,
-                        actorRole: 'admin',
-                        targetId: player.id,
-                        targetName: `${player.firstName} ${player.lastName}`,
-                        details: `Administrator distributed rewards: ${changeDetails.join(', ')}`,
-                        timestamp: new Date().toISOString()
-                    });
+                    if (changeDetails.length > 0) {
+                        await window.addDoc(window.collection(window.db, 'logs'), {
+                            action: 'rewards_distributed',
+                            actorLogin: currentUser.login,
+                            actorRole: 'admin',
+                            targetId: player.id,
+                            targetName: `${player.firstName} ${player.lastName}`,
+                            details: `Administrator distributed rewards: ${changeDetails.join(', ')}`,
+                            timestamp: new Date().toISOString()
+                        });
+                    }
 
                     successCount++;
                 }
@@ -925,6 +1374,10 @@
                     document.getElementById(`${stat}Value`).value = 0;
                     document.getElementById(`${stat}Op`).value = 'add';
                 });
+
+                // Clear items
+                document.getElementById('itemsList').innerHTML = '';
+                itemCounter = 0;
 
                 selectedPlayers.clear();
                 updateSelectedCount();

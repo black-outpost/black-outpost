@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item View - Black Outpost Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(20,20,30,0.9) 100%), 
+                        url('https://cdn.discordapp.com/attachments/1408447648767414476/1408592371725242478/image_1.png?ex=68aa4d5f&is=68a8fbdf&hm=3c8442351405014db57137c5664aada195f2e2573e8ffc25ecf22b5b97814cc7&');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e0e6ed;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-bar {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-title::before {
+            content: "👁";
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+            border-color: rgba(148, 163, 184, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(37, 99, 235, 0.9) 100%);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .item-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .item-card {
+            background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,41,59,0.9) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .item-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .item-card.consumable::before {
+            background: linear-gradient(90deg, #10b981, #059669);
+        }
+
+        .item-card.equipment::before {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+        }
+
+        .item-card.material::before {
+            background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+        }
+
+        .item-card.misc::before {
+            background: linear-gradient(90deg, #06b6d4, #0891b2);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: #f1f5f9;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .item-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .category-badge {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            align-self: flex-start;
+        }
+
+        .item-image-section {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .item-image {
+            width: 120px;
+            height: 120px;
+            border: 2px solid rgba(71, 85, 105, 0.5);
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .no-image {
+            font-size: 48px;
+            opacity: 0.5;
+        }
+
+        .quantity-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #f1f5f9;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .item-details {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #94a3b8;
+        }
+
+        .item-details .field {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            padding: 4px 0;
+        }
+
+        .item-details .label {
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .item-details .value {
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        .item-footer {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(71, 85, 105, 0.3);
+            text-align: center;
+        }
+
+        .created-info {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .character-info {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .info-header {
+            background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(51,65,85,0.8) 100%);
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+        }
+
+        .info-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            letter-spacing: 0.5px;
+        }
+
+        .info-content {
+            padding: 24px;
+        }
+
+        .character-summary {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+        }
+
+        .character-avatar {
+            width: 60px;
+            height: 75px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .character-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .character-details h3 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+        }
+
+        .character-details p {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+            margin: 2px 0;
+        }
+
+        .description-section {
+            margin-top: 30px;
+        }
+
+        .description-block {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .description-header {
+            background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(51,65,85,0.8) 100%);
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+        }
+
+        .description-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            color: #f1f5f9;
+            letter-spacing: 0.5px;
+        }
+
+        .description-content {
+            padding: 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #cbd5e1;
+            letter-spacing: 0.3px;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.98) 0%, rgba(15,23,42,0.95) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(71, 85, 105, 0.3);
+            border-top: 3px solid #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #64748b;
+            letter-spacing: 0.5px;
+        }
+
+        .error-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 1001;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            background: linear-gradient(135deg, rgba(153, 27, 27, 0.9) 0%, rgba(127, 29, 29, 0.8) 100%);
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        @media (max-width: 1024px) {
+            .item-layout {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .item-card {
+                max-width: 500px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .nav-bar {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .nav-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .character-summary {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(30,41,59,0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">ACCESSING EQUIPMENT RECORD...</div>
+    </div>
+
+    <div class="container">
+        <nav class="nav-bar">
+            <div class="nav-title">
+                EQUIPMENT RECORD VIEW
+            </div>
+            <div class="nav-actions">
+                <a href="admin-items.html" class="btn" id="backToItems">BACK TO EQUIPMENT</a>
+                <a href="#" class="btn btn-primary" id="editItemBtn">EDIT ITEM</a>
+                <a href="admin-dashboard.html" class="btn" id="backToDashboard">DASHBOARD</a>
+            </div>
+        </nav>
+
+        <div class="item-layout">
+            <div class="item-card" id="itemCard">
+                <div class="item-header">
+                    <div class="item-info">
+                        <div class="item-title" id="itemTitle">LOADING...</div>
+                        <div class="item-meta">
+                            <div>ITEM ID: <span id="itemId">------</span></div>
+                            <div>OWNER: <span id="itemOwner">------</span></div>
+                        </div>
+                    </div>
+                    <div class="category-badge" id="categoryBadge">MISC</div>
+                </div>
+
+                <div class="item-image-section">
+                    <div class="item-image" id="itemImage">
+                        <div class="no-image">📦</div>
+                    </div>
+                    <div class="quantity-display" id="quantityDisplay">QUANTITY: 1</div>
+                </div>
+
+                <div class="item-details">
+                    <div class="field">
+                        <span class="label">CATEGORY:</span>
+                        <span class="value" id="categoryValue">MISCELLANEOUS</span>
+                    </div>
+                    <div class="field">
+                        <span class="label">STATUS:</span>
+                        <span class="value" id="statusValue">ACTIVE</span>
+                    </div>
+                </div>
+
+                <div class="item-footer">
+                    <div class="created-info" id="createdInfo">CREATED: LOADING...</div>
+                </div>
+            </div>
+
+            <div class="character-info">
+                <div class="info-header">
+                    <div class="info-title">OWNER INFORMATION</div>
+                </div>
+                <div class="info-content">
+                    <div class="character-summary">
+                        <div class="character-avatar" id="characterAvatar">
+                            <div style="font-size: 24px; opacity: 0.5;">👤</div>
+                        </div>
+                        <div class="character-details">
+                            <h3 id="characterName">LOADING...</h3>
+                            <p>ID: <span id="characterId">------</span></p>
+                            <p>RACE: <span id="characterRace">------</span></p>
+                            <p>RANK: <span id="characterRank">------</span></p>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h4 style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #cbd5e1; margin-bottom: 12px;">EQUIPMENT SUMMARY</h4>
+                        <div class="item-details">
+                            <div class="field">
+                                <span class="label">Total Items:</span>
+                                <span class="value" id="totalItems">0</span>
+                            </div>
+                            <div class="field">
+                                <span class="label">Consumables:</span>
+                                <span class="value" id="consumableCount">0</span>
+                            </div>
+                            <div class="field">
+                                <span class="label">Equipment:</span>
+                                <span class="value" id="equipmentCount">0</span>
+                            </div>
+                            <div class="field">
+                                <span class="label">Materials:</span>
+                                <span class="value" id="materialCount">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="description-section">
+            <div class="description-block">
+                <div class="description-header">
+                    <div class="description-title">ITEM DESCRIPTION</div>
+                </div>
+                <div class="description-content" id="itemDescription">
+                    LOADING...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
+            authDomain: "bleach-black-outpost.firebaseapp.com",
+            projectId: "bleach-black-outpost",
+            storageBucket: "bleach-black-outpost.firebasestorage.app",
+            messagingSenderId: "201204368777",
+            appId: "1:201204368777:web:c2a34d61acb46e7b494d58",
+            measurementId: "G-SBD3766NQ6"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        window.db = db;
+        window.getDoc = getDoc;
+        window.doc = doc;
+        window.collection = collection;
+        window.query = query;
+        window.where = where;
+        window.getDocs = getDocs;
+    </script>
+
+    <script>
+        let currentUser = null;
+        let currentItem = null;
+        let targetCharacter = null;
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        async function loadUserData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const login = urlParams.get('login') || localStorage.getItem('currentUser');
+            const characterDocId = urlParams.get('character');
+            const itemDocId = urlParams.get('item');
+            
+            if (!login) {
+                showError('NO USER SESSION FOUND');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+
+            if (!characterDocId || !itemDocId) {
+                showError('MISSING PARAMETERS');
+                setTimeout(() => {
+                    window.location.href = `admin-items.html?login=${login}`;
+                }, 2000);
+                return;
+            }
+
+            try {
+                const userDoc = await window.getDoc(window.doc(window.db, 'users', login));
+                if (!userDoc.exists()) {
+                    showError('USER DATA NOT FOUND');
+                    return;
+                }
+
+                currentUser = { login, ...userDoc.data() };
+
+                if (currentUser.role !== 'admin') {
+                    showError('INSUFFICIENT PRIVILEGES');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                    return;
+                }
+
+                // Update navigation links
+                document.getElementById('backToItems').href = `admin-items.html?login=${login}`;
+                document.getElementById('editItemBtn').href = `admin-item-edit.html?login=${login}&character=${characterDocId}&item=${itemDocId}`;
+                document.getElementById('backToDashboard').href = `admin-dashboard.html?login=${login}`;
+
+                // Get character data
+                const characterDoc = await window.getDoc(window.doc(window.db, 'characters', characterDocId));
+                if (!characterDoc.exists()) {
+                    showError('CHARACTER NOT FOUND');
+                    return;
+                }
+
+                targetCharacter = { docId: characterDocId, ...characterDoc.data() };
+
+                // Get item data
+                const itemDoc = await window.getDoc(window.doc(window.db, 'items', itemDocId));
+                if (!itemDoc.exists()) {
+                    showError('ITEM NOT FOUND');
+                    return;
+                }
+
+                currentItem = { docId: itemDocId, ...itemDoc.data() };
+
+                displayItemData();
+                await loadCharacterItems();
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('DATABASE CONNECTION ERROR');
+            }
+        }
+
+        async function loadCharacterItems() {
+            try {
+                const itemsRef = window.collection(window.db, 'items');
+                const q = window.query(itemsRef, window.where('characterId', '==', targetCharacter.id));
+                const querySnapshot = await window.getDocs(q);
+                
+                let totalItems = 0;
+                let consumableCount = 0;
+                let equipmentCount = 0;
+                let materialCount = 0;
+
+                querySnapshot.forEach(doc => {
+                    const item = doc.data();
+                    totalItems += item.quantity || 1;
+                    
+                    switch(item.category.toLowerCase()) {
+                        case 'consumable':
+                            consumableCount += item.quantity || 1;
+                            break;
+                        case 'equipment':
+                            equipmentCount += item.quantity || 1;
+                            break;
+                        case 'material':
+                            materialCount += item.quantity || 1;
+                            break;
+                    }
+                });
+
+                document.getElementById('totalItems').textContent = totalItems;
+                document.getElementById('consumableCount').textContent = consumableCount;
+                document.getElementById('equipmentCount').textContent = equipmentCount;
+                document.getElementById('materialCount').textContent = materialCount;
+
+            } catch (error) {
+                console.error('Error loading character items:', error);
+            }
+        }
+
+        function displayItemData() {
+            if (!currentItem || !targetCharacter) return;
+
+            // Update item card
+            document.getElementById('itemTitle').innerHTML = currentItem.name || 'Untitled Item';
+            document.getElementById('itemId').textContent = currentItem.docId.substring(0, 8).toUpperCase();
+            document.getElementById('itemOwner').textContent = `${targetCharacter.firstName} ${targetCharacter.lastName}`;
+            
+            // Update category
+            const category = currentItem.category || 'misc';
+            document.getElementById('categoryBadge').textContent = category.toUpperCase();
+            document.getElementById('categoryValue').textContent = category.toUpperCase();
+            document.getElementById('itemCard').className = `item-card ${category.toLowerCase()}`;
+
+            // Update quantity
+            if (currentItem.quantity > 1) {
+                document.getElementById('quantityDisplay').textContent = `QUANTITY: ${currentItem.quantity}`;
+            } else {
+                document.getElementById('quantityDisplay').style.display = 'none';
+            }
+
+            // Update image
+            if (currentItem.imageUrl) {
+                document.getElementById('itemImage').innerHTML = `<img src="${currentItem.imageUrl}" alt="${currentItem.name}">`;
+            }
+
+            // Update created info
+            if (currentItem.createdAt) {
+                const date = new Date(currentItem.createdAt).toLocaleDateString('en-GB').replace(/\//g, '-');
+                document.getElementById('createdInfo').textContent = `CREATED: ${date} by ${currentItem.createdBy}`;
+            }
+
+            // Update character info
+            document.getElementById('characterName').textContent = `${targetCharacter.firstName} ${targetCharacter.lastName}`.toUpperCase();
+            document.getElementById('characterId').textContent = targetCharacter.id || '------';
+            document.getElementById('characterRace').textContent = targetCharacter.race || '------';
+            document.getElementById('characterRank').textContent = targetCharacter.rank || 'I';
+
+            // Update character avatar
+            if (targetCharacter.photoUrl) {
+                document.getElementById('characterAvatar').innerHTML = `<img src="${targetCharacter.photoUrl}" alt="Character Photo">`;
+            }
+
+            // Update description
+            document.getElementById('itemDescription').innerHTML = currentItem.description || 'No description provided.';
+        }
+
+        // Initialize page
+        window.addEventListener('load', async function() {
+            await loadUserData();
+            
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
