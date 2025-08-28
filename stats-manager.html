@@ -596,32 +596,9 @@
             }
         };
 
-        function showError(message) {
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'error-message';
-            errorDiv.textContent = message;
-            document.body.appendChild(errorDiv);
-            
-            setTimeout(() => {
-                errorDiv.remove();
-            }, 5000);
-        }
-
-        function showSuccess(message) {
-            const successDiv = document.createElement('div');
-            successDiv.className = 'success-message';
-            successDiv.textContent = message;
-            document.body.appendChild(successDiv);
-            
-            setTimeout(() => {
-                successDiv.remove();
-            }, 3000);
-        }
-
         function calculateNodeProgression(reisenAbsorbed) {
             if (reisenAbsorbed < 0) reisenAbsorbed = 0;
             
-            // Node requirements: 4x4, then 5x3, 6x3, 7x3, then 8x2, 9x2, 10x2, etc.
             const requirements = [];
             
             // 4 × 4 times
@@ -666,6 +643,43 @@
                 nextProgress: `0/${nextReq}`,
                 nodesReceived: nodesReceived
             };
+        }
+
+        function getTotalNodePoints(character) {
+            const manualNodes = character.nodePointsToDistribute || 0;
+            const reisenNodes = character.totalNodesFromReisen || 0;
+            return manualNodes + reisenNodes;
+        }
+
+        function ensureReisenNodesCalculated(character) {
+            const reisenAbsorbed = character.reisenAbsorbed || 0;
+            if (reisenAbsorbed > 0) {
+                const nodeProgression = calculateNodeProgression(reisenAbsorbed);
+                character.totalNodesFromReisen = nodeProgression.totalNodes;
+                character.nextNodeProgress = nodeProgression.nextProgress;
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
         }
 
         async function loadUserData() {
@@ -719,16 +733,20 @@
 
             const char = currentCharacter;
             
-            // Update resources - FIXED: Default loyalty to 0
+            // Upewnij się, że totalNodesFromReisen jest obliczone
+            ensureReisenNodesCalculated(currentCharacter);
+            const totalNodePoints = getTotalNodePoints(currentCharacter);
+            
+            // Update resources
             document.getElementById('availablePoints').textContent = char.pointsToDistribute || 0;
-            document.getElementById('nodePoints').textContent = char.nodePointsToDistribute || 0;
+            document.getElementById('nodePoints').textContent = totalNodePoints;
             document.getElementById('currentYen').textContent = char.yenInHand || 0;
-            document.getElementById('loyaltyLeft').textContent = char.loyaltyLeft || 0; // FIXED: Default to 0
+            document.getElementById('loyaltyLeft').textContent = char.loyaltyLeft || 0;
 
-            // Update reisen info - FIXED: Default node progress to 0/4
+            // Update reisen info
             document.getElementById('reisenInHand').textContent = char.reisenInHand || 0;
             document.getElementById('reisenAbsorbed').textContent = char.reisenAbsorbed || 0;
-            document.getElementById('nodeProgress').textContent = char.nextNodeProgress || '0/4'; // FIXED: Default to 0/4
+            document.getElementById('nodeProgress').textContent = char.nextNodeProgress || '0/4';
             
             // Update absorb input max
             document.getElementById('absorbAmount').max = char.reisenInHand || 0;
@@ -804,12 +822,6 @@
                 return;
             }
 
-            // Check max limit - REMOVED: No upper limit for stats
-            // if (change > 0 && currentValue >= 100) {
-            //     showError('MAXIMUM STAT IS 100');
-            //     return;
-            // }
-
             // Apply change
             currentCharacter[statKey] = currentValue + change;
             currentCharacter.pointsToDistribute = availablePoints - change;
@@ -837,7 +849,7 @@
                 const increaseBtn = item.querySelector('.stat-btn-increase');
 
                 decreaseBtn.disabled = currentValue <= 0;
-                increaseBtn.disabled = availablePoints <= 0; // REMOVED: || currentValue >= 100
+                increaseBtn.disabled = availablePoints <= 0;
             });
         }
 
@@ -871,6 +883,11 @@
             document.getElementById('reisenInHand').textContent = newInHand;
             document.getElementById('reisenAbsorbed').textContent = newAbsorbed;
             document.getElementById('nodeProgress').textContent = nodeProgression.nextProgress;
+            
+            // Update total node points display
+            const totalNodePoints = getTotalNodePoints(currentCharacter);
+            document.getElementById('nodePoints').textContent = totalNodePoints;
+            
             document.getElementById('absorbAmount').max = newInHand;
             document.getElementById('absorbAmount').value = 0;
 

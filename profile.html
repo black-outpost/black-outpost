@@ -774,6 +774,70 @@
             }
         };
 
+        function calculateNodeProgression(reisenAbsorbed) {
+            if (reisenAbsorbed < 0) reisenAbsorbed = 0;
+            
+            const requirements = [];
+            
+            // 4 × 4 times
+            for (let i = 0; i < 4; i++) requirements.push(4);
+            
+            // 5,6,7 × 3 times each
+            for (let req = 5; req <= 7; req++) {
+                for (let i = 0; i < 3; i++) requirements.push(req);
+            }
+            
+            // 8+ × 2 times each
+            let req = 8;
+            while (requirements.length < 1000) {
+                for (let i = 0; i < 2 && requirements.length < 1000; i++) {
+                    requirements.push(req);
+                }
+                req++;
+            }
+            
+            let totalUsed = 0;
+            let nodesReceived = 0;
+            
+            for (let i = 0; i < requirements.length; i++) {
+                const needed = requirements[i];
+                
+                if (totalUsed + needed <= reisenAbsorbed) {
+                    totalUsed += needed;
+                    nodesReceived++;
+                } else {
+                    const progress = reisenAbsorbed - totalUsed;
+                    return {
+                        totalNodes: nodesReceived,
+                        nextProgress: `${progress}/${needed}`,
+                        nodesReceived: nodesReceived
+                    };
+                }
+            }
+            
+            const nextReq = requirements[nodesReceived] || (requirements[requirements.length - 1] + Math.floor(nodesReceived / 2));
+            return {
+                totalNodes: nodesReceived,
+                nextProgress: `0/${nextReq}`,
+                nodesReceived: nodesReceived
+            };
+        }
+
+        function getTotalNodePoints(character) {
+            const manualNodes = character.nodePointsToDistribute || 0;
+            const reisenNodes = character.totalNodesFromReisen || 0;
+            return manualNodes + reisenNodes;
+        }
+
+        function ensureReisenNodesCalculated(character) {
+            const reisenAbsorbed = character.reisenAbsorbed || 0;
+            if (reisenAbsorbed > 0) {
+                const nodeProgression = calculateNodeProgression(reisenAbsorbed);
+                character.totalNodesFromReisen = nodeProgression.totalNodes;
+                character.nextNodeProgress = nodeProgression.nextProgress;
+            }
+        }
+
         function showError(message) {
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error-message';
@@ -902,14 +966,18 @@
             document.getElementById('statMagic').textContent = char.magic || 0;
             document.getElementById('statNazo').textContent = char.nazo || 0;
 
-            // Update resources - FIXED: Handle loyalty properly
+            // POPRAWKA: Oblicz prawidłowe node points
+            ensureReisenNodesCalculated(currentCharacter);
+            const totalNodePoints = getTotalNodePoints(currentCharacter);
+            
+            // Update resources
             document.getElementById('pointsLeft').textContent = char.pointsToDistribute || 0;
-            document.getElementById('nodePoints').textContent = char.nodePointsToDistribute || 0;
+            document.getElementById('nodePoints').textContent = totalNodePoints;
             document.getElementById('reisenInHand').textContent = char.reisenInHand || 0;
             document.getElementById('reisenAbsorbed').textContent = char.reisenAbsorbed || 0;
-            document.getElementById('nodeProgress').textContent = char.nextNodeProgress || '0/4'; // FIXED: Default to 0/4
+            document.getElementById('nodeProgress').textContent = char.nextNodeProgress || '0/4';
             document.getElementById('yenAmount').textContent = char.yenInHand || 0;
-            document.getElementById('loyaltyLeft').textContent = char.loyaltyLeft || 0; // FIXED: Default to 0
+            document.getElementById('loyaltyLeft').textContent = char.loyaltyLeft || 0;
 
             // Update descriptions
             displayDescriptions();
