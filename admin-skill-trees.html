@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Tree Editor - Black Outpost Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(20,20,30,0.9) 100%), 
+                        url('https://cdn.discordapp.com/attachments/1408447648767414476/1408592371725242478/image_1.png?ex=68aa4d5f&is=68a8fbdf&hm=3c8442351405014db57137c5664aada195f2e2573e8ffc25ecf22b5b97814cc7&');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e0e6ed;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-bar {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-title::before {
+            content: "🌳";
+            color: #10b981;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 1) 0%, rgba(51, 65, 85, 1) 100%);
+            border-color: rgba(148, 163, 184, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.9) 100%);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.8) 0%, rgba(5, 150, 105, 0.9) 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .editor-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr 350px;
+            gap: 20px;
+            height: calc(100vh - 140px);
+        }
+
+        .sidebar, .properties-panel {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar-header, .panel-header {
+            background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(51,65,85,0.8) 100%);
+            padding: 16px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+        }
+
+        .sidebar-title, .panel-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            color: #f1f5f9;
+            letter-spacing: 0.5px;
+        }
+
+        .tree-selector {
+            padding: 16px;
+        }
+
+        .tree-tabs {
+            display: grid;
+            gap: 8px;
+        }
+
+        .tree-tab {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            color: #94a3b8;
+        }
+
+        .tree-tab:hover {
+            border-color: rgba(148, 163, 184, 0.5);
+            color: #e2e8f0;
+        }
+
+        .tree-tab.active {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(5, 150, 105, 0.2) 100%);
+            border-color: rgba(16, 185, 129, 0.5);
+            color: #10b981;
+        }
+
+        .node-palette {
+            padding: 16px;
+            border-top: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .palette-section {
+            margin-bottom: 20px;
+        }
+
+        .palette-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .node-templates {
+            display: grid;
+            gap: 8px;
+        }
+
+        .node-template {
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .node-template:hover {
+            border-color: rgba(148, 163, 184, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .node-template:active {
+            cursor: grabbing;
+        }
+
+        .canvas-container {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .canvas-header {
+            background: linear-gradient(135deg, rgba(30,41,59,0.9) 0%, rgba(51,65,85,0.8) 100%);
+            padding: 16px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .canvas-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .canvas-tools {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tool-btn {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.6) 0%, rgba(51, 65, 85, 0.7) 100%);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #94a3b8;
+        }
+
+        .tool-btn:hover {
+            background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
+            color: #e2e8f0;
+        }
+
+        .tool-btn.active {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(5, 150, 105, 0.2) 100%);
+            border-color: rgba(16, 185, 129, 0.5);
+            color: #10b981;
+        }
+
+        .tree-canvas {
+            position: relative;
+            width: 100%;
+            height: calc(100% - 60px);
+            overflow: auto;
+            background: 
+                radial-gradient(circle at 50px 50px, rgba(71, 85, 105, 0.1) 2px, transparent 2px),
+                radial-gradient(circle at 75px 25px, rgba(71, 85, 105, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px, 25px 25px;
+        }
+
+        .tier-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: repeating-linear-gradient(
+                to right,
+                rgba(148, 163, 184, 0.4) 0px,
+                rgba(148, 163, 184, 0.4) 10px,
+                transparent 10px,
+                transparent 20px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .tier-label {
+            position: absolute;
+            right: 20px;
+            top: -10px;
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: #64748b;
+            border: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .skill-node {
+            position: absolute;
+            cursor: move;
+            user-select: none;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .skill-node.selected {
+            filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.6));
+        }
+
+        .node-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(51, 65, 85, 0.9) 0%, rgba(71, 85, 105, 0.8) 100%);
+            border: 2px solid rgba(148, 163, 184, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            color: #e2e8f0;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .node-rect {
+            min-width: 120px;
+            padding: 12px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(51, 65, 85, 0.9) 0%, rgba(71, 85, 105, 0.8) 100%);
+            border: 2px solid rgba(148, 163, 184, 0.4);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: #e2e8f0;
+            text-align: center;
+            max-width: 200px;
+        }
+
+        .node-small { border-color: #10b981; }
+        .node-medium { border-color: #f59e0b; }
+        .node-large { border-color: #ef4444; }
+
+        .node-connection {
+            position: absolute;
+            stroke: rgba(148, 163, 184, 0.6);
+            stroke-width: 2;
+            stroke-dasharray: 5,5;
+            fill: none;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .properties-content {
+            padding: 16px;
+            height: calc(100% - 60px);
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            display: block;
+            text-transform: uppercase;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 6px;
+            color: #f1f5f9;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+
+        .form-textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+
+        .checkbox-group {
+            display: grid;
+            gap: 8px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-input {
+            width: 16px;
+            height: 16px;
+            accent-color: #10b981;
+        }
+
+        .checkbox-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: #e2e8f0;
+        }
+
+        .effects-section {
+            background: linear-gradient(135deg, rgba(30,41,59,0.4) 0%, rgba(51,65,85,0.3) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 8px;
+        }
+
+        .effects-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: #f59e0b;
+            margin-bottom: 8px;
+        }
+
+        .stat-effects {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .stat-input {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-input label {
+            font-size: 10px;
+            color: #94a3b8;
+            min-width: 30px;
+        }
+
+        .stat-input input {
+            width: 50px;
+            padding: 4px;
+            background: rgba(30,41,59,0.6);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 4px;
+            color: #f1f5f9;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,41,59,0.9) 100%);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .loading-state, .error-message, .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 1001;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .loading-state {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(37, 99, 235, 0.8) 100%);
+            color: #dbeafe;
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, rgba(153, 27, 27, 0.9) 0%, rgba(127, 29, 29, 0.8) 100%);
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.9) 0%, rgba(16, 185, 129, 0.8) 100%);
+            color: #a7f3d0;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        @media (max-width: 1400px) {
+            .editor-layout {
+                grid-template-columns: 280px 1fr 320px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .editor-layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+                height: auto;
+            }
+            
+            .sidebar, .properties-panel {
+                height: auto;
+                max-height: 300px;
+            }
+            
+            .tree-canvas {
+                height: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav-bar">
+            <div class="nav-title">
+                SKILL TREE EDITOR
+            </div>
+            <div class="nav-actions">
+                <button class="btn" onclick="importTree()">IMPORT</button>
+                <button class="btn" onclick="exportTree()">EXPORT</button>
+                <button class="btn btn-success" onclick="saveTree()">SAVE TREE</button>
+                <a href="admin-dashboard.html" class="btn" id="backToDashboard">DASHBOARD</a>
+                <a href="index.html" class="btn btn-danger" onclick="logout()">LOGOUT</a>
+            </div>
+        </nav>
+
+        <div class="editor-layout">
+            <!-- Left Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <div class="sidebar-title">SKILL TREES</div>
+                </div>
+                <div class="tree-selector">
+                    <div class="tree-tabs" id="treeTabs">
+                        <div class="tree-tab active" data-tree="strength">STRENGTH</div>
+                        <div class="tree-tab" data-tree="vitality">VITALITY</div>
+                        <div class="tree-tab" data-tree="speed">SPEED</div>
+                        <div class="tree-tab" data-tree="defense">DEFENSE</div>
+                        <div class="tree-tab" data-tree="reiatsu">REIATSU</div>
+                        <div class="tree-tab" data-tree="hakuda">HAKUDA</div>
+                        <div class="tree-tab" data-tree="weaponship">WEAPONSHIP</div>
+                        <div class="tree-tab" data-tree="tamashi">TAMASHI</div>
+                        <div class="tree-tab" data-tree="magic">MAGIC</div>
+                        <div class="tree-tab" data-tree="nazo">NAZO</div>
+                    </div>
+                </div>
+                <div class="node-palette">
+                    <div class="palette-section">
+                        <div class="palette-title">Node Types</div>
+                        <div class="node-templates">
+                            <div class="node-template" draggable="true" data-type="small">
+                                <span style="color: #10b981;">●</span>
+                                Small Node (+Stats)
+                            </div>
+                            <div class="node-template" draggable="true" data-type="medium">
+                                <span style="color: #f59e0b;">●</span>
+                                Medium Node (Passive)
+                            </div>
+                            <div class="node-template" draggable="true" data-type="large">
+                                <span style="color: #ef4444;">●</span>
+                                Large Node (Technique)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Canvas -->
+            <div class="canvas-container">
+                <div class="canvas-header">
+                    <div class="canvas-title" id="canvasTitle">STRENGTH TREE</div>
+                    <div class="canvas-tools">
+                        <button class="tool-btn active" id="selectTool" onclick="setTool('select')">SELECT</button>
+                        <button class="tool-btn" id="connectTool" onclick="setTool('connect')">CONNECT</button>
+                        <button class="tool-btn" id="tierTool" onclick="setTool('tier')">ADD TIER</button>
+                        <button class="tool-btn" onclick="previewTree()">PREVIEW</button>
+                        <button class="tool-btn" onclick="clearTree()">CLEAR</button>
+                    </div>
+                </div>
+                <div class="tree-canvas" id="treeCanvas">
+                    <svg id="connectionSvg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2;">
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Right Properties Panel -->
+            <div class="properties-panel">
+                <div class="panel-header">
+                    <div class="panel-title">NODE PROPERTIES</div>
+                </div>
+                <div class="properties-content" id="propertiesContent">
+                    <div style="text-align: center; color: #64748b; font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-top: 40px;">
+                        SELECT A NODE TO EDIT
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import/Export Modal -->
+    <div class="modal" id="importExportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">IMPORT TREE</div>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tree Data (JSON)</label>
+                <textarea class="form-textarea" id="treeDataInput" rows="15" placeholder="Paste tree JSON data here..."></textarea>
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button class="btn" onclick="closeModal()">CANCEL</button>
+                <button class="btn btn-success" id="modalConfirmBtn">IMPORT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase functions from CDN
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+        import { getFirestore, doc, getDoc, setDoc, collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
+            authDomain: "bleach-black-outpost.firebaseapp.com",
+            projectId: "bleach-black-outpost",
+            storageBucket: "bleach-black-outpost.firebasestorage.app",
+            messagingSenderId: "201204368777",
+            appId: "1:201204368777:web:c2a34d61acb46e7b494d58",
+            measurementId: "G-SBD3766NQ6"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Make Firebase available globally by attaching to window
+        window.firebase = {
+            db: db,
+            doc: doc,
+            getDoc: getDoc,
+            setDoc: setDoc,
+            collection: collection,
+            addDoc: addDoc
+        };
+        
+        // Signal that Firebase is ready
+        window.firebaseReady = true;
+    </script>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let currentTree = 'strength';
+        let currentTool = 'select';
+        let selectedNode = null;
+        let treeData = {};
+        let nodeIdCounter = 1;
+        let isDragging = false;
+        let dragOffset = { x: 0, y: 0 };
+
+        // Initialize editor
+        window.addEventListener('load', function() {
+            // Wait for Firebase before initializing
+            const checkFirebase = setInterval(() => {
+                if (window.firebaseReady) {
+                    clearInterval(checkFirebase);
+                    loadUserData();
+                    setupEventListeners();
+                    initializeTree();
+                }
+            }, 100);
+        });
+
+        function showMessage(message, type = 'loading') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `${type}-message`;
+            messageDiv.textContent = message;
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, type === 'loading' ? 1000 : 3000);
+        }
+
+        async function loadUserData() {
+            // Wait for Firebase to be ready
+            while (!window.firebaseReady) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const login = urlParams.get('login') || localStorage.getItem('currentUser');
+            
+            if (!login) {
+                showMessage('NO USER SESSION FOUND', 'error');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+
+            try {
+                const userDoc = await window.firebase.getDoc(window.firebase.doc(window.firebase.db, 'users', login));
+                if (!userDoc.exists()) {
+                    showMessage('USER DATA NOT FOUND', 'error');
+                    return;
+                }
+
+                currentUser = { login, ...userDoc.data() };
+
+                if (currentUser.role !== 'admin') {
+                    showMessage('INSUFFICIENT PRIVILEGES', 'error');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                    return;
+                }
+
+                document.getElementById('backToDashboard').href = `admin-dashboard.html?login=${login}`;
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showMessage('DATABASE CONNECTION ERROR', 'error');
+            }
+        }
+
+        function setupEventListeners() {
+            // Tree tab switching
+            document.getElementById('treeTabs').addEventListener('click', function(e) {
+                if (e.target.classList.contains('tree-tab')) {
+                    switchTree(e.target.dataset.tree);
+                }
+            });
+
+            // Canvas events
+            const canvas = document.getElementById('treeCanvas');
+            canvas.addEventListener('click', handleCanvasClick);
+            canvas.addEventListener('mousedown', handleCanvasMouseDown);
+            canvas.addEventListener('mousemove', handleCanvasMouseMove);
+            canvas.addEventListener('mouseup', handleCanvasMouseUp);
+
+            // Node template dragging
+            document.querySelectorAll('.node-template').forEach(template => {
+                template.addEventListener('dragstart', handleDragStart);
+            });
+
+            canvas.addEventListener('dragover', handleDragOver);
+            canvas.addEventListener('drop', handleDrop);
+        }
+
+        function switchTree(treeType) {
+            currentTree = treeType;
+            
+            // Update active tab
+            document.querySelectorAll('.tree-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-tree="${treeType}"]`).classList.add('active');
+            
+            // Update canvas title
+            document.getElementById('canvasTitle').textContent = treeType.toUpperCase() + ' TREE';
+            
+            // Load tree data
+            loadTreeData();
+        }
+
+        async function loadTreeData() {
+            try {
+                const treeDoc = await window.firebase.getDoc(window.firebase.doc(window.firebase.db, 'skillTrees', `${currentTree}_tree`));
+                
+                if (treeDoc.exists()) {
+                    treeData = treeDoc.data();
+                } else {
+                    // Initialize empty tree
+                    treeData = {
+                        id: `${currentTree}_tree`,
+                        name: `${currentTree.charAt(0).toUpperCase() + currentTree.slice(1)} Mastery`,
+                        description: `${currentTree} enhancement tree`,
+                        associatedStat: currentTree,
+                        raceRestrictions: [],
+                        tiers: []
+                    };
+                }
+                
+                renderTree();
+                
+            } catch (error) {
+                console.error('Error loading tree:', error);
+                showMessage('ERROR LOADING TREE DATA', 'error');
+            }
+        }
+
+        function renderTree() {
+            const canvas = document.getElementById('treeCanvas');
+            const svg = document.getElementById('connectionSvg');
+            
+            // Clear existing content
+            const existingNodes = canvas.querySelectorAll('.skill-node, .tier-line');
+            existingNodes.forEach(node => node.remove());
+            svg.innerHTML = '';
+            
+            // Render tier lines
+            if (treeData.tiers) {
+                treeData.tiers.forEach((tier, index) => {
+                    const tierY = 150 + (index * 200);
+                    const tierLine = document.createElement('div');
+                    tierLine.className = 'tier-line';
+                    tierLine.style.top = tierY + 'px';
+                    
+                    const tierLabel = document.createElement('div');
+                    tierLabel.className = 'tier-label';
+                    tierLabel.textContent = `TIER ${tier.tier}`;
+                    tierLine.appendChild(tierLabel);
+                    
+                    canvas.appendChild(tierLine);
+                });
+            }
+            
+            // Render nodes
+            if (treeData.tiers) {
+                treeData.tiers.forEach((tier) => {
+                    if (tier.nodes) {
+                        tier.nodes.forEach(node => {
+                            createNodeElement(node);
+                        });
+                    }
+                });
+            }
+            
+            // Render connections
+            renderConnections();
+        }
+
+        function createNodeElement(nodeData) {
+            const nodeEl = document.createElement('div');
+            nodeEl.className = `skill-node node-${nodeData.type}`;
+            nodeEl.dataset.nodeId = nodeData.id;
+            nodeEl.style.left = (nodeData.position?.x || 100) + 'px';
+            nodeEl.style.top = (nodeData.position?.y || 100) + 'px';
+
+            const nodeContent = document.createElement('div');
+            nodeContent.className = nodeData.type === 'small' ? 'node-circle' : 'node-rect';
+            
+            if (nodeData.type === 'small') {
+                nodeContent.textContent = nodeData.effects?.stats ? 
+                    Object.entries(nodeData.effects.stats).map(([stat, val]) => 
+                        `+${val} ${stat.substr(0,3).toUpperCase()}`).join('\n') : '+1 STAT';
+            } else {
+                nodeContent.innerHTML = `
+                    <div style="font-weight: 600; margin-bottom: 4px;">${nodeData.name || 'New Node'}</div>
+                    <div style="font-size: 8px; opacity: 0.8;">${nodeData.description || 'Description'}</div>
+                `;
+            }
+
+            nodeEl.appendChild(nodeContent);
+            nodeEl.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectNode(nodeData.id);
+            });
+
+            document.getElementById('treeCanvas').appendChild(nodeEl);
+        }
+
+        function selectNode(nodeId) {
+            // Clear previous selection
+            document.querySelectorAll('.skill-node').forEach(node => {
+                node.classList.remove('selected');
+            });
+
+            // Select new node
+            const nodeEl = document.querySelector(`[data-node-id="${nodeId}"]`);
+            if (nodeEl) {
+                nodeEl.classList.add('selected');
+                selectedNode = findNodeData(nodeId);
+                showNodeProperties(selectedNode);
+            }
+        }
+
+        function findNodeData(nodeId) {
+            for (let tier of (treeData.tiers || [])) {
+                for (let node of (tier.nodes || [])) {
+                    if (node.id === nodeId) {
+                        return node;
+                    }
+                }
+            }
+            return null;
+        }
+
+        function showNodeProperties(node) {
+            const content = document.getElementById('propertiesContent');
+            
+            if (!node) {
+                content.innerHTML = `
+                    <div style="text-align: center; color: #64748b; font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-top: 40px;">
+                        SELECT A NODE TO EDIT
+                    </div>
+                `;
+                return;
+            }
+
+            content.innerHTML = `
+                <div class="form-group">
+                    <label class="form-label">Node ID</label>
+                    <input type="text" class="form-input" value="${node.id}" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Node Type</label>
+                    <select class="form-select" id="nodeType" onchange="updateNodeProperty('type', this.value)">
+                        <option value="small" ${node.type === 'small' ? 'selected' : ''}>Small (+Stats)</option>
+                        <option value="medium" ${node.type === 'medium' ? 'selected' : ''}>Medium (Passive)</option>
+                        <option value="large" ${node.type === 'large' ? 'selected' : ''}>Large (Technique)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-input" value="${node.name || ''}" onchange="updateNodeProperty('name', this.value)">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" onchange="updateNodeProperty('description', this.value)">${node.description || ''}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Cost</label>
+                    <input type="number" class="form-input" value="${node.cost || 1}" min="1" onchange="updateNodeProperty('cost', parseInt(this.value))">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Max Purchases</label>
+                    <input type="number" class="form-input" value="${node.maxPurchases || 1}" min="1" onchange="updateNodeProperty('maxPurchases', parseInt(this.value))">
+                </div>
+
+                ${generateEffectsSection(node)}
+                ${generatePrerequisitesSection(node)}
+                
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-danger" onclick="deleteNode('${node.id}')">DELETE NODE</button>
+                </div>
+            `;
+        }
+
+        function generateEffectsSection(node) {
+            if (node.type === 'small') {
+                const stats = node.effects?.stats || {};
+                return `
+                    <div class="form-group">
+                        <label class="form-label">Stat Effects</label>
+                        <div class="effects-section">
+                            <div class="effects-title">Stat Bonuses</div>
+                            <div class="stat-effects">
+                                <div class="stat-input">
+                                    <label>STR</label>
+                                    <input type="number" value="${stats.strength || 0}" onchange="updateStatEffect('strength', this.value)">
+                                </div>
+                                <div class="stat-input">
+                                    <label>VIT</label>
+                                    <input type="number" value="${stats.vitality || 0}" onchange="updateStatEffect('vitality', this.value)">
+                                </div>
+                                <div class="stat-input">
+                                    <label>SPD</label>
+                                    <input type="number" value="${stats.speed || 0}" onchange="updateStatEffect('speed', this.value)">
+                                </div>
+                                <div class="stat-input">
+                                    <label>DEF</label>
+                                    <input type="number" value="${stats.defense || 0}" onchange="updateStatEffect('defense', this.value)">
+                                </div>
+                                <div class="stat-input">
+                                    <label>RAS</label>
+                                    <input type="number" value="${stats.reiatsu || 0}" onchange="updateStatEffect('reiatsu', this.value)">
+                                </div>
+                                <div class="stat-input">
+                                    <label>BUJ</label>
+                                    <input type="number" value="${stats.hakuda || 0}" onchange="updateStatEffect('hakuda', this.value)">
+                                </div>
+                                <div class="stat-input">
+                                    <label>WEP</label>
+                                    <input type="number" value="${stats.weaponship || 0}" onchange="updateStatEffect('weaponship', this.value)">
+                                </div>
+                                <div class="stat-input">
+                                    <label>TSH</label>
+                                    <input type="number" value="${stats.tamashi || 0}" onchange="updateStatEffect('tamashi', this.value)">
+                                </div>
+                                <div class="stat-input">
+                                    <label>RYK</label>
+                                    <input type="number" value="${stats.magic || 0}" onchange="updateStatEffect('magic', this.value)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (node.type === 'medium') {
+                const passive = node.effects?.passive || {};
+                return `
+                    <div class="form-group">
+                        <label class="form-label">Passive Effect</label>
+                        <div class="effects-section">
+                            <div class="form-group">
+                                <label class="form-label">Passive Name</label>
+                                <input type="text" class="form-input" value="${passive.name || ''}" onchange="updatePassiveEffect('name', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Passive Description</label>
+                                <textarea class="form-textarea" onchange="updatePassiveEffect('description', this.value)">${passive.description || ''}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (node.type === 'large') {
+                const technique = node.effects?.technique || {};
+                return `
+                    <div class="form-group">
+                        <label class="form-label">Technique</label>
+                        <div class="effects-section">
+                            <div class="form-group">
+                                <label class="form-label">Technique Name</label>
+                                <input type="text" class="form-input" value="${technique.name || ''}" onchange="updateTechniqueEffect('name', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Requires Approval</label>
+                                <select class="form-select" onchange="updateTechniqueEffect('requiresApproval', this.value === 'true')">
+                                    <option value="true" ${technique.requiresApproval !== false ? 'selected' : ''}>Yes</option>
+                                    <option value="false" ${technique.requiresApproval === false ? 'selected' : ''}>No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            return '';
+        }
+
+        function generatePrerequisitesSection(node) {
+            return `
+                <div class="form-group">
+                    <label class="form-label">Prerequisites</label>
+                    <div class="checkbox-group" id="prerequisitesList">
+                        ${generateNodeCheckboxes(node.prerequisites || [])}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Exclusions</label>
+                    <div class="checkbox-group" id="exclusionsList">
+                        ${generateNodeCheckboxes(node.exclusions || [], 'exclusions')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateNodeCheckboxes(selectedIds, type = 'prerequisites') {
+            let html = '';
+            
+            if (treeData.tiers) {
+                treeData.tiers.forEach(tier => {
+                    if (tier.nodes) {
+                        tier.nodes.forEach(node => {
+                            if (node.id !== selectedNode?.id) {
+                                const isChecked = selectedIds.includes(node.id);
+                                html += `
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" class="checkbox-input" 
+                                               ${isChecked ? 'checked' : ''} 
+                                               onchange="updateNodeArray('${type}', '${node.id}', this.checked)">
+                                        <label class="checkbox-label">${node.name || node.id}</label>
+                                    </div>
+                                `;
+                            }
+                        });
+                    }
+                });
+            }
+            
+            return html || '<div style="color: #64748b; font-size: 11px;">No other nodes available</div>';
+        }
+
+        function updateNodeProperty(property, value) {
+            if (selectedNode) {
+                selectedNode[property] = value;
+                renderTree();
+            }
+        }
+
+        function updateStatEffect(stat, value) {
+            if (selectedNode) {
+                if (!selectedNode.effects) selectedNode.effects = {};
+                if (!selectedNode.effects.stats) selectedNode.effects.stats = {};
+                
+                const numValue = parseInt(value) || 0;
+                if (numValue > 0) {
+                    selectedNode.effects.stats[stat] = numValue;
+                } else {
+                    delete selectedNode.effects.stats[stat];
+                }
+                
+                renderTree();
+            }
+        }
+
+        function updatePassiveEffect(property, value) {
+            if (selectedNode) {
+                if (!selectedNode.effects) selectedNode.effects = {};
+                if (!selectedNode.effects.passive) selectedNode.effects.passive = {};
+                selectedNode.effects.passive[property] = value;
+            }
+        }
+
+        function updateTechniqueEffect(property, value) {
+            if (selectedNode) {
+                if (!selectedNode.effects) selectedNode.effects = {};
+                if (!selectedNode.effects.technique) selectedNode.effects.technique = {};
+                selectedNode.effects.technique[property] = value;
+            }
+        }
+
+        function updateNodeArray(arrayType, nodeId, checked) {
+            if (selectedNode) {
+                if (!selectedNode[arrayType]) selectedNode[arrayType] = [];
+                
+                const index = selectedNode[arrayType].indexOf(nodeId);
+                if (checked && index === -1) {
+                    selectedNode[arrayType].push(nodeId);
+                } else if (!checked && index !== -1) {
+                    selectedNode[arrayType].splice(index, 1);
+                }
+                
+                renderConnections();
+            }
+        }
+
+        function renderConnections() {
+            const svg = document.getElementById('connectionSvg');
+            svg.innerHTML = '';
+            
+            if (treeData.tiers) {
+                treeData.tiers.forEach(tier => {
+                    if (tier.nodes) {
+                        tier.nodes.forEach(node => {
+                            if (node.prerequisites) {
+                                node.prerequisites.forEach(prereqId => {
+                                    drawConnection(prereqId, node.id);
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        function drawConnection(fromNodeId, toNodeId) {
+            const fromEl = document.querySelector(`[data-node-id="${fromNodeId}"]`);
+            const toEl = document.querySelector(`[data-node-id="${toNodeId}"]`);
+            
+            if (fromEl && toEl) {
+                const fromRect = fromEl.getBoundingClientRect();
+                const toRect = toEl.getBoundingClientRect();
+                const canvasRect = document.getElementById('treeCanvas').getBoundingClientRect();
+                
+                const fromX = fromRect.left - canvasRect.left + fromRect.width / 2;
+                const fromY = fromRect.top - canvasRect.top + fromRect.height / 2;
+                const toX = toRect.left - canvasRect.left + toRect.width / 2;
+                const toY = toRect.top - canvasRect.top + toRect.height / 2;
+                
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', fromX);
+                line.setAttribute('y1', fromY);
+                line.setAttribute('x2', toX);
+                line.setAttribute('y2', toY);
+                line.className = 'node-connection';
+                
+                document.getElementById('connectionSvg').appendChild(line);
+            }
+        }
+
+        function deleteNode(nodeId) {
+            if (confirm('Are you sure you want to delete this node?')) {
+                // Remove from tree data
+                if (treeData.tiers) {
+                    treeData.tiers.forEach(tier => {
+                        if (tier.nodes) {
+                            tier.nodes = tier.nodes.filter(node => node.id !== nodeId);
+                        }
+                    });
+                }
+                
+                // Remove from prerequisites and exclusions of other nodes
+                if (treeData.tiers) {
+                    treeData.tiers.forEach(tier => {
+                        if (tier.nodes) {
+                            tier.nodes.forEach(node => {
+                                if (node.prerequisites) {
+                                    node.prerequisites = node.prerequisites.filter(id => id !== nodeId);
+                                }
+                                if (node.exclusions) {
+                                    node.exclusions = node.exclusions.filter(id => id !== nodeId);
+                                }
+                            });
+                        }
+                    });
+                }
+                
+                selectedNode = null;
+                renderTree();
+                showNodeProperties(null);
+            }
+        }
+
+        function handleDragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.dataset.type);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const nodeType = e.dataTransfer.getData('text/plain');
+            const canvasRect = document.getElementById('treeCanvas').getBoundingClientRect();
+            const x = e.clientX - canvasRect.left - 30;
+            const y = e.clientY - canvasRect.top - 30;
+            
+            createNewNode(nodeType, x, y);
+        }
+
+        function createNewNode(type, x, y) {
+            const nodeId = `${currentTree}_${Date.now()}`;
+            const newNode = {
+                id: nodeId,
+                type: type,
+                name: `New ${type} Node`,
+                description: `New ${type} node description`,
+                cost: 1,
+                maxPurchases: 1,
+                position: { x, y },
+                effects: type === 'small' ? { stats: {} } : 
+                        type === 'medium' ? { passive: {} } : 
+                        { technique: { requiresApproval: true } },
+                prerequisites: [],
+                exclusions: [],
+                color: type === 'small' ? '#10b981' : 
+                       type === 'medium' ? '#f59e0b' : '#ef4444',
+                icon: type === 'small' ? '💪' : 
+                      type === 'medium' ? '⚡' : '🌟'
+            };
+            
+            // Add to current tier or create new tier
+            if (!treeData.tiers) treeData.tiers = [];
+            if (treeData.tiers.length === 0) {
+                treeData.tiers.push({
+                    tier: 1,
+                    requiredNodes: 0,
+                    nodes: []
+                });
+            }
+            
+            // Add to first tier for now (user can move between tiers later)
+            treeData.tiers[0].nodes = treeData.tiers[0].nodes || [];
+            treeData.tiers[0].nodes.push(newNode);
+            
+            renderTree();
+            selectNode(nodeId);
+        }
+
+        function handleCanvasClick(e) {
+            if (e.target.id === 'treeCanvas') {
+                selectedNode = null;
+                document.querySelectorAll('.skill-node').forEach(node => {
+                    node.classList.remove('selected');
+                });
+                showNodeProperties(null);
+            }
+        }
+
+        function handleCanvasMouseDown(e) {
+            if (e.target.closest('.skill-node') && currentTool === 'select') {
+                isDragging = true;
+                const nodeEl = e.target.closest('.skill-node');
+                const rect = nodeEl.getBoundingClientRect();
+                dragOffset.x = e.clientX - rect.left;
+                dragOffset.y = e.clientY - rect.top;
+                nodeEl.style.cursor = 'grabbing';
+            }
+        }
+
+        function handleCanvasMouseMove(e) {
+            if (isDragging && selectedNode) {
+                const canvasRect = document.getElementById('treeCanvas').getBoundingClientRect();
+                const x = e.clientX - canvasRect.left - dragOffset.x;
+                const y = e.clientY - canvasRect.top - dragOffset.y;
+                
+                selectedNode.position = { x, y };
+                
+                const nodeEl = document.querySelector(`[data-node-id="${selectedNode.id}"]`);
+                if (nodeEl) {
+                    nodeEl.style.left = x + 'px';
+                    nodeEl.style.top = y + 'px';
+                }
+                
+                renderConnections();
+            }
+        }
+
+        function handleCanvasMouseUp(e) {
+            if (isDragging) {
+                isDragging = false;
+                const nodeEl = document.querySelector(`[data-node-id="${selectedNode?.id}"]`);
+                if (nodeEl) {
+                    nodeEl.style.cursor = 'move';
+                }
+            }
+        }
+
+        function setTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(tool + 'Tool').classList.add('active');
+        }
+
+        function previewTree() {
+            showMessage('PREVIEW MODE - Feature coming soon', 'success');
+        }
+
+        function clearTree() {
+            if (confirm('Are you sure you want to clear this entire tree?')) {
+                treeData.tiers = [];
+                selectedNode = null;
+                renderTree();
+                showNodeProperties(null);
+            }
+        }
+
+        async function saveTree() {
+            try {
+                showMessage('SAVING TREE...', 'loading');
+                
+                await window.firebase.setDoc(window.firebase.doc(window.firebase.db, 'skillTrees', `${currentTree}_tree`), treeData);
+                
+                // Log the action
+                await window.firebase.addDoc(window.firebase.collection(window.firebase.db, 'logs'), {
+                    action: 'skill_tree_updated',
+                    actorLogin: currentUser.login,
+                    actorRole: 'admin',
+                    targetId: `${currentTree}_tree`,
+                    targetName: `${currentTree} Skill Tree`,
+                    details: `Updated ${currentTree} skill tree structure`,
+                    timestamp: new Date().toISOString()
+                });
+                
+                showMessage('SKILL TREE SAVED SUCCESSFULLY', 'success');
+                
+            } catch (error) {
+                console.error('Error saving tree:', error);
+                showMessage('ERROR SAVING SKILL TREE', 'error');
+            }
+        }
+
+        function exportTree() {
+            document.getElementById('modalTitle').textContent = 'EXPORT TREE';
+            document.getElementById('modalConfirmBtn').textContent = 'COPY TO CLIPBOARD';
+            document.getElementById('modalConfirmBtn').onclick = copyTreeData;
+            document.getElementById('treeDataInput').value = JSON.stringify(treeData, null, 2);
+            document.getElementById('importExportModal').style.display = 'flex';
+        }
+
+        function importTree() {
+            document.getElementById('modalTitle').textContent = 'IMPORT TREE';
+            document.getElementById('modalConfirmBtn').textContent = 'IMPORT';
+            document.getElementById('modalConfirmBtn').onclick = loadTreeData;
+            document.getElementById('treeDataInput').value = '';
+            document.getElementById('importExportModal').style.display = 'flex';
+        }
+
+        function copyTreeData() {
+            navigator.clipboard.writeText(document.getElementById('treeDataInput').value);
+            showMessage('TREE DATA COPIED TO CLIPBOARD', 'success');
+            closeModal();
+        }
+
+        function loadTreeDataFromImport() {
+            try {
+                const importedData = JSON.parse(document.getElementById('treeDataInput').value);
+                treeData = importedData;
+                renderTree();
+                closeModal();
+                showMessage('TREE IMPORTED SUCCESSFULLY', 'success');
+            } catch (error) {
+                showMessage('INVALID JSON FORMAT', 'error');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('importExportModal').style.display = 'none';
+        }
+
+        function initializeTree() {
+            loadTreeData();
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Add this to modal confirm button
+        document.getElementById('modalConfirmBtn').onclick = function() {
+            const title = document.getElementById('modalTitle').textContent;
+            if (title === 'IMPORT TREE') {
+                loadTreeDataFromImport();
+            } else {
+                copyTreeData();
+            }
+        };
+    </script>
+</body>
+</html>

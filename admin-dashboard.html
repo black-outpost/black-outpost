@@ -185,6 +185,10 @@
             background: linear-gradient(90deg, #f59e0b, #d97706);
         }
 
+        .admin-card.skill-trees::before {
+            background: linear-gradient(90deg, #10b981, #059669);
+        }
+
         .card-icon {
             font-size: 48px;
             margin-bottom: 16px;
@@ -356,6 +360,15 @@
                 </div>
             </a>
 
+            <a class="admin-card skill-trees">
+                <div class="card-icon">🌳</div>
+                <div class="card-title">SKILL TREE EDITOR</div>
+                <div class="card-description">
+                    Design and manage skill progression trees. 
+                    Create node structures, set prerequisites and configure stat bonuses.
+                </div>
+            </a>
+
             <a class="admin-card rewards">
                 <div class="card-icon">🎁</div>
                 <div class="card-title">REWARDS SYSTEM</div>
@@ -431,6 +444,10 @@
                     <div class="stat-value" id="totalItems">-</div>
                 </div>
                 <div class="stat-item">
+                    <div class="stat-label">Skill Trees</div>
+                    <div class="stat-value" id="skillTrees">-</div>
+                </div>
+                <div class="stat-item">
                     <div class="stat-label">Recent Actions</div>
                     <div class="stat-value" id="recentActions">-</div>
                 </div>
@@ -440,8 +457,8 @@
 
     <!-- Firebase SDK -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
@@ -525,6 +542,7 @@
                 // Update URLs to pass login parameter
                 const links = [
                     { selector: '.admin-card.characters', href: 'admin-characters.html' },
+                    { selector: '.admin-card.skill-trees', href: 'admin-skill-trees.html' },
                     { selector: '.admin-card.rewards', href: 'admin-rewards.html' },
                     { selector: '.admin-card.techniques', href: 'admin-techniques.html' },
                     { selector: '.admin-card.items', href: 'admin-items.html' },
@@ -570,6 +588,11 @@
                 const itemsSnapshot = await window.getDocs(itemsRef);
                 document.getElementById('totalItems').textContent = itemsSnapshot.size;
 
+                // Load skill trees count
+                const skillTreesRef = window.collection(window.db, 'skillTrees');
+                const skillTreesSnapshot = await window.getDocs(skillTreesRef);
+                document.getElementById('skillTrees').textContent = skillTreesSnapshot.size;
+
                 // Load recent actions count
                 const logsRef = window.collection(window.db, 'logs');
                 const recentLogsQuery = window.query(logsRef, window.orderBy('timestamp', 'desc'), window.limit(10));
@@ -583,6 +606,7 @@
                 document.getElementById('activeUsers').textContent = '0';
                 document.getElementById('totalTechniques').textContent = '0';
                 document.getElementById('totalItems').textContent = '0';
+                document.getElementById('skillTrees').textContent = '0';
                 document.getElementById('recentActions').textContent = '0';
             }
         }
