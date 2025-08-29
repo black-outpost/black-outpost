@@ -269,6 +269,7 @@
                 radial-gradient(circle at 50px 50px, rgba(71, 85, 105, 0.1) 2px, transparent 2px),
                 radial-gradient(circle at 75px 25px, rgba(71, 85, 105, 0.1) 1px, transparent 1px);
             background-size: 50px 50px, 25px 25px;
+            min-height: 2000px; /* Large scrollable area */
         }
 
         .tier-line {
@@ -731,7 +732,7 @@
     <script type="module">
         // Import Firebase functions from CDN
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
-        import { getFirestore, doc, getDoc, setDoc, collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
         
         const firebaseConfig = {
             apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
@@ -754,7 +755,8 @@
             getDoc: getDoc,
             setDoc: setDoc,
             collection: collection,
-            addDoc: addDoc
+            addDoc: addDoc,
+            getDocs: getDocs
         };
         
         // Signal that Firebase is ready
@@ -994,10 +996,11 @@
             existingNodes.forEach(node => node.remove());
             svg.innerHTML = '';
             
-            // Render tier lines
+            // Render tier lines (going upward from starter)
             if (treeData.tiers) {
                 treeData.tiers.forEach((tier, index) => {
-                    const tierY = 150 + (index * 200);
+                    // Start from bottom (1500px) and go up with 300px spacing
+                    const tierY = 1500 - (index * 300);
                     const tierLine = document.createElement('div');
                     tierLine.className = 'tier-line';
                     tierLine.style.top = tierY + 'px';
@@ -1653,18 +1656,114 @@
 
         function addTierLine() {
             const currentTierCount = treeData.tiers ? treeData.tiers.length : 0;
-            const newTierY = 150 + (currentTierCount * 200);
             
             if (!treeData.tiers) treeData.tiers = [];
             
+            // Add new tier above existing tiers
             treeData.tiers.push({
                 tier: currentTierCount + 1,
-                requiredNodes: currentTierCount, // Require nodes from previous tiers
+                requiredNodes: Math.max(0, currentTierCount - 1), // Previous tier nodes required
                 nodes: []
             });
             
             renderTree();
-            showMessage(`Added Tier ${currentTierCount + 1}`, 'success');
+            showMessage(`Added Tier ${currentTierCount + 1} above existing tiers`, 'success');
+        }
+
+        function setTool(tool) {
+            currentTool = tool;
+            connectingFrom = null;
+            
+            // Update tool buttons
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(tool + 'Tool')?.classList.add('active');
+            
+            // Update canvas class and instructions
+            const canvas = document.getElementById('treeCanvas');
+            canvas.classList.remove('connecting-mode');
+            
+            if (tool === 'connect') {
+                canvas.classList.add('connecting-mode');
+                showMessage('CONNECT MODE: Creates bidirectional connection (both nodes become prerequisites)', 'success');
+            } else if (tool === 'arrow') {
+                canvas.classList.add('connecting-mode');
+                showMessage('ARROW MODE: Creates one-way prerequisite (first → second)', 'success');
+            } else if (tool === 'exclude') {
+                canvas.classList.add('connecting-mode');
+                showMessage('EXCLUDE MODE: Creates mutual exclusion (red dashed line)', 'success');
+            }
+        }
+
+        function previewTree() {
+            const modal = document.getElementById('importExportModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const textArea = document.getElementById('treeDataInput');
+            const confirmBtn = document.getElementById('modalConfirmBtn');
+            
+            modalTitle.textContent = 'TREE PREVIEW';
+            confirmBtn.textContent = 'CLOSE';
+            confirmBtn.onclick = closeModal;
+            
+            // Generate tree preview report
+            const starterNode = findNodeByProperty('isStarter', true);
+            let preview = `=== SKILL TREE PREVIEW ===\n`;
+            preview += `Tree: ${treeData.name || currentTree}\n`;
+            preview += `Tiers: ${treeData.tiers?.length || 0}\n\n`;
+            
+            if (starterNode) {
+                preview += `STARTER NODE: ${starterNode.name} (${starterNode.id})\n\n`;
+            }
+            
+            // Analyze each tier
+            if (treeData.tiers) {
+                treeData.tiers.forEach((tier, index) => {
+                    preview += `--- TIER ${tier.tier} ---\n`;
+                    preview += `Required nodes from previous tiers: ${tier.requiredNodes}\n`;
+                    preview += `Nodes in this tier: ${tier.nodes?.length || 0}\n`;
+                    
+                    tier.nodes?.forEach(node => {
+                        preview += `  • ${node.name} (${node.type})\n`;
+                        if (node.prerequisites?.length) {
+                            preview += `    Prerequisites: ${node.prerequisites.join(', ')}\n`;
+                        }
+                        if (node.exclusions?.length) {
+                            preview += `    Excludes: ${node.exclusions.join(', ')}\n`;
+                        }
+                        if (node.connections?.length) {
+                            preview += `    Connections: ${node.connections.length}\n`;
+                        }
+                    });
+                    preview += `\n`;
+                });
+            }
+            
+            // Validation checks
+            preview += `=== VALIDATION ===\n`;
+            let issues = [];
+            
+            if (!starterNode) {
+                issues.push('❌ No starter node found');
+            }
+            
+            // Check for orphaned nodes
+            let totalNodes = 0;
+            if (treeData.tiers) {
+                treeData.tiers.forEach(tier => {
+                    totalNodes += tier.nodes?.length || 0;
+                });
+            }
+            
+            if (issues.length === 0) {
+                preview += `✅ Tree structure valid\n`;
+                preview += `✅ ${totalNodes} total nodes\n`;
+            } else {
+                issues.forEach(issue => preview += issue + `\n`);
+            }
+            
+            textArea.value = preview;
+            modal.style.display = 'flex';
         }
 
         function resetToStart() {
@@ -1676,7 +1775,7 @@
                     description: 'Starting point for all abilities',
                     cost: 1,
                     maxPurchases: 1,
-                    position: { x: 400, y: 500 },
+                    position: { x: 400, y: 1500 }, // Bottom of canvas
                     effects: { stats: {} },
                     prerequisites: [],
                     exclusions: [],
@@ -1696,71 +1795,6 @@
                 renderTree();
                 showNodeProperties(null);
             }
-        }
-
-        function previewTree() {
-            // Simple preview mode - highlight all purchasable paths from starter
-            const starterNode = findNodeByProperty('isStarter', true);
-            if (!starterNode) {
-                showMessage('No starter node found', 'error');
-                return;
-            }
-            
-            // Find all nodes reachable from starter
-            const reachableNodes = new Set([starterNode.id]);
-            let changed = true;
-            
-            while (changed) {
-                changed = false;
-                if (treeData.tiers) {
-                    treeData.tiers.forEach(tier => {
-                        tier.nodes?.forEach(node => {
-                            if (!reachableNodes.has(node.id)) {
-                                const hasValidPath = !node.prerequisites?.length || 
-                                    node.prerequisites.some(prereqId => reachableNodes.has(prereqId));
-                                
-                                if (hasValidPath) {
-                                    reachableNodes.add(node.id);
-                                    changed = true;
-                                }
-                            }
-                        });
-                    });
-                }
-            }
-            
-            // Highlight reachable nodes
-            document.querySelectorAll('.skill-node').forEach(nodeEl => {
-                const nodeId = nodeEl.dataset.nodeId;
-                if (reachableNodes.has(nodeId)) {
-                    nodeEl.style.filter = 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.8))';
-                } else {
-                    nodeEl.style.filter = 'drop-shadow(0 0 8px rgba(239, 68, 68, 0.8))';
-                }
-            });
-            
-            setTimeout(() => {
-                document.querySelectorAll('.skill-node').forEach(nodeEl => {
-                    nodeEl.style.filter = '';
-                });
-            }, 3000);
-            
-            showMessage(`Preview: ${reachableNodes.size} nodes reachable from starter`, 'success');
-        }
-
-        function findNodeByProperty(property, value) {
-            if (treeData.tiers) {
-                for (let tier of treeData.tiers) {
-                    if (tier.nodes) {
-                        for (let node of tier.nodes) {
-                            if (node[property] === value) {
-                                return node;
-                            }
-                        }
-                    }
-                }
-            }
-            return null;
         }
 
         function handleCanvasMouseDown(e) {
