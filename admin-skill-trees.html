@@ -912,12 +912,14 @@
         }
 
         function switchTree(treeType) {
+            // Save current tree before switching
+            if (currentTree && Object.keys(treeData).length > 0) {
+                saveCurrentTreeData();
+            }
+            
             currentTree = treeType;
             selectedNode = null;
             connectingFrom = null;
-            
-            // Clear existing tree data to prevent copying
-            treeData = {};
             
             // Update active tab
             document.querySelectorAll('.tree-tab').forEach(tab => {
@@ -942,18 +944,36 @@
             }
             document.getElementById('canvasTitle').textContent = title;
             
-            // Reset tool and clear canvas
+            // Reset tool and clear properties
             setTool('select');
-            document.getElementById('tierContainer').innerHTML = '';
-            document.getElementById('connectionSvg').innerHTML = '';
             showNodeProperties(null);
             
-            // Load tree data
+            // Load tree data for new tree
             loadTreeData();
         }
 
+        async function saveCurrentTreeData() {
+            if (!currentUser || !currentTree || !treeData || Object.keys(treeData).length === 0) return;
+            
+            try {
+                let treeId = `${currentTree}_tree`;
+                if (currentTree === 'nazo' && selectedCharacter) {
+                    treeId = `nazo_${selectedCharacter}`;
+                }
+                
+                await window.firebase.setDoc(window.firebase.doc(window.firebase.db, 'skillTrees', treeId), treeData);
+            } catch (error) {
+                console.error('Error auto-saving tree:', error);
+            }
+        }
+
         function resetToStart() {
-            if (confirm('Reset tree to starter node only?')) {
+            if (confirm('Reset tree to starter node only? This will delete all nodes except the starter.')) {
+                // Clear everything first
+                selectedNode = null;
+                connectingFrom = null;
+                
+                // Create fresh starter node
                 const starterNode = {
                     id: `${currentTree}_starter`,
                     type: 'small',
@@ -971,14 +991,23 @@
                     icon: '⭐'
                 };
                 
-                treeData.tiers = [{
-                    tier: 1,
-                    requiredNodes: 0,
-                    nodes: [starterNode]
-                }];
+                // Replace entire tree data
+                treeData = {
+                    id: `${currentTree}_tree`,
+                    name: `${currentTree.charAt(0).toUpperCase() + currentTree.slice(1)} Mastery`,
+                    description: `${currentTree} enhancement tree`,
+                    associatedStat: currentTree,
+                    raceRestrictions: [],
+                    tiers: [{
+                        tier: 1,
+                        requiredNodes: 0,
+                        nodes: [starterNode]
+                    }]
+                };
                 
-                selectedNode = null;
-                connectingFrom = null;
+                // Clear DOM and re-render
+                document.getElementById('tierContainer').innerHTML = '';
+                document.getElementById('connectionSvg').innerHTML = '';
                 renderTree();
                 showNodeProperties(null);
                 showMessage('Tree reset to starter node', 'success');
@@ -1278,7 +1307,7 @@
             showMessage(`Added Tier ${newTierNumber}`, 'success');
         }
 
-        function previewTree() {
+        function showPreviewTree() {
             const starterNode = findNodeByProperty('isStarter', true);
             let reachableNodes = new Set();
             
@@ -1379,16 +1408,12 @@
                             font-size: 16px;
                         }
                         .tier-content { padding: 20px; }
-                        .nodes-grid {
-                            display: grid;
-                            gap: 12px;
-                            margin-top: 15px;
-                        }
                         .node { 
                             padding: 15px; 
                             border-radius: 8px; 
                             border-left: 4px solid;
                             background: rgba(15, 23, 42, 0.8);
+                            margin-bottom: 12px;
                         }
                         .node-header { font-weight: bold; margin-bottom: 8px; }
                         .node-details { font-size: 13px; color: #cbd5e1; }
@@ -1417,21 +1442,12 @@
                             cursor: pointer;
                             font-weight: bold;
                         }
-                        .print-btn {
-                            background: #3b82f6;
-                            color: white;
-                            border: none;
-                            padding: 10px 20px;
-                            border-radius: 6px;
-                            cursor: pointer;
-                            margin: 10px 5px;
-                        }
                     </style>
                 </head>
                 <body>
                     <button class="close-btn" onclick="window.close()">✕ Close</button>
                     <div class="container">
-                        <h1>🌳 ${currentTree.toUpperCase()} SKILL TREE</h1>
+                        <h1>${currentTree.toUpperCase()} SKILL TREE</h1>
                         
                         <div class="summary">
                             <h2 style="margin-top: 0; color: #f1f5f9;">Tree Overview</h2>
@@ -1469,12 +1485,11 @@
                     html += `<div class="tier">
                         <div class="tier-title">
                             TIER ${tier.tier} - ${tierNodes.length} nodes 
-                            (${reachableInTier} reachable, ${tier.requiredNodes} previous required)
+                            (${reachableInTier} reachable)
                         </div>
                         <div class="tier-content">`;
                     
                     if (tierNodes.length > 0) {
-                        html += `<div class="nodes-grid">`;
                         tierNodes.forEach(node => {
                             const isReachable = reachableNodes.has(node.id);
                             const nodeClass = node.isStarter ? 'starter' : (isReachable ? 'reachable' : 'unreachable');
@@ -1491,21 +1506,9 @@
                             if (node.exclusions?.length) {
                                 html += `<br>Excludes: ${node.exclusions.join(', ')}`;
                             }
-                            if (node.connections?.length) {
-                                html += `<br>Connections: ${node.connections.length} (${node.connections.map(c => c.type).join(', ')})`;
-                            }
-                            if (node.effects?.stats) {
-                                const stats = Object.entries(node.effects.stats)
-                                    .filter(([stat, val]) => val > 0)
-                                    .map(([stat, val]) => `+${val} ${stat}`);
-                                if (stats.length) {
-                                    html += `<br>Stats: ${stats.join(', ')}`;
-                                }
-                            }
                             
                             html += `</div></div>`;
                         });
-                        html += `</div>`;
                     } else {
                         html += `<div style="color: #64748b; font-style: italic; text-align: center; padding: 20px;">No nodes in this tier</div>`;
                     }
@@ -1526,20 +1529,10 @@
             
             if (reachableNodes.size > 0) {
                 html += `<div class="status-good">✅ ${reachableNodes.size} nodes reachable from start</div>`;
-            } else {
-                html += `<div class="status-bad">❌ No nodes reachable from start</div>`;
             }
             
             if (unreachableCount > 0) {
-                html += `<div class="status-warning">⚠️ ${unreachableCount} nodes unreachable (check prerequisites)</div>`;
-            } else if (totalNodes > 1) {
-                html += `<div class="status-good">✅ All nodes have valid paths</div>`;
-            }
-            
-            if (treeData.tiers?.length) {
-                html += `<div class="status-good">✅ ${treeData.tiers.length} tier(s) defined</div>`;
-            } else {
-                html += `<div class="status-bad">❌ No tiers defined</div>`;
+                html += `<div class="status-warning">⚠️ ${unreachableCount} nodes unreachable</div>`;
             }
             
             html += `</div>
@@ -1556,6 +1549,9 @@
             
             showMessage('Tree preview opened in new window', 'success');
         }
+
+        // Make sure preview button calls the right function
+        window.previewTree = showPreviewTree;
 
         async function loadTreeData() {
             try {
