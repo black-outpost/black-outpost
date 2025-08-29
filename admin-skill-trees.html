@@ -913,6 +913,11 @@
 
         function switchTree(treeType) {
             currentTree = treeType;
+            selectedNode = null;
+            connectingFrom = null;
+            
+            // Clear existing tree data to prevent copying
+            treeData = {};
             
             // Update active tab
             document.querySelectorAll('.tree-tab').forEach(tab => {
@@ -937,11 +942,128 @@
             }
             document.getElementById('canvasTitle').textContent = title;
             
-            // Reset connection state
+            // Reset tool and clear canvas
             setTool('select');
+            document.getElementById('tierContainer').innerHTML = '';
+            document.getElementById('connectionSvg').innerHTML = '';
+            showNodeProperties(null);
             
             // Load tree data
             loadTreeData();
+        }
+
+        function resetToStart() {
+            if (confirm('Reset tree to starter node only?')) {
+                const starterNode = {
+                    id: `${currentTree}_starter`,
+                    type: 'small',
+                    name: 'Foundation',
+                    description: 'Starting point for all abilities',
+                    cost: 1,
+                    maxPurchases: 1,
+                    position: { x: 400, y: 200 },
+                    effects: { stats: {} },
+                    prerequisites: [],
+                    exclusions: [],
+                    connections: [],
+                    isStarter: true,
+                    color: '#10b981',
+                    icon: '⭐'
+                };
+                
+                treeData.tiers = [{
+                    tier: 1,
+                    requiredNodes: 0,
+                    nodes: [starterNode]
+                }];
+                
+                selectedNode = null;
+                connectingFrom = null;
+                renderTree();
+                showNodeProperties(null);
+                showMessage('Tree reset to starter node', 'success');
+            }
+        }
+
+        function handleCanvasMouseMove(e) {
+            if (isDragging && selectedNode) {
+                const canvas = document.getElementById('treeCanvas');
+                const canvasRect = canvas.getBoundingClientRect();
+                
+                // Calculate position relative to the tier section
+                const tierSection = document.querySelector(`[data-node-id="${selectedNode.id}"]`).closest('.tier-section');
+                const tierRect = tierSection.getBoundingClientRect();
+                
+                const x = e.clientX - tierRect.left;
+                const y = e.clientY - tierRect.top;
+                
+                // Update node position
+                selectedNode.position = { x: Math.max(0, x - dragOffset.x), y: Math.max(30, y - dragOffset.y) };
+                
+                const nodeEl = document.querySelector(`[data-node-id="${selectedNode.id}"]`);
+                if (nodeEl) {
+                    nodeEl.style.left = selectedNode.position.x + 'px';
+                    nodeEl.style.top = selectedNode.position.y + 'px';
+                }
+                
+                renderConnections();
+            }
+        }
+
+        function handleCanvasMouseDown(e) {
+            if (e.target.closest('.skill-node') && currentTool === 'select') {
+                isDragging = true;
+                const nodeEl = e.target.closest('.skill-node');
+                const rect = nodeEl.getBoundingClientRect();
+                const tierSection = nodeEl.closest('.tier-section');
+                const tierRect = tierSection.getBoundingClientRect();
+                
+                dragOffset.x = e.clientX - rect.left;
+                dragOffset.y = e.clientY - rect.top;
+                nodeEl.style.cursor = 'grabbing';
+            }
+        }
+
+        function createNewNode(type, x, y, tierNumber) {
+            const nodeId = `${currentTree}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            const newNode = {
+                id: nodeId,
+                type: type,
+                name: `New ${type} Node`,
+                description: `New ${type} node description`,
+                cost: 1,
+                maxPurchases: 1,
+                position: { x, y },
+                effects: type === 'small' ? { stats: {} } : 
+                        type === 'medium' ? { passive: {} } : 
+                        { technique: { requiresApproval: true } },
+                prerequisites: [],
+                exclusions: [],
+                connections: [],
+                color: type === 'small' ? '#10b981' : 
+                       type === 'medium' ? '#f59e0b' : '#ef4444',
+                icon: type === 'small' ? '💪' : 
+                      type === 'medium' ? '⚡' : '🌟'
+            };
+            
+            // Find or create the target tier
+            if (!treeData.tiers) treeData.tiers = [];
+            
+            let targetTier = treeData.tiers.find(tier => tier.tier === tierNumber);
+            if (!targetTier) {
+                targetTier = {
+                    tier: tierNumber,
+                    requiredNodes: Math.max(0, tierNumber - 1),
+                    nodes: []
+                };
+                treeData.tiers.push(targetTier);
+            }
+            
+            if (!targetTier.nodes) targetTier.nodes = [];
+            targetTier.nodes.push(newNode);
+            
+            renderTree();
+            selectNode(nodeId);
         }
 
         async function loadCharacterList() {
