@@ -269,7 +269,52 @@
                 radial-gradient(circle at 50px 50px, rgba(71, 85, 105, 0.1) 2px, transparent 2px),
                 radial-gradient(circle at 75px 25px, rgba(71, 85, 105, 0.1) 1px, transparent 1px);
             background-size: 50px 50px, 25px 25px;
-            min-height: 2000px; /* Large scrollable area */
+        }
+
+        .tier-section {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            border-bottom: 2px dashed rgba(148, 163, 184, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .tier-header {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #f1f5f9;
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            z-index: 5;
+        }
+
+        .add-tier-btn {
+            position: sticky;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.8) 0%, rgba(5, 150, 105, 0.9) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #f1f5f9;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .add-tier-btn:hover {
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
         }
 
         .tier-line {
@@ -685,12 +730,13 @@
                         <button class="tool-btn" id="connectTool" onclick="setTool('connect')">CONNECT</button>
                         <button class="tool-btn" id="arrowTool" onclick="setTool('arrow')">ARROW</button>
                         <button class="tool-btn" id="excludeTool" onclick="setTool('exclude')">EXCLUDE</button>
-                        <button class="tool-btn" onclick="addTierLine()">ADD TIER</button>
                         <button class="tool-btn" onclick="previewTree()">PREVIEW</button>
                         <button class="tool-btn" onclick="resetToStart()">RESET</button>
                     </div>
                 </div>
                 <div class="tree-canvas" id="treeCanvas">
+                    <button class="add-tier-btn" onclick="addTierSection()">+ ADD TIER</button>
+                    <div id="tierContainer"></div>
                     <svg id="connectionSvg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2;">
                     </svg>
                 </div>
@@ -988,45 +1034,328 @@
         }
 
         function renderTree() {
-            const canvas = document.getElementById('treeCanvas');
+            const tierContainer = document.getElementById('tierContainer');
             const svg = document.getElementById('connectionSvg');
             
             // Clear existing content
-            const existingNodes = canvas.querySelectorAll('.skill-node, .tier-line');
-            existingNodes.forEach(node => node.remove());
+            tierContainer.innerHTML = '';
             svg.innerHTML = '';
             
-            // Render tier lines (going upward from starter)
-            if (treeData.tiers) {
-                treeData.tiers.forEach((tier, index) => {
-                    // Start from bottom (1500px) and go up with 300px spacing
-                    const tierY = 1500 - (index * 300);
-                    const tierLine = document.createElement('div');
-                    tierLine.className = 'tier-line';
-                    tierLine.style.top = tierY + 'px';
+            // Create tier sections
+            if (treeData.tiers && treeData.tiers.length > 0) {
+                // Sort tiers by tier number
+                const sortedTiers = [...treeData.tiers].sort((a, b) => b.tier - a.tier); // Reverse order (highest first)
+                
+                sortedTiers.forEach((tier, index) => {
+                    const tierSection = document.createElement('div');
+                    tierSection.className = 'tier-section';
+                    tierSection.id = `tier-${tier.tier}`;
+                    tierSection.style.height = '350px';
                     
-                    const tierLabel = document.createElement('div');
-                    tierLabel.className = 'tier-label';
-                    tierLabel.textContent = `TIER ${tier.tier}`;
-                    tierLine.appendChild(tierLabel);
+                    const tierHeader = document.createElement('div');
+                    tierHeader.className = 'tier-header';
+                    tierHeader.textContent = `TIER ${tier.tier}`;
+                    if (tier.requiredNodes > 0) {
+                        tierHeader.textContent += ` (Requires ${tier.requiredNodes} nodes from lower tiers)`;
+                    }
                     
-                    canvas.appendChild(tierLine);
+                    tierSection.appendChild(tierHeader);
+                    tierContainer.appendChild(tierSection);
                 });
-            }
-            
-            // Render nodes
-            if (treeData.tiers) {
-                treeData.tiers.forEach((tier) => {
+                
+                // Add nodes to their tier sections
+                treeData.tiers.forEach(tier => {
                     if (tier.nodes) {
                         tier.nodes.forEach(node => {
-                            createNodeElement(node);
+                            createNodeElement(node, tier.tier);
                         });
                     }
                 });
+            } else {
+                // Create initial tier with starter node
+                const tierSection = document.createElement('div');
+                tierSection.className = 'tier-section';
+                tierSection.id = 'tier-1';
+                tierSection.style.height = '350px';
+                
+                const tierHeader = document.createElement('div');
+                tierHeader.className = 'tier-header';
+                tierHeader.textContent = 'TIER 1 (Starting Tier)';
+                
+                tierSection.appendChild(tierHeader);
+                tierContainer.appendChild(tierSection);
             }
             
             // Render connections
-            renderConnections();
+            setTimeout(() => renderConnections(), 100); // Small delay to ensure nodes are rendered
+        }
+
+        function createNodeElement(nodeData, tierNumber) {
+            const tierSection = document.getElementById(`tier-${tierNumber}`);
+            if (!tierSection) return;
+            
+            const nodeEl = document.createElement('div');
+            nodeEl.className = `skill-node node-${nodeData.type}`;
+            if (nodeData.isStarter) nodeEl.classList.add('starter-node');
+            
+            nodeEl.dataset.nodeId = nodeData.id;
+            nodeEl.style.position = 'absolute';
+            nodeEl.style.left = (nodeData.position?.x || 100) + 'px';
+            nodeEl.style.top = (nodeData.position?.y || 50) + 'px';
+
+            const nodeContent = document.createElement('div');
+            nodeContent.className = nodeData.type === 'small' ? 'node-circle' : 'node-rect';
+            
+            if (nodeData.type === 'small') {
+                nodeContent.textContent = nodeData.effects?.stats ? 
+                    Object.entries(nodeData.effects.stats).map(([stat, val]) => 
+                        `+${val} ${stat.substr(0,3).toUpperCase()}`).join('\n') : '+1 STAT';
+            } else {
+                nodeContent.innerHTML = `
+                    <div style="font-weight: 600; margin-bottom: 4px;">${nodeData.name || 'New Node'}</div>
+                    <div style="font-size: 8px; opacity: 0.8;">${nodeData.description || 'Description'}</div>
+                `;
+            }
+
+            nodeEl.appendChild(nodeContent);
+            
+            // Add click handler with connection support
+            nodeEl.addEventListener('click', (e) => {
+                handleNodeClick(nodeData.id, e);
+            });
+
+            tierSection.appendChild(nodeEl);
+        }
+
+        function addTierSection() {
+            const currentTierCount = treeData.tiers ? treeData.tiers.length : 0;
+            const newTierNumber = currentTierCount + 1;
+            
+            if (!treeData.tiers) treeData.tiers = [];
+            
+            // Add new tier at the top (highest tier number)
+            treeData.tiers.push({
+                tier: newTierNumber,
+                requiredNodes: Math.max(0, currentTierCount - 1),
+                nodes: []
+            });
+            
+            renderTree();
+            
+            // Scroll to the new tier at the top
+            setTimeout(() => {
+                document.getElementById('treeCanvas').scrollTop = 0;
+            }, 100);
+            
+            showMessage(`Added Tier ${newTierNumber}`, 'success');
+        }
+
+        async function loadTreeData() {
+            try {
+                let treeId = `${currentTree}_tree`;
+                if (currentTree === 'nazo' && selectedCharacter) {
+                    treeId = `nazo_${selectedCharacter}`;
+                } else if (currentTree === 'nazo' && !selectedCharacter) {
+                    treeData = { tiers: [] };
+                    renderTree();
+                    return;
+                }
+                
+                const treeDoc = await window.firebase.getDoc(window.firebase.doc(window.firebase.db, 'skillTrees', treeId));
+                
+                if (treeDoc.exists()) {
+                    treeData = treeDoc.data();
+                } else {
+                    // Initialize tree with starter node in tier 1
+                    treeData = {
+                        id: treeId,
+                        name: `${currentTree.charAt(0).toUpperCase() + currentTree.slice(1)} Mastery`,
+                        description: `${currentTree} enhancement tree`,
+                        associatedStat: currentTree,
+                        raceRestrictions: [],
+                        tiers: [{
+                            tier: 1,
+                            requiredNodes: 0,
+                            nodes: [{
+                                id: `${currentTree}_starter`,
+                                type: 'small',
+                                name: 'Foundation',
+                                description: 'Starting point for all abilities',
+                                cost: 1,
+                                maxPurchases: 1,
+                                position: { x: 400, y: 200 }, // Center of tier section
+                                effects: { stats: {} },
+                                prerequisites: [],
+                                exclusions: [],
+                                connections: [],
+                                isStarter: true,
+                                color: '#10b981',
+                                icon: '⭐'
+                            }]
+                        }]
+                    };
+                }
+                
+                renderTree();
+                
+            } catch (error) {
+                console.error('Error loading tree:', error);
+                showMessage('ERROR LOADING TREE DATA', 'error');
+            }
+        }
+
+        function previewTree() {
+            // Create preview window
+            const previewWindow = window.open('', 'TreePreview', 'width=800,height=600,scrollbars=yes');
+            
+            const starterNode = findNodeByProperty('isStarter', true);
+            let reachableNodes = new Set();
+            
+            if (starterNode) {
+                reachableNodes.add(starterNode.id);
+                
+                // Calculate reachable nodes
+                let changed = true;
+                while (changed) {
+                    changed = false;
+                    treeData.tiers?.forEach(tier => {
+                        tier.nodes?.forEach(node => {
+                            if (!reachableNodes.has(node.id)) {
+                                const hasValidPath = !node.prerequisites?.length || 
+                                    node.prerequisites.some(prereqId => reachableNodes.has(prereqId));
+                                
+                                if (hasValidPath) {
+                                    reachableNodes.add(node.id);
+                                    changed = true;
+                                }
+                            }
+                        });
+                    });
+                }
+            }
+            
+            let html = `
+                <html>
+                <head>
+                    <title>Skill Tree Preview - ${currentTree}</title>
+                    <style>
+                        body { font-family: 'Courier New', monospace; padding: 20px; background: #1e293b; color: #e2e8f0; }
+                        h1 { color: #10b981; }
+                        .tier { margin-bottom: 30px; border: 1px solid #374151; padding: 15px; border-radius: 8px; }
+                        .tier-title { color: #f59e0b; font-weight: bold; margin-bottom: 10px; }
+                        .node { margin: 10px 0; padding: 10px; border-left: 3px solid #64748b; }
+                        .node.reachable { border-left-color: #10b981; background: rgba(16, 185, 129, 0.1); }
+                        .node.unreachable { border-left-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+                        .node.starter { border-left-color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
+                        .summary { background: #374151; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>🌳 Skill Tree Preview: ${currentTree.toUpperCase()}</h1>
+                    
+                    <div class="summary">
+                        <strong>Summary:</strong><br>
+                        • Total Tiers: ${treeData.tiers?.length || 0}<br>
+                        • Total Nodes: ${treeData.tiers?.reduce((sum, tier) => sum + (tier.nodes?.length || 0), 0) || 0}<br>
+                        • Reachable Nodes: ${reachableNodes.size}<br>
+                        • Starter Node: ${starterNode ? starterNode.name : 'Not Found'}
+                    </div>
+            `;
+            
+            if (treeData.tiers) {
+                // Sort tiers by tier number (ascending)
+                const sortedTiers = [...treeData.tiers].sort((a, b) => a.tier - b.tier);
+                
+                sortedTiers.forEach(tier => {
+                    html += `<div class="tier">
+                        <div class="tier-title">TIER ${tier.tier} (Requires ${tier.requiredNodes} nodes from previous tiers)</div>`;
+                    
+                    if (tier.nodes && tier.nodes.length > 0) {
+                        tier.nodes.forEach(node => {
+                            const isReachable = reachableNodes.has(node.id);
+                            const nodeClass = node.isStarter ? 'starter' : (isReachable ? 'reachable' : 'unreachable');
+                            
+                            html += `<div class="node ${nodeClass}">
+                                <strong>${node.name || 'Unnamed'}</strong> (${node.type})<br>
+                                ${node.description || 'No description'}<br>
+                                Cost: ${node.cost || 1} | Max: ${node.maxPurchases || 1}`;
+                            
+                            if (node.prerequisites?.length) {
+                                html += `<br>Prerequisites: ${node.prerequisites.join(', ')}`;
+                            }
+                            if (node.exclusions?.length) {
+                                html += `<br>Excludes: ${node.exclusions.join(', ')}`;
+                            }
+                            
+                            html += `</div>`;
+                        });
+                    } else {
+                        html += `<div style="color: #64748b; font-style: italic;">No nodes in this tier</div>`;
+                    }
+                    
+                    html += `</div>`;
+                });
+            }
+            
+            html += `
+                    <div class="summary">
+                        <strong>Validation:</strong><br>
+                        ${starterNode ? '✅ Starter node found' : '❌ No starter node'}<br>
+                        ${reachableNodes.size > 0 ? `✅ ${reachableNodes.size} nodes reachable` : '❌ No reachable nodes'}<br>
+                        ${treeData.tiers?.length ? `✅ ${treeData.tiers.length} tiers defined` : '❌ No tiers defined'}
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            previewWindow.document.write(html);
+            previewWindow.document.close();
+        }
+
+        function findNodeByProperty(property, value) {
+            if (treeData.tiers) {
+                for (let tier of treeData.tiers) {
+                    if (tier.nodes) {
+                        for (let node of tier.nodes) {
+                            if (node[property] === value) {
+                                return node;
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        function resetToStart() {
+            if (confirm('Reset tree to starter node only?')) {
+                const starterNode = {
+                    id: `${currentTree}_starter`,
+                    type: 'small',
+                    name: 'Foundation',
+                    description: 'Starting point for all abilities',
+                    cost: 1,
+                    maxPurchases: 1,
+                    position: { x: 400, y: 200 },
+                    effects: { stats: {} },
+                    prerequisites: [],
+                    exclusions: [],
+                    connections: [],
+                    isStarter: true,
+                    color: '#10b981',
+                    icon: '⭐'
+                };
+                
+                treeData.tiers = [{
+                    tier: 1,
+                    requiredNodes: 0,
+                    nodes: [starterNode]
+                }];
+                
+                selectedNode = null;
+                renderTree();
+                showNodeProperties(null);
+            }
         }
 
         function createNodeElement(nodeData) {
@@ -1670,6 +1999,104 @@
             showMessage(`Added Tier ${currentTierCount + 1} above existing tiers`, 'success');
         }
 
+        function renderConnections() {
+            const svg = document.getElementById('connectionSvg');
+            svg.innerHTML = '';
+            
+            if (treeData.tiers) {
+                treeData.tiers.forEach(tier => {
+                    tier.nodes?.forEach(node => {
+                        if (node.connections) {
+                            node.connections.forEach(conn => {
+                                drawConnection(node.id, conn.target, conn.type);
+                            });
+                        }
+                    });
+                });
+            }
+        }
+
+        function drawConnection(fromNodeId, toNodeId, connectionType = 'arrow') {
+            const fromEl = document.querySelector(`[data-node-id="${fromNodeId}"]`);
+            const toEl = document.querySelector(`[data-node-id="${toNodeId}"]`);
+            
+            if (fromEl && toEl) {
+                const canvas = document.getElementById('treeCanvas');
+                const fromRect = fromEl.getBoundingClientRect();
+                const toRect = toEl.getBoundingClientRect();
+                const canvasRect = canvas.getBoundingClientRect();
+                
+                const fromX = fromRect.left - canvasRect.left + fromRect.width / 2 + canvas.scrollLeft;
+                const fromY = fromRect.top - canvasRect.top + fromRect.height / 2 + canvas.scrollTop;
+                const toX = toRect.left - canvasRect.left + toRect.width / 2 + canvas.scrollLeft;
+                const toY = toRect.top - canvasRect.top + toRect.height / 2 + canvas.scrollTop;
+                
+                // Create path for connection
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                
+                if (connectionType === 'exclusion') {
+                    path.setAttribute('d', `M ${fromX} ${fromY} L ${toX} ${toY}`);
+                    path.className = 'node-connection connection-exclusion';
+                } else if (connectionType === 'bidirectional') {
+                    path.setAttribute('d', `M ${fromX} ${fromY} L ${toX} ${toY}`);
+                    path.className = 'node-connection connection-line';
+                    addArrowMarker(svg, fromX, fromY, toX, toY, 'from');
+                    addArrowMarker(svg, toX, toY, fromX, fromY, 'to');
+                } else {
+                    path.setAttribute('d', `M ${fromX} ${fromY} L ${toX} ${toY}`);
+                    path.className = 'node-connection connection-arrow';
+                    addArrowMarker(svg, fromX, fromY, toX, toY, 'to');
+                }
+                
+                svg.appendChild(path);
+            }
+        }
+
+        function handleCanvasMouseMove(e) {
+            if (isDragging && selectedNode) {
+                const canvas = document.getElementById('treeCanvas');
+                const canvasRect = canvas.getBoundingClientRect();
+                const x = e.clientX - canvasRect.left - dragOffset.x + canvas.scrollLeft;
+                const y = e.clientY - canvasRect.top - dragOffset.y + canvas.scrollTop;
+                
+                selectedNode.position = { x, y };
+                
+                const nodeEl = document.querySelector(`[data-node-id="${selectedNode.id}"]`);
+                if (nodeEl) {
+                    nodeEl.style.left = (x - canvas.scrollLeft) + 'px';
+                    nodeEl.style.top = (y - canvas.scrollTop) + 'px';
+                }
+                
+                renderConnections();
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const nodeType = e.dataTransfer.getData('text/plain');
+            const canvas = document.getElementById('treeCanvas');
+            const canvasRect = canvas.getBoundingClientRect();
+            const x = e.clientX - canvasRect.left - 30 + canvas.scrollLeft;
+            const y = e.clientY - canvasRect.top - 30 + canvas.scrollTop;
+            
+            // Find which tier section this drop is in
+            const tierSections = document.querySelectorAll('.tier-section');
+            let targetTier = 1;
+            
+            tierSections.forEach(section => {
+                const sectionRect = section.getBoundingClientRect();
+                const relativeY = e.clientY - canvasRect.top;
+                const sectionTop = sectionRect.top - canvasRect.top;
+                const sectionBottom = sectionTop + sectionRect.height;
+                
+                if (relativeY >= sectionTop && relativeY <= sectionBottom) {
+                    targetTier = parseInt(section.id.split('-')[1]);
+                }
+            });
+            
+            createNewNode(nodeType, x, y, targetTier);
+        }
+
         function setTool(tool) {
             currentTool = tool;
             connectingFrom = null;
@@ -1694,76 +2121,6 @@
                 canvas.classList.add('connecting-mode');
                 showMessage('EXCLUDE MODE: Creates mutual exclusion (red dashed line)', 'success');
             }
-        }
-
-        function previewTree() {
-            const modal = document.getElementById('importExportModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const textArea = document.getElementById('treeDataInput');
-            const confirmBtn = document.getElementById('modalConfirmBtn');
-            
-            modalTitle.textContent = 'TREE PREVIEW';
-            confirmBtn.textContent = 'CLOSE';
-            confirmBtn.onclick = closeModal;
-            
-            // Generate tree preview report
-            const starterNode = findNodeByProperty('isStarter', true);
-            let preview = `=== SKILL TREE PREVIEW ===\n`;
-            preview += `Tree: ${treeData.name || currentTree}\n`;
-            preview += `Tiers: ${treeData.tiers?.length || 0}\n\n`;
-            
-            if (starterNode) {
-                preview += `STARTER NODE: ${starterNode.name} (${starterNode.id})\n\n`;
-            }
-            
-            // Analyze each tier
-            if (treeData.tiers) {
-                treeData.tiers.forEach((tier, index) => {
-                    preview += `--- TIER ${tier.tier} ---\n`;
-                    preview += `Required nodes from previous tiers: ${tier.requiredNodes}\n`;
-                    preview += `Nodes in this tier: ${tier.nodes?.length || 0}\n`;
-                    
-                    tier.nodes?.forEach(node => {
-                        preview += `  • ${node.name} (${node.type})\n`;
-                        if (node.prerequisites?.length) {
-                            preview += `    Prerequisites: ${node.prerequisites.join(', ')}\n`;
-                        }
-                        if (node.exclusions?.length) {
-                            preview += `    Excludes: ${node.exclusions.join(', ')}\n`;
-                        }
-                        if (node.connections?.length) {
-                            preview += `    Connections: ${node.connections.length}\n`;
-                        }
-                    });
-                    preview += `\n`;
-                });
-            }
-            
-            // Validation checks
-            preview += `=== VALIDATION ===\n`;
-            let issues = [];
-            
-            if (!starterNode) {
-                issues.push('❌ No starter node found');
-            }
-            
-            // Check for orphaned nodes
-            let totalNodes = 0;
-            if (treeData.tiers) {
-                treeData.tiers.forEach(tier => {
-                    totalNodes += tier.nodes?.length || 0;
-                });
-            }
-            
-            if (issues.length === 0) {
-                preview += `✅ Tree structure valid\n`;
-                preview += `✅ ${totalNodes} total nodes\n`;
-            } else {
-                issues.forEach(issue => preview += issue + `\n`);
-            }
-            
-            textArea.value = preview;
-            modal.style.display = 'flex';
         }
 
         function resetToStart() {
