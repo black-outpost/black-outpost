@@ -350,10 +350,52 @@
             position: absolute;
             stroke: rgba(148, 163, 184, 0.6);
             stroke-width: 2;
-            stroke-dasharray: 5,5;
             fill: none;
             pointer-events: none;
             z-index: 2;
+        }
+
+        .connection-line {
+            stroke-dasharray: none;
+        }
+
+        .connection-arrow {
+            stroke-dasharray: none;
+        }
+
+        .connection-exclusion {
+            stroke: rgba(239, 68, 68, 0.8);
+            stroke-dasharray: 8,4;
+        }
+
+        .connection-temp {
+            stroke: rgba(16, 185, 129, 0.8);
+            stroke-width: 3;
+            stroke-dasharray: 4,4;
+        }
+
+        .starter-node {
+            border: 3px solid #f59e0b !important;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .starter-node::after {
+            content: "START";
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 8px;
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .connecting-mode .skill-node {
+            cursor: crosshair;
+        }
+
+        .connecting-mode .skill-node:hover {
+            filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6));
         }
 
         .properties-content {
@@ -602,7 +644,14 @@
                         <div class="tree-tab" data-tree="weaponship">WEAPONSHIP</div>
                         <div class="tree-tab" data-tree="tamashi">TAMASHI</div>
                         <div class="tree-tab" data-tree="magic">MAGIC</div>
-                        <div class="tree-tab" data-tree="nazo">NAZO</div>
+                        <div class="tree-tab nazo-tab" data-tree="nazo">NAZO</div>
+                    </div>
+                    <!-- Nazo Character Selector -->
+                    <div id="nazoSelector" style="display: none; padding: 12px; border-top: 1px solid rgba(71, 85, 105, 0.3);">
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #94a3b8; margin-bottom: 8px;">SELECT CHARACTER:</div>
+                        <select id="nazoCharacterSelect" class="form-select">
+                            <option value="">Loading characters...</option>
+                        </select>
                     </div>
                 </div>
                 <div class="node-palette">
@@ -633,9 +682,11 @@
                     <div class="canvas-tools">
                         <button class="tool-btn active" id="selectTool" onclick="setTool('select')">SELECT</button>
                         <button class="tool-btn" id="connectTool" onclick="setTool('connect')">CONNECT</button>
-                        <button class="tool-btn" id="tierTool" onclick="setTool('tier')">ADD TIER</button>
+                        <button class="tool-btn" id="arrowTool" onclick="setTool('arrow')">ARROW</button>
+                        <button class="tool-btn" id="excludeTool" onclick="setTool('exclude')">EXCLUDE</button>
+                        <button class="tool-btn" onclick="addTierLine()">ADD TIER</button>
                         <button class="tool-btn" onclick="previewTree()">PREVIEW</button>
-                        <button class="tool-btn" onclick="clearTree()">CLEAR</button>
+                        <button class="tool-btn" onclick="resetToStart()">RESET</button>
                     </div>
                 </div>
                 <div class="tree-canvas" id="treeCanvas">
@@ -714,8 +765,10 @@
         // Global variables
         let currentUser = null;
         let currentTree = 'strength';
+        let selectedCharacter = null; // For Nazo trees
         let currentTool = 'select';
         let selectedNode = null;
+        let connectingFrom = null; // For connection mode
         let treeData = {};
         let nodeIdCounter = 1;
         let isDragging = false;
@@ -723,7 +776,6 @@
 
         // Initialize editor
         window.addEventListener('load', function() {
-            // Wait for Firebase before initializing
             const checkFirebase = setInterval(() => {
                 if (window.firebaseReady) {
                     clearInterval(checkFirebase);
@@ -820,28 +872,108 @@
             });
             document.querySelector(`[data-tree="${treeType}"]`).classList.add('active');
             
+            // Show/hide Nazo character selector
+            const nazoSelector = document.getElementById('nazoSelector');
+            if (treeType === 'nazo') {
+                nazoSelector.style.display = 'block';
+                loadCharacterList();
+            } else {
+                nazoSelector.style.display = 'none';
+                selectedCharacter = null;
+            }
+            
             // Update canvas title
-            document.getElementById('canvasTitle').textContent = treeType.toUpperCase() + ' TREE';
+            let title = treeType.toUpperCase() + ' TREE';
+            if (treeType === 'nazo' && selectedCharacter) {
+                title += ` - ${selectedCharacter}`;
+            }
+            document.getElementById('canvasTitle').textContent = title;
+            
+            // Reset connection state
+            setTool('select');
             
             // Load tree data
             loadTreeData();
         }
 
+        async function loadCharacterList() {
+            try {
+                const charactersRef = window.firebase.collection(window.firebase.db, 'characters');
+                const snapshot = await window.firebase.getDocs(charactersRef);
+                
+                const select = document.getElementById('nazoCharacterSelect');
+                select.innerHTML = '<option value="">Select character...</option>';
+                
+                snapshot.forEach(doc => {
+                    const char = doc.data();
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = `${char.firstName} ${char.lastName} (${doc.id})`;
+                    select.appendChild(option);
+                });
+                
+                // Add event listener for character selection
+                select.onchange = function() {
+                    selectedCharacter = this.value;
+                    if (selectedCharacter) {
+                        const selectedOption = this.options[this.selectedIndex];
+                        document.getElementById('canvasTitle').textContent = 
+                            `NAZO TREE - ${selectedOption.textContent}`;
+                        loadTreeData();
+                    }
+                };
+                
+            } catch (error) {
+                console.error('Error loading characters:', error);
+                document.getElementById('nazoCharacterSelect').innerHTML = 
+                    '<option value="">Error loading characters</option>';
+            }
+        }
+
         async function loadTreeData() {
             try {
-                const treeDoc = await window.firebase.getDoc(window.firebase.doc(window.firebase.db, 'skillTrees', `${currentTree}_tree`));
+                let treeId = `${currentTree}_tree`;
+                if (currentTree === 'nazo' && selectedCharacter) {
+                    treeId = `nazo_${selectedCharacter}`;
+                } else if (currentTree === 'nazo' && !selectedCharacter) {
+                    // Don't load anything for Nazo without character selection
+                    treeData = { tiers: [] };
+                    renderTree();
+                    return;
+                }
+                
+                const treeDoc = await window.firebase.getDoc(window.firebase.doc(window.firebase.db, 'skillTrees', treeId));
                 
                 if (treeDoc.exists()) {
                     treeData = treeDoc.data();
                 } else {
-                    // Initialize empty tree
+                    // Initialize empty tree with starter node
                     treeData = {
-                        id: `${currentTree}_tree`,
+                        id: treeId,
                         name: `${currentTree.charAt(0).toUpperCase() + currentTree.slice(1)} Mastery`,
                         description: `${currentTree} enhancement tree`,
                         associatedStat: currentTree,
                         raceRestrictions: [],
-                        tiers: []
+                        tiers: [{
+                            tier: 1,
+                            requiredNodes: 0,
+                            nodes: [{
+                                id: `${currentTree}_starter`,
+                                type: 'small',
+                                name: 'Foundation',
+                                description: 'Starting point for all abilities',
+                                cost: 1,
+                                maxPurchases: 1,
+                                position: { x: 400, y: 500 },
+                                effects: { stats: {} },
+                                prerequisites: [],
+                                exclusions: [],
+                                connections: [],
+                                isStarter: true,
+                                color: '#10b981',
+                                icon: '⭐'
+                            }]
+                        }]
                     };
                 }
                 
@@ -897,6 +1029,8 @@
         function createNodeElement(nodeData) {
             const nodeEl = document.createElement('div');
             nodeEl.className = `skill-node node-${nodeData.type}`;
+            if (nodeData.isStarter) nodeEl.classList.add('starter-node');
+            
             nodeEl.dataset.nodeId = nodeData.id;
             nodeEl.style.left = (nodeData.position?.x || 100) + 'px';
             nodeEl.style.top = (nodeData.position?.y || 100) + 'px';
@@ -916,9 +1050,10 @@
             }
 
             nodeEl.appendChild(nodeContent);
+            
+            // Add click handler with connection support
             nodeEl.addEventListener('click', (e) => {
-                e.stopPropagation();
-                selectNode(nodeData.id);
+                handleNodeClick(nodeData.id, e);
             });
 
             document.getElementById('treeCanvas').appendChild(nodeEl);
@@ -1073,20 +1208,19 @@
                     </div>
                 `;
             } else if (node.type === 'large') {
-                const technique = node.effects?.technique || {};
                 return `
                     <div class="form-group">
-                        <label class="form-label">Technique</label>
+                        <label class="form-label">Technique Node</label>
                         <div class="effects-section">
+                            <div class="effects-title">Technique Unlock</div>
+                            <p style="font-size: 11px; color: #94a3b8; margin: 8px 0;">
+                                When purchased, this node will send an admin notification with the player and node details for technique assignment.
+                            </p>
                             <div class="form-group">
-                                <label class="form-label">Technique Name</label>
-                                <input type="text" class="form-input" value="${technique.name || ''}" onchange="updateTechniqueEffect('name', this.value)">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Requires Approval</label>
+                                <label class="form-label">Requires Admin Approval</label>
                                 <select class="form-select" onchange="updateTechniqueEffect('requiresApproval', this.value === 'true')">
-                                    <option value="true" ${technique.requiresApproval !== false ? 'selected' : ''}>Yes</option>
-                                    <option value="false" ${technique.requiresApproval === false ? 'selected' : ''}>No</option>
+                                    <option value="true" ${node.effects?.technique?.requiresApproval !== false ? 'selected' : ''}>Yes</option>
+                                    <option value="false" ${node.effects?.technique?.requiresApproval === false ? 'selected' : ''}>No</option>
                                 </select>
                             </div>
                         </div>
@@ -1200,20 +1334,18 @@
             
             if (treeData.tiers) {
                 treeData.tiers.forEach(tier => {
-                    if (tier.nodes) {
-                        tier.nodes.forEach(node => {
-                            if (node.prerequisites) {
-                                node.prerequisites.forEach(prereqId => {
-                                    drawConnection(prereqId, node.id);
-                                });
-                            }
-                        });
-                    }
+                    tier.nodes?.forEach(node => {
+                        if (node.connections) {
+                            node.connections.forEach(conn => {
+                                drawConnection(node.id, conn.target, conn.type);
+                            });
+                        }
+                    });
                 });
             }
         }
 
-        function drawConnection(fromNodeId, toNodeId) {
+        function drawConnection(fromNodeId, toNodeId, connectionType = 'arrow') {
             const fromEl = document.querySelector(`[data-node-id="${fromNodeId}"]`);
             const toEl = document.querySelector(`[data-node-id="${toNodeId}"]`);
             
@@ -1227,18 +1359,69 @@
                 const toX = toRect.left - canvasRect.left + toRect.width / 2;
                 const toY = toRect.top - canvasRect.top + toRect.height / 2;
                 
-                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line.setAttribute('x1', fromX);
-                line.setAttribute('y1', fromY);
-                line.setAttribute('x2', toX);
-                line.setAttribute('y2', toY);
-                line.className = 'node-connection';
+                // Create path for connection
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                 
-                document.getElementById('connectionSvg').appendChild(line);
+                if (connectionType === 'exclusion') {
+                    // Exclusion: red dashed line
+                    path.setAttribute('d', `M ${fromX} ${fromY} L ${toX} ${toY}`);
+                    path.className = 'node-connection connection-exclusion';
+                } else if (connectionType === 'bidirectional') {
+                    // Bidirectional: solid line with arrows on both ends
+                    path.setAttribute('d', `M ${fromX} ${fromY} L ${toX} ${toY}`);
+                    path.className = 'node-connection connection-line';
+                    
+                    // Add arrow markers
+                    addArrowMarker(svg, fromX, fromY, toX, toY, 'from');
+                    addArrowMarker(svg, toX, toY, fromX, fromY, 'to');
+                } else {
+                    // Arrow: one-way connection
+                    path.setAttribute('d', `M ${fromX} ${fromY} L ${toX} ${toY}`);
+                    path.className = 'node-connection connection-arrow';
+                    
+                    // Add single arrow marker
+                    addArrowMarker(svg, fromX, fromY, toX, toY, 'to');
+                }
+                
+                svg.appendChild(path);
             }
         }
 
+        function addArrowMarker(svg, x1, y1, x2, y2, direction) {
+            // Calculate arrow head position
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            const arrowLength = 12;
+            const arrowAngle = Math.PI / 6;
+            
+            let tipX, tipY;
+            if (direction === 'to') {
+                tipX = x2 - Math.cos(angle) * 30; // offset from node edge
+                tipY = y2 - Math.sin(angle) * 30;
+            } else {
+                tipX = x1 + Math.cos(angle) * 30;
+                tipY = y1 + Math.sin(angle) * 30;
+            }
+            
+            const arrow1X = tipX - Math.cos(angle - arrowAngle) * arrowLength;
+            const arrow1Y = tipY - Math.sin(angle - arrowAngle) * arrowLength;
+            const arrow2X = tipX - Math.cos(angle + arrowAngle) * arrowLength;
+            const arrow2Y = tipY - Math.sin(angle + arrowAngle) * arrowLength;
+            
+            const arrowPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            arrowPath.setAttribute('d', `M ${tipX} ${tipY} L ${arrow1X} ${arrow1Y} M ${tipX} ${tipY} L ${arrow2X} ${arrow2Y}`);
+            arrowPath.className = 'node-connection';
+            arrowPath.style.strokeWidth = '2';
+            
+            svg.appendChild(arrowPath);
+        }
+
         function deleteNode(nodeId) {
+            const node = findNodeData(nodeId);
+            if (node?.isStarter) {
+                showMessage('Cannot delete starter node', 'error');
+                return;
+            }
+            
             if (confirm('Are you sure you want to delete this node?')) {
                 // Remove from tree data
                 if (treeData.tiers) {
@@ -1249,25 +1432,66 @@
                     });
                 }
                 
-                // Remove from prerequisites and exclusions of other nodes
+                // Remove all connections to/from this node
                 if (treeData.tiers) {
                     treeData.tiers.forEach(tier => {
-                        if (tier.nodes) {
-                            tier.nodes.forEach(node => {
-                                if (node.prerequisites) {
-                                    node.prerequisites = node.prerequisites.filter(id => id !== nodeId);
-                                }
-                                if (node.exclusions) {
-                                    node.exclusions = node.exclusions.filter(id => id !== nodeId);
-                                }
-                            });
-                        }
+                        tier.nodes?.forEach(node => {
+                            // Remove from prerequisites
+                            if (node.prerequisites) {
+                                node.prerequisites = node.prerequisites.filter(id => id !== nodeId);
+                            }
+                            // Remove from exclusions
+                            if (node.exclusions) {
+                                node.exclusions = node.exclusions.filter(id => id !== nodeId);
+                            }
+                            // Remove from connections
+                            if (node.connections) {
+                                node.connections = node.connections.filter(conn => conn.target !== nodeId);
+                            }
+                        });
                     });
                 }
                 
                 selectedNode = null;
                 renderTree();
                 showNodeProperties(null);
+            }
+        }
+
+        async function saveTree() {
+            try {
+                showMessage('SAVING TREE...', 'loading');
+                
+                let treeId = `${currentTree}_tree`;
+                let targetName = `${currentTree} Skill Tree`;
+                
+                if (currentTree === 'nazo' && selectedCharacter) {
+                    treeId = `nazo_${selectedCharacter}`;
+                    const charOption = document.querySelector(`#nazoCharacterSelect option[value="${selectedCharacter}"]`);
+                    targetName = `Nazo Tree - ${charOption?.textContent || selectedCharacter}`;
+                } else if (currentTree === 'nazo' && !selectedCharacter) {
+                    showMessage('Please select a character for Nazo tree', 'error');
+                    return;
+                }
+                
+                await window.firebase.setDoc(window.firebase.doc(window.firebase.db, 'skillTrees', treeId), treeData);
+                
+                // Log the action
+                await window.firebase.addDoc(window.firebase.collection(window.firebase.db, 'logs'), {
+                    action: 'skill_tree_updated',
+                    actorLogin: currentUser.login,
+                    actorRole: 'admin',
+                    targetId: treeId,
+                    targetName: targetName,
+                    details: `Updated ${targetName} structure`,
+                    timestamp: new Date().toISOString()
+                });
+                
+                showMessage('SKILL TREE SAVED SUCCESSFULLY', 'success');
+                
+            } catch (error) {
+                console.error('Error saving tree:', error);
+                showMessage('ERROR SAVING SKILL TREE', 'error');
             }
         }
 
@@ -1329,13 +1553,214 @@
         }
 
         function handleCanvasClick(e) {
-            if (e.target.id === 'treeCanvas') {
+            if (e.target.id === 'treeCanvas' || e.target.id === 'connectionSvg') {
+                if (currentTool === 'connect' || currentTool === 'arrow' || currentTool === 'exclude') {
+                    // Cancel connection mode
+                    connectingFrom = null;
+                    document.getElementById('treeCanvas').classList.remove('connecting-mode');
+                } else {
+                    // Deselect node
+                    selectedNode = null;
+                    document.querySelectorAll('.skill-node').forEach(node => {
+                        node.classList.remove('selected');
+                    });
+                    showNodeProperties(null);
+                }
+            }
+        }
+
+        function setTool(tool) {
+            currentTool = tool;
+            connectingFrom = null;
+            
+            // Update tool buttons
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(tool + 'Tool')?.classList.add('active');
+            
+            // Update canvas class for visual feedback
+            const canvas = document.getElementById('treeCanvas');
+            canvas.classList.remove('connecting-mode');
+            
+            if (tool === 'connect' || tool === 'arrow' || tool === 'exclude') {
+                canvas.classList.add('connecting-mode');
+                showMessage(`${tool.toUpperCase()} MODE: Click first node, then second node`, 'success');
+            }
+        }
+
+        function handleNodeClick(nodeId, event) {
+            event.stopPropagation();
+            
+            if (currentTool === 'select') {
+                selectNode(nodeId);
+            } else if (currentTool === 'connect' || currentTool === 'arrow' || currentTool === 'exclude') {
+                if (!connectingFrom) {
+                    connectingFrom = nodeId;
+                    showMessage(`Selected first node. Click target node.`, 'success');
+                } else {
+                    if (connectingFrom !== nodeId) {
+                        createConnection(connectingFrom, nodeId, currentTool);
+                    }
+                    connectingFrom = null;
+                    setTool('select');
+                }
+            }
+        }
+
+        function createConnection(fromId, toId, type) {
+            const fromNode = findNodeData(fromId);
+            const toNode = findNodeData(toId);
+            
+            if (!fromNode || !toNode) return;
+            
+            // Initialize connections array if needed
+            if (!fromNode.connections) fromNode.connections = [];
+            if (!toNode.connections) toNode.connections = [];
+            
+            // Create connection based on type
+            if (type === 'connect') {
+                // Bidirectional prerequisite
+                if (!fromNode.prerequisites) fromNode.prerequisites = [];
+                if (!toNode.prerequisites) toNode.prerequisites = [];
+                if (!fromNode.prerequisites.includes(toId)) fromNode.prerequisites.push(toId);
+                if (!toNode.prerequisites.includes(fromId)) toNode.prerequisites.push(fromId);
+                
+                fromNode.connections.push({ target: toId, type: 'bidirectional' });
+                toNode.connections.push({ target: fromId, type: 'bidirectional' });
+                
+            } else if (type === 'arrow') {
+                // One-way prerequisite (from -> to)
+                if (!toNode.prerequisites) toNode.prerequisites = [];
+                if (!toNode.prerequisites.includes(fromId)) toNode.prerequisites.push(fromId);
+                
+                fromNode.connections.push({ target: toId, type: 'arrow' });
+                
+            } else if (type === 'exclude') {
+                // Mutual exclusion
+                if (!fromNode.exclusions) fromNode.exclusions = [];
+                if (!toNode.exclusions) toNode.exclusions = [];
+                if (!fromNode.exclusions.includes(toId)) fromNode.exclusions.push(toId);
+                if (!toNode.exclusions.includes(fromId)) toNode.exclusions.push(fromId);
+                
+                fromNode.connections.push({ target: toId, type: 'exclusion' });
+                toNode.connections.push({ target: fromId, type: 'exclusion' });
+            }
+            
+            renderConnections();
+            showMessage(`${type.toUpperCase()} connection created`, 'success');
+        }
+
+        function addTierLine() {
+            const currentTierCount = treeData.tiers ? treeData.tiers.length : 0;
+            const newTierY = 150 + (currentTierCount * 200);
+            
+            if (!treeData.tiers) treeData.tiers = [];
+            
+            treeData.tiers.push({
+                tier: currentTierCount + 1,
+                requiredNodes: currentTierCount, // Require nodes from previous tiers
+                nodes: []
+            });
+            
+            renderTree();
+            showMessage(`Added Tier ${currentTierCount + 1}`, 'success');
+        }
+
+        function resetToStart() {
+            if (confirm('Reset tree to starter node only?')) {
+                const starterNode = {
+                    id: `${currentTree}_starter`,
+                    type: 'small',
+                    name: 'Foundation',
+                    description: 'Starting point for all abilities',
+                    cost: 1,
+                    maxPurchases: 1,
+                    position: { x: 400, y: 500 },
+                    effects: { stats: {} },
+                    prerequisites: [],
+                    exclusions: [],
+                    connections: [],
+                    isStarter: true,
+                    color: '#10b981',
+                    icon: '⭐'
+                };
+                
+                treeData.tiers = [{
+                    tier: 1,
+                    requiredNodes: 0,
+                    nodes: [starterNode]
+                }];
+                
                 selectedNode = null;
-                document.querySelectorAll('.skill-node').forEach(node => {
-                    node.classList.remove('selected');
-                });
+                renderTree();
                 showNodeProperties(null);
             }
+        }
+
+        function previewTree() {
+            // Simple preview mode - highlight all purchasable paths from starter
+            const starterNode = findNodeByProperty('isStarter', true);
+            if (!starterNode) {
+                showMessage('No starter node found', 'error');
+                return;
+            }
+            
+            // Find all nodes reachable from starter
+            const reachableNodes = new Set([starterNode.id]);
+            let changed = true;
+            
+            while (changed) {
+                changed = false;
+                if (treeData.tiers) {
+                    treeData.tiers.forEach(tier => {
+                        tier.nodes?.forEach(node => {
+                            if (!reachableNodes.has(node.id)) {
+                                const hasValidPath = !node.prerequisites?.length || 
+                                    node.prerequisites.some(prereqId => reachableNodes.has(prereqId));
+                                
+                                if (hasValidPath) {
+                                    reachableNodes.add(node.id);
+                                    changed = true;
+                                }
+                            }
+                        });
+                    });
+                }
+            }
+            
+            // Highlight reachable nodes
+            document.querySelectorAll('.skill-node').forEach(nodeEl => {
+                const nodeId = nodeEl.dataset.nodeId;
+                if (reachableNodes.has(nodeId)) {
+                    nodeEl.style.filter = 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.8))';
+                } else {
+                    nodeEl.style.filter = 'drop-shadow(0 0 8px rgba(239, 68, 68, 0.8))';
+                }
+            });
+            
+            setTimeout(() => {
+                document.querySelectorAll('.skill-node').forEach(nodeEl => {
+                    nodeEl.style.filter = '';
+                });
+            }, 3000);
+            
+            showMessage(`Preview: ${reachableNodes.size} nodes reachable from starter`, 'success');
+        }
+
+        function findNodeByProperty(property, value) {
+            if (treeData.tiers) {
+                for (let tier of treeData.tiers) {
+                    if (tier.nodes) {
+                        for (let node of tier.nodes) {
+                            if (node[property] === value) {
+                                return node;
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
         }
 
         function handleCanvasMouseDown(e) {
