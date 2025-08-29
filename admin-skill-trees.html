@@ -1041,16 +1041,16 @@
             tierContainer.innerHTML = '';
             svg.innerHTML = '';
             
-            // Create tier sections
+            // Create tier sections (highest tier first for visual hierarchy)
             if (treeData.tiers && treeData.tiers.length > 0) {
-                // Sort tiers by tier number
-                const sortedTiers = [...treeData.tiers].sort((a, b) => b.tier - a.tier); // Reverse order (highest first)
+                const sortedTiers = [...treeData.tiers].sort((a, b) => b.tier - a.tier);
                 
-                sortedTiers.forEach((tier, index) => {
+                sortedTiers.forEach((tier) => {
                     const tierSection = document.createElement('div');
                     tierSection.className = 'tier-section';
                     tierSection.id = `tier-${tier.tier}`;
                     tierSection.style.height = '350px';
+                    tierSection.style.position = 'relative';
                     
                     const tierHeader = document.createElement('div');
                     tierHeader.className = 'tier-header';
@@ -1061,10 +1061,8 @@
                     
                     tierSection.appendChild(tierHeader);
                     tierContainer.appendChild(tierSection);
-                });
-                
-                // Add nodes to their tier sections
-                treeData.tiers.forEach(tier => {
+                    
+                    // Add nodes to this tier section
                     if (tier.nodes) {
                         tier.nodes.forEach(node => {
                             createNodeElement(node, tier.tier);
@@ -1072,11 +1070,12 @@
                     }
                 });
             } else {
-                // Create initial tier with starter node
+                // Create initial tier
                 const tierSection = document.createElement('div');
                 tierSection.className = 'tier-section';
                 tierSection.id = 'tier-1';
                 tierSection.style.height = '350px';
+                tierSection.style.position = 'relative';
                 
                 const tierHeader = document.createElement('div');
                 tierHeader.className = 'tier-header';
@@ -1086,8 +1085,8 @@
                 tierContainer.appendChild(tierSection);
             }
             
-            // Render connections
-            setTimeout(() => renderConnections(), 100); // Small delay to ensure nodes are rendered
+            // Render connections after nodes are positioned
+            setTimeout(() => renderConnections(), 50);
         }
 
         function createNodeElement(nodeData, tierNumber) {
@@ -1100,16 +1099,24 @@
             
             nodeEl.dataset.nodeId = nodeData.id;
             nodeEl.style.position = 'absolute';
-            nodeEl.style.left = (nodeData.position?.x || 100) + 'px';
-            nodeEl.style.top = (nodeData.position?.y || 50) + 'px';
+            
+            // Use node's stored position within the tier
+            const x = nodeData.position?.x || 100;
+            const y = nodeData.position?.y || 100;
+            
+            nodeEl.style.left = x + 'px';
+            nodeEl.style.top = y + 'px';
 
             const nodeContent = document.createElement('div');
             nodeContent.className = nodeData.type === 'small' ? 'node-circle' : 'node-rect';
             
             if (nodeData.type === 'small') {
-                nodeContent.textContent = nodeData.effects?.stats ? 
-                    Object.entries(nodeData.effects.stats).map(([stat, val]) => 
-                        `+${val} ${stat.substr(0,3).toUpperCase()}`).join('\n') : '+1 STAT';
+                const statsText = nodeData.effects?.stats ? 
+                    Object.entries(nodeData.effects.stats)
+                        .filter(([stat, val]) => val > 0)
+                        .map(([stat, val]) => `+${val} ${stat.substr(0,3).toUpperCase()}`)
+                        .join('\n') : '+1 STAT';
+                nodeContent.textContent = statsText;
             } else {
                 nodeContent.innerHTML = `
                     <div style="font-weight: 600; margin-bottom: 4px;">${nodeData.name || 'New Node'}</div>
@@ -1118,8 +1125,6 @@
             }
 
             nodeEl.appendChild(nodeContent);
-            
-            // Add click handler with connection support
             nodeEl.addEventListener('click', (e) => {
                 handleNodeClick(nodeData.id, e);
             });
@@ -1128,26 +1133,306 @@
         }
 
         function addTierSection() {
-            const currentTierCount = treeData.tiers ? treeData.tiers.length : 0;
-            const newTierNumber = currentTierCount + 1;
-            
             if (!treeData.tiers) treeData.tiers = [];
             
-            // Add new tier at the top (highest tier number)
+            const currentMaxTier = treeData.tiers.length > 0 ? 
+                Math.max(...treeData.tiers.map(t => t.tier)) : 0;
+            const newTierNumber = currentMaxTier + 1;
+            
+            // Add new tier
             treeData.tiers.push({
                 tier: newTierNumber,
-                requiredNodes: Math.max(0, currentTierCount - 1),
+                requiredNodes: Math.max(0, newTierNumber - 1),
                 nodes: []
             });
             
             renderTree();
             
-            // Scroll to the new tier at the top
+            // Scroll to new tier at top
             setTimeout(() => {
                 document.getElementById('treeCanvas').scrollTop = 0;
             }, 100);
             
             showMessage(`Added Tier ${newTierNumber}`, 'success');
+        }
+
+        function previewTree() {
+            const starterNode = findNodeByProperty('isStarter', true);
+            let reachableNodes = new Set();
+            
+            if (starterNode) {
+                reachableNodes.add(starterNode.id);
+                
+                // Calculate reachable nodes through prerequisites
+                let changed = true;
+                while (changed) {
+                    changed = false;
+                    treeData.tiers?.forEach(tier => {
+                        tier.nodes?.forEach(node => {
+                            if (!reachableNodes.has(node.id)) {
+                                const hasValidPath = !node.prerequisites?.length || 
+                                    node.prerequisites.some(prereqId => reachableNodes.has(prereqId));
+                                
+                                if (hasValidPath) {
+                                    reachableNodes.add(node.id);
+                                    changed = true;
+                                }
+                            }
+                        });
+                    });
+                }
+            }
+            
+            // Create new window with proper viewport
+            const previewWindow = window.open('', 'TreePreview', 'width=900,height=700,scrollbars=yes,resizable=yes');
+            
+            if (!previewWindow) {
+                showMessage('Please allow popups to view preview', 'error');
+                return;
+            }
+            
+            let totalNodes = 0;
+            let totalConnections = 0;
+            
+            if (treeData.tiers) {
+                treeData.tiers.forEach(tier => {
+                    totalNodes += tier.nodes?.length || 0;
+                    tier.nodes?.forEach(node => {
+                        totalConnections += node.connections?.length || 0;
+                    });
+                });
+            }
+            
+            const unreachableCount = totalNodes - reachableNodes.size;
+            
+            let html = `<!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Skill Tree Preview - ${currentTree.toUpperCase()}</title>
+                    <meta charset="utf-8">
+                    <style>
+                        body { 
+                            font-family: 'Consolas', 'Monaco', monospace; 
+                            padding: 20px; 
+                            background: #0f172a; 
+                            color: #e2e8f0; 
+                            line-height: 1.6; 
+                            margin: 0;
+                        }
+                        .container { max-width: 800px; margin: 0 auto; }
+                        h1 { color: #10b981; text-align: center; border-bottom: 2px solid #374151; padding-bottom: 15px; }
+                        .summary { 
+                            background: linear-gradient(135deg, #1e293b, #334155); 
+                            padding: 20px; 
+                            border-radius: 12px; 
+                            margin-bottom: 25px; 
+                            border: 1px solid #475569;
+                        }
+                        .summary-grid {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                            gap: 15px;
+                            margin-top: 15px;
+                        }
+                        .summary-item {
+                            background: rgba(30, 41, 59, 0.5);
+                            padding: 12px;
+                            border-radius: 8px;
+                            text-align: center;
+                        }
+                        .summary-label { font-size: 12px; color: #94a3b8; text-transform: uppercase; }
+                        .summary-value { font-size: 24px; font-weight: bold; color: #f1f5f9; }
+                        .tier { 
+                            margin-bottom: 25px; 
+                            border: 1px solid #475569; 
+                            border-radius: 12px; 
+                            overflow: hidden;
+                            background: linear-gradient(135deg, #1e293b, #334155);
+                        }
+                        .tier-title { 
+                            background: #374151; 
+                            color: #fbbf24; 
+                            font-weight: bold; 
+                            padding: 12px 20px; 
+                            font-size: 16px;
+                        }
+                        .tier-content { padding: 20px; }
+                        .nodes-grid {
+                            display: grid;
+                            gap: 12px;
+                            margin-top: 15px;
+                        }
+                        .node { 
+                            padding: 15px; 
+                            border-radius: 8px; 
+                            border-left: 4px solid;
+                            background: rgba(15, 23, 42, 0.8);
+                        }
+                        .node-header { font-weight: bold; margin-bottom: 8px; }
+                        .node-details { font-size: 13px; color: #cbd5e1; }
+                        .node-meta { font-size: 11px; color: #94a3b8; margin-top: 8px; }
+                        .node.reachable { border-left-color: #10b981; background: rgba(16, 185, 129, 0.1); }
+                        .node.unreachable { border-left-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+                        .node.starter { border-left-color: #f59e0b; background: rgba(245, 158, 11, 0.15); }
+                        .validation { 
+                            background: #374151; 
+                            padding: 20px; 
+                            border-radius: 12px; 
+                            margin-top: 25px; 
+                        }
+                        .status-good { color: #10b981; }
+                        .status-bad { color: #ef4444; }
+                        .status-warning { color: #f59e0b; }
+                        .close-btn {
+                            position: fixed;
+                            top: 20px;
+                            right: 20px;
+                            background: #ef4444;
+                            color: white;
+                            border: none;
+                            padding: 10px 15px;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            font-weight: bold;
+                        }
+                        .print-btn {
+                            background: #3b82f6;
+                            color: white;
+                            border: none;
+                            padding: 10px 20px;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            margin: 10px 5px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <button class="close-btn" onclick="window.close()">✕ Close</button>
+                    <div class="container">
+                        <h1>🌳 ${currentTree.toUpperCase()} SKILL TREE</h1>
+                        
+                        <div class="summary">
+                            <h2 style="margin-top: 0; color: #f1f5f9;">Tree Overview</h2>
+                            <div class="summary-grid">
+                                <div class="summary-item">
+                                    <div class="summary-label">Total Tiers</div>
+                                    <div class="summary-value">${treeData.tiers?.length || 0}</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-label">Total Nodes</div>
+                                    <div class="summary-value">${totalNodes}</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-label">Reachable</div>
+                                    <div class="summary-value status-good">${reachableNodes.size}</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-label">Blocked</div>
+                                    <div class="summary-value ${unreachableCount > 0 ? 'status-bad' : 'status-good'}">${unreachableCount}</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-label">Connections</div>
+                                    <div class="summary-value">${totalConnections}</div>
+                                </div>
+                            </div>
+                        </div>`;
+            
+            if (treeData.tiers && treeData.tiers.length > 0) {
+                const sortedTiers = [...treeData.tiers].sort((a, b) => a.tier - b.tier);
+                
+                sortedTiers.forEach(tier => {
+                    const tierNodes = tier.nodes || [];
+                    const reachableInTier = tierNodes.filter(node => reachableNodes.has(node.id)).length;
+                    
+                    html += `<div class="tier">
+                        <div class="tier-title">
+                            TIER ${tier.tier} - ${tierNodes.length} nodes 
+                            (${reachableInTier} reachable, ${tier.requiredNodes} previous required)
+                        </div>
+                        <div class="tier-content">`;
+                    
+                    if (tierNodes.length > 0) {
+                        html += `<div class="nodes-grid">`;
+                        tierNodes.forEach(node => {
+                            const isReachable = reachableNodes.has(node.id);
+                            const nodeClass = node.isStarter ? 'starter' : (isReachable ? 'reachable' : 'unreachable');
+                            
+                            html += `<div class="node ${nodeClass}">
+                                <div class="node-header">${node.name || 'Unnamed'} (${node.type.toUpperCase()})</div>
+                                <div class="node-details">${node.description || 'No description'}</div>
+                                <div class="node-meta">
+                                    Cost: ${node.cost || 1} | Max Purchases: ${node.maxPurchases || 1}`;
+                            
+                            if (node.prerequisites?.length) {
+                                html += `<br>Prerequisites: ${node.prerequisites.join(', ')}`;
+                            }
+                            if (node.exclusions?.length) {
+                                html += `<br>Excludes: ${node.exclusions.join(', ')}`;
+                            }
+                            if (node.connections?.length) {
+                                html += `<br>Connections: ${node.connections.length} (${node.connections.map(c => c.type).join(', ')})`;
+                            }
+                            if (node.effects?.stats) {
+                                const stats = Object.entries(node.effects.stats)
+                                    .filter(([stat, val]) => val > 0)
+                                    .map(([stat, val]) => `+${val} ${stat}`);
+                                if (stats.length) {
+                                    html += `<br>Stats: ${stats.join(', ')}`;
+                                }
+                            }
+                            
+                            html += `</div></div>`;
+                        });
+                        html += `</div>`;
+                    } else {
+                        html += `<div style="color: #64748b; font-style: italic; text-align: center; padding: 20px;">No nodes in this tier</div>`;
+                    }
+                    
+                    html += `</div></div>`;
+                });
+            }
+            
+            // Validation section
+            html += `<div class="validation">
+                <h2 style="margin-top: 0; color: #f1f5f9;">Validation Report</h2>`;
+            
+            if (starterNode) {
+                html += `<div class="status-good">✅ Starter node found: ${starterNode.name}</div>`;
+            } else {
+                html += `<div class="status-bad">❌ No starter node found</div>`;
+            }
+            
+            if (reachableNodes.size > 0) {
+                html += `<div class="status-good">✅ ${reachableNodes.size} nodes reachable from start</div>`;
+            } else {
+                html += `<div class="status-bad">❌ No nodes reachable from start</div>`;
+            }
+            
+            if (unreachableCount > 0) {
+                html += `<div class="status-warning">⚠️ ${unreachableCount} nodes unreachable (check prerequisites)</div>`;
+            } else if (totalNodes > 1) {
+                html += `<div class="status-good">✅ All nodes have valid paths</div>`;
+            }
+            
+            if (treeData.tiers?.length) {
+                html += `<div class="status-good">✅ ${treeData.tiers.length} tier(s) defined</div>`;
+            } else {
+                html += `<div class="status-bad">❌ No tiers defined</div>`;
+            }
+            
+            html += `</div>
+                    <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #374151; color: #64748b; font-size: 12px;">
+                        Generated at ${new Date().toLocaleString()}
+                    </div>
+                </div>
+                </body>
+                </html>`;
+            
+            previewWindow.document.write(html);
+            previewWindow.document.close();
+            previewWindow.focus();
+            
+            showMessage('Tree preview opened in new window', 'success');
         }
 
         async function loadTreeData() {
