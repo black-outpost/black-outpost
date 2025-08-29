@@ -539,6 +539,7 @@
                 <a href="#" class="btn" onclick="openStatsManager()">MANAGE STATS</a>
                 <a href="#" class="btn" onclick="viewFullStats()">VIEW STATS</a>
                 <a href="#" class="btn" onclick="viewTechniques()">VIEW TECHNIQUES</a>
+                <a href="#" class="btn" onclick="viewEquipment()">VIEW EQUIPMENT</a>
                 <a href="index.html" class="btn btn-danger" onclick="logout()">LOGOUT</a>
             </div>
         </nav>
@@ -1033,6 +1034,10 @@
 
         function viewTechniques() {
             window.location.href = `techniques.html?login=${currentUser.login}`;
+        }
+
+        function viewEquipment() {
+            window.location.href = `equipment.html?login=${currentUser.login}`;
         }
 
         function logout() {

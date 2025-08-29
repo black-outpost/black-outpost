@@ -313,6 +313,57 @@
             overflow: hidden;
         }
 
+        .stat-calculation {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #6ee7b7;
+            cursor: help;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .stat-calculation:hover {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(5, 150, 105, 0.2) 100%);
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+
+        .stat-calculation.not-calculable {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.1) 100%);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        .stat-calculation.not-calculable:hover {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.3) 0%, rgba(220, 38, 38, 0.2) 100%);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 11px;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 4px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-calculation:hover .tooltip {
+            opacity: 1;
+        }
+
         .item-actions {
             display: flex;
             gap: 8px;
@@ -668,9 +719,6 @@
                 const character = allCharacters.find(c => c.id === item.characterId);
                 const characterName = character ? `${character.firstName} ${character.lastName}` : 'Unknown Character';
                 
-                // Strip HTML for preview
-                const descriptionText = item.description.replace(/<[^>]*>/g, '').trim();
-                
                 html += `
                     <div class="item-card ${item.category.toLowerCase()}">
                         <div class="item-header">
@@ -691,7 +739,7 @@
                         </div>
                         
                         <div class="item-description">
-                            ${descriptionText || 'No description provided.'}
+                            ${processContentWithCalculations(item.description || 'No description provided.', character)}
                         </div>
                         
                         <div class="item-actions">
@@ -710,6 +758,91 @@
             
             html += '</div>';
             container.innerHTML = html;
+        }
+
+        function processContentWithCalculations(content, character) {
+            if (!content) return '';
+            
+            // Replace stat calculations with interactive elements
+            return content.replace(/(\d+(?:\.\d+)?)\s*x\s*\[([^\]]+)\]/g, (match, multiplier, statName) => {
+                const calculation = calculateStatValue(parseFloat(multiplier), statName, character);
+                const formula = `${multiplier}×[${statName}]`;
+                
+                if (calculation.calculable) {
+                    return `<span class="stat-calculation" title="${formula} = ${calculation.value}">
+                        ${calculation.value}
+                        <div class="tooltip">${formula} = ${calculation.value}</div>
+                    </span>`;
+                } else {
+                    return `<span class="stat-calculation not-calculable" title="${formula}">
+                        ${formula}
+                        <div class="tooltip">Not calculable: ${calculation.reason}</div>
+                    </span>`;
+                }
+            });
+        }
+
+        function calculateStatValue(multiplier, statName, character) {
+            if (!character) {
+                return { calculable: false, reason: 'No character data' };
+            }
+
+            // Complete stat mapping including all variants
+            const statMapping = {
+                // Basic stats
+                'Strength': 'strength',
+                'Vitality': 'vitality',
+                'Speed': 'speed',
+                'Defense': 'defense',
+                'Reiatsu': 'reiatsu',
+                
+                // Hakuda (same for all races)
+                'Hakuda': 'hakuda',
+                'Bujutsu': 'hakuda',
+                
+                // Weapon skills (race-specific)
+                'Zanjutsu': 'weaponship',
+                'Ojigi': 'weaponship',
+                'Weaponship': 'weaponship',
+                'Bukijutsu': 'weaponship',
+                'Weapon Skill': 'weaponship',
+                'Weapon Mastery': 'weaponship',
+                
+                // Tamashi (race-specific)
+                'Zanpakuto Mastery': 'tamashi',
+                'Blood Legacy': 'tamashi',
+                'Fullbring Mastery': 'tamashi',
+                'Tamashi': 'tamashi',
+                
+                // Magic/Reiryoku (race-specific)
+                'Kido Mastery': 'magic',
+                'Primal Reiryoku': 'magic',
+                'Ginto Mastery': 'magic',
+                'Soul Manipulation': 'magic',
+                'Reiryoku': 'magic',
+                'Magic': 'magic'
+            };
+
+            // Check if it's the character's unique Nazo stat
+            if (statName === character.nazoName || statName === 'Nazo') {
+                const value = parseFloat(((character.nazo || 0) * multiplier).toFixed(1));
+                return { calculable: true, value: value };
+            }
+
+            // Check mapped stats
+            const statKey = statMapping[statName];
+            if (statKey && character[statKey] !== undefined) {
+                const value = parseFloat(((character[statKey] || 0) * multiplier).toFixed(1));
+                return { calculable: true, value: value };
+            }
+
+            // Handle special cases that depend on game state
+            const gameStateStats = ['Wydane Reiatsu', 'Current HP', 'Remaining Actions', 'Max HP', 'Obecne HP'];
+            if (gameStateStats.some(special => statName.includes(special))) {
+                return { calculable: false, reason: 'Depends on current game state' };
+            }
+
+            return { calculable: false, reason: `Unknown stat: ${statName}` };
         }
 
         function viewItem(characterId, itemDocId) {

@@ -497,6 +497,24 @@
             color: #fcd34d;
         }
 
+        .range-highlight {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #86efac;
+        }
+
+        .time-highlight {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.1) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: 600;
+            color: #93c5fd;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -810,11 +828,6 @@
 
         function generateItemCard(item) {
             const categoryClass = item.category.toLowerCase();
-            const stripHtml = (html) => {
-                const div = document.createElement('div');
-                div.innerHTML = html;
-                return div.textContent || div.innerText || '';
-            };
             
             return `
                 <div class="item-card ${categoryClass}">
