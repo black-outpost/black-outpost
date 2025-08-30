@@ -891,42 +891,36 @@
 
         function setupDragAndDrop() {
             document.querySelectorAll('.node-template').forEach(template => {
-                // Click to select node type for placement
+                // Click to automatically place node
                 template.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    // Deselect all templates
-                    document.querySelectorAll('.node-template').forEach(t => t.classList.remove('selected'));
-                    
-                    // Select this template
-                    this.classList.add('selected');
-                    selectedNodeType = {
-                        type: this.dataset.type,
-                        size: parseInt(this.dataset.size)
-                    };
-                    
-                    showMessage('Click on a grid cell to place the node', 'success');
-                });
-
-                // Drag and drop functionality (with text selection fix)
-                template.addEventListener('dragstart', function(e) {
                     const nodeData = {
                         type: this.dataset.type,
                         size: parseInt(this.dataset.size)
                     };
-                    selectedNodeType = nodeData;
-                    e.dataTransfer.setData('text/plain', JSON.stringify(nodeData));
-                    e.dataTransfer.effectAllowed = 'copy';
                     
-                    // Prevent text selection during drag
-                    document.body.style.userSelect = 'none';
-                });
-
-                template.addEventListener('dragend', function(e) {
-                    selectedNodeType = null;
-                    // Restore text selection
-                    document.body.style.userSelect = '';
+                    // Find the highest tier to place the node in
+                    const highestTier = Math.max(...treeData.tiers.map(t => t.tier));
+                    
+                    // Find first available position
+                    const position = findFirstAvailablePosition(highestTier, nodeData);
+                    
+                    if (position) {
+                        createNewNode(nodeData, position.tier, position.row, position.col);
+                        showMessage(`Node placed in tier ${position.tier}. Drag to reposition.`, 'success');
+                    } else {
+                        // Create new tier if no space available
+                        const newTierNumber = highestTier + 1;
+                        const newTier = createEmptyTier(newTierNumber);
+                        treeData.tiers.push(newTier);
+                        
+                        // Place in first position of new tier
+                        createNewNode(nodeData, newTierNumber, 0, 0);
+                        renderTree();
+                        showMessage(`Node placed in new tier ${newTierNumber}. Drag to reposition.`, 'success');
+                    }
                 });
                 
                 // Prevent text selection on mousedown
@@ -941,75 +935,104 @@
             
             tierContainer.addEventListener('dragover', function(e) {
                 e.preventDefault();
-                e.dataTransfer.dropEffect = 'copy';
+                e.dataTransfer.dropEffect = 'move';
             });
 
             tierContainer.addEventListener('drop', function(e) {
                 e.preventDefault();
-                handleNodeDrop(e);
+                handleNodeReposition(e);
             });
 
             tierContainer.addEventListener('click', function(e) {
-                console.log('Canvas clicked:', e.target.className, 'selectedNodeType:', selectedNodeType);
-                
                 // Handle skill node selection
                 if (e.target.classList.contains('skill-node') || e.target.closest('.skill-node')) {
                     const node = e.target.classList.contains('skill-node') ? e.target : e.target.closest('.skill-node');
                     selectNode(node);
-                    return;
-                }
-                
-                // Handle grid cell clicks for node placement - check more specifically
-                if (e.target.classList.contains('grid-cell')) {
-                    console.log('Grid cell detected! Row:', e.target.dataset.row, 'Col:', e.target.dataset.col);
-                    
-                    if (selectedNodeType) {
-                        console.log('Attempting to place node...');
-                        e.stopPropagation();
-                        
-                        const tierElement = e.target.closest('.tier-section');
-                        if (!tierElement) {
-                            console.log('No tier element found');
-                            return;
-                        }
-                        
-                        const tierNumber = parseInt(tierElement.dataset.tier);
-                        const row = parseInt(e.target.dataset.row);
-                        const col = parseInt(e.target.dataset.col);
-                        
-                        console.log('Placing node at Tier:', tierNumber, 'Row:', row, 'Col:', col);
-                        
-                        // Don't allow placing nodes exactly on the starter node position in tier 1
-                        if (tierNumber === 1 && row === 9 && col === 5) {
-                            showMessage('Cannot place node on starter position', 'error');
-                            return;
-                        }
-                        
-                        if (canPlaceNode(tierNumber, row, col, selectedNodeType)) {
-                            console.log('Can place node, creating...');
-                            createNewNode(selectedNodeType, tierNumber, row, col);
-                            clearNodeSelection();
-                            showMessage(`Node placed in tier ${tierNumber}`, 'success');
-                        } else {
-                            console.log('Cannot place node - space occupied or invalid');
-                            showMessage('Cannot place node here - space occupied or out of bounds', 'error');
-                        }
-                        return;
-                    } else {
-                        console.log('No node type selected');
-                    }
-                    return; // Important: return here so we don't clear selection when clicking grid cells
-                }
-                
-                // Handle empty space clicks - only clear if not clicking grid cells
-                console.log('Empty space clicked, clearing selection');
-                if (selectedNodeType) {
-                    clearNodeSelection();
-                    showMessage('Node selection cleared', 'success');
                 } else {
+                    // Deselect when clicking empty space
                     deselectNode();
                 }
             });
+        }
+
+        function handleNodeReposition(e) {
+            const dropData = e.dataTransfer.getData('application/json');
+            if (!dropData) return;
+            
+            try {
+                const moveData = JSON.parse(dropData);
+                if (moveData.action !== 'move') return;
+                
+                const tierElement = e.target.closest('.tier-section');
+                if (!tierElement) return;
+                
+                const tierContent = tierElement.querySelector('.tier-content');
+                if (!tierContent) return;
+                
+                const newTierNumber = parseInt(tierElement.dataset.tier);
+                const rect = tierContent.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const newCol = Math.floor(x / GRID_SIZE);
+                const newRow = Math.floor(y / GRID_SIZE);
+                
+                if (newCol >= 0 && newCol < GRID_COLS && newRow >= 0 && newRow < GRID_ROWS) {
+                    moveNode(moveData.nodeId, moveData.tierNumber, newTierNumber, newRow, newCol);
+                }
+                
+            } catch (error) {
+                console.error('Error repositioning node:', error);
+                showMessage('Error moving node', 'error');
+            }
+        }
+
+        function moveNode(nodeId, oldTierNumber, newTierNumber, newRow, newCol) {
+            // Find the node in the old tier
+            const oldTier = treeData.tiers.find(t => t.tier === oldTierNumber);
+            if (!oldTier) return;
+            
+            const nodeIndex = oldTier.nodes.findIndex(node => node.id === nodeId);
+            if (nodeIndex === -1) return;
+            
+            const node = oldTier.nodes[nodeIndex];
+            
+            // Don't allow moving to starter position in tier 1
+            if (newTierNumber === 1 && newRow === 9 && newCol === 5 && !node.isStarter) {
+                showMessage('Cannot move node to starter position', 'error');
+                return;
+            }
+            
+            // Check if position is available in new location
+            const nodeData = { type: node.type, size: node.gridSize };
+            if (!canPlaceNode(newTierNumber, newRow, newCol, nodeData, nodeId)) {
+                showMessage('Cannot move node here - space occupied', 'error');
+                return;
+            }
+            
+            // Free old position
+            markGridCells(oldTier, node, false);
+            
+            // Remove from old tier
+            oldTier.nodes.splice(nodeIndex, 1);
+            
+            // Update node position
+            node.tierNumber = newTierNumber;
+            node.gridRow = newRow;
+            node.gridCol = newCol;
+            
+            // Add to new tier
+            let newTier = treeData.tiers.find(t => t.tier === newTierNumber);
+            if (!newTier) {
+                newTier = createEmptyTier(newTierNumber);
+                treeData.tiers.push(newTier);
+            }
+            
+            newTier.nodes.push(node);
+            markGridCells(newTier, node, true);
+            
+            renderTree();
+            showMessage(`Node moved to tier ${newTierNumber}`, 'success');
         }
 
         function switchTree(treeType) {
@@ -1132,6 +1155,11 @@
             });
 
             renderConnections();
+            
+            // Enable dragging on all skill nodes after rendering
+            setTimeout(() => {
+                setupNodeDragging();
+            }, 100);
         }
 
         function createTierElement(tier) {
@@ -1370,7 +1398,7 @@
             }
         }
 
-        function canPlaceNode(tierNumber, gridRow, gridCol, nodeData) {
+        function canPlaceNode(tierNumber, gridRow, gridCol, nodeData, excludeNodeId = null) {
             const tier = treeData.tiers.find(t => t.tier === tierNumber);
             if (!tier || !tier.grid) return false;
 
@@ -1378,7 +1406,11 @@
             
             return cellsToCheck.every(cellKey => {
                 const [row, col] = cellKey.split('-').map(Number);
-                return row >= 0 && row < GRID_ROWS && col >= 0 && col < GRID_COLS && !tier.grid[cellKey];
+                if (row < 0 || row >= GRID_ROWS || col < 0 || col >= GRID_COLS) return false;
+                
+                const occupyingNodeId = tier.grid[cellKey];
+                // Cell is free, or occupied by the node we're moving
+                return !occupyingNodeId || occupyingNodeId === excludeNodeId;
             });
         }
 
