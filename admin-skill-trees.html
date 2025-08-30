@@ -947,40 +947,32 @@
                 e.dataTransfer.dropEffect = 'copy';
             });
 
-            tierContainer.addEventListener('dragleave', function(e) {
-                // Only clear highlights when leaving the container entirely
-                if (!tierContainer.contains(e.relatedTarget)) {
-                    // Clear any highlights if needed
-                }
-            });
-
             tierContainer.addEventListener('drop', function(e) {
                 e.preventDefault();
                 handleNodeDrop(e);
             });
 
             tierContainer.addEventListener('click', function(e) {
+                // Handle skill node selection
                 if (e.target.classList.contains('skill-node') || e.target.closest('.skill-node')) {
                     const node = e.target.classList.contains('skill-node') ? e.target : e.target.closest('.skill-node');
                     selectNode(node);
-                } else if (e.target.classList.contains('grid-cell')) {
-                    // Grid cell clicks are handled by enableGridClickToPlace
-                } else {
-                    // Clicked on empty space - cancel node selection if active
+                    return;
+                }
+                
+                // Handle grid cell clicks - check if it's a clickable grid cell first
+                if (e.target.classList.contains('grid-cell') && e.target.classList.contains('clickable')) {
+                    // Let the grid cell's own click handler manage this
+                    return;
+                }
+                
+                // Handle empty space clicks
+                if (!e.target.classList.contains('grid-cell')) {
                     if (selectedNodeType) {
                         clearNodeSelection();
                     } else {
                         deselectNode();
                     }
-                }
-            });
-
-            // Add event listeners to tier sections specifically
-            tierContainer.addEventListener('dragover', function(e) {
-                const tierSection = e.target.closest('.tier-section');
-                if (tierSection) {
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = 'copy';
                 }
             });
         }
@@ -1019,7 +1011,7 @@
                 if (treeDoc.exists()) {
                     treeData = treeDoc.data();
                 } else {
-                    // Initialize empty tree with starter node in tier 1
+                    // Initialize empty tree starting with tier 1
                     treeData = {
                         id: treeId,
                         name: `${currentTree.charAt(0).toUpperCase() + currentTree.slice(1)} Tree`,
@@ -1033,9 +1025,6 @@
                     tier1.nodes.push(starterNode);
                     markGridCells(tier1, starterNode, true);
                     treeData.tiers.push(tier1);
-                    
-                    // Create tier 2
-                    treeData.tiers.push(createEmptyTier(2));
                 }
                 
                 renderTree();
@@ -1053,7 +1042,7 @@
                 type: 'small',
                 tierNumber: 1,
                 gridRow: 9, // Bottom of grid (last row)
-                gridCol: 5, // Centered horizontally (middle column in 11-column grid)
+                gridCol: 5, // Centered horizontally (middle column in 11-column grid: 0,1,2,3,4,5,6,7,8,9,10)
                 gridSize: 1,
                 name: `${currentTree.toUpperCase()} START`,
                 description: `Starting node for ${currentTree} skill tree`,
@@ -1091,12 +1080,12 @@
             tierContainer.innerHTML = '';
 
             if (!treeData.tiers || treeData.tiers.length === 0) {
-                // Initialize with tier 1 containing starter node and tier 2
+                // Initialize with tier 1 containing starter node
                 const tier1 = createEmptyTier(1);
                 const starterNode = createStarterNode();
                 tier1.nodes.push(starterNode);
                 markGridCells(tier1, starterNode, true);
-                treeData.tiers = [tier1, createEmptyTier(2)];
+                treeData.tiers = [tier1];
             }
 
             // Render tiers from top to bottom (highest tier first, then descending to 1)
@@ -1122,7 +1111,7 @@
             // Tier header
             const header = document.createElement('div');
             header.className = 'tier-header';
-            header.textContent = tier.tier === 1 ? 'STARTER' : `TIER ${tier.tier}`;
+            header.textContent = `TIER ${tier.tier}`;
             tierContent.appendChild(header);
 
             // Grid overlay 
@@ -1239,6 +1228,8 @@
             document.querySelectorAll('.grid-cell').forEach(cell => {
                 cell.classList.add('clickable');
                 cell.onclick = function(e) {
+                    e.stopPropagation(); // Prevent event bubbling
+                    
                     if (!selectedNodeType) return;
                     
                     const tierElement = this.closest('.tier-section');
@@ -1248,7 +1239,7 @@
                     const row = parseInt(this.dataset.row);
                     const col = parseInt(this.dataset.col);
                     
-                    // Don't allow placing nodes on starter node position in tier 1
+                    // Don't allow placing nodes exactly on the starter node position in tier 1
                     if (tierNumber === 1 && row === 9 && col === 5) {
                         showMessage('Cannot place node on starter position', 'error');
                         return;
@@ -1271,7 +1262,6 @@
                 cell.classList.remove('clickable');
                 cell.onclick = null;
             });
-            showMessage('Node placement cancelled', 'success');
         }
 
         function getCellsForNode(gridRow, gridCol, nodeData) {
