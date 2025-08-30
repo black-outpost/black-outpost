@@ -191,6 +191,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            draggable: true;
         }
 
         .node-template:hover {
@@ -267,12 +268,13 @@
             position: relative;
             width: 100%;
             min-height: 100%;
+            padding: 20px;
         }
 
         .tier-section {
             position: relative;
             width: 100%;
-            height: 400px;
+            height: 500px;
             border-bottom: 2px dashed rgba(148, 163, 184, 0.3);
             margin-bottom: 20px;
         }
@@ -292,10 +294,8 @@
         }
 
         .add-tier-btn {
-            position: sticky;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
+            display: block;
+            margin: 20px auto;
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.8) 0%, rgba(5, 150, 105, 0.9) 100%);
             border: 1px solid rgba(16, 185, 129, 0.3);
             color: #f1f5f9;
@@ -305,13 +305,12 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            margin: 20px 0;
             transition: all 0.3s ease;
             z-index: 10;
         }
 
         .add-tier-btn:hover {
-            transform: translateX(-50%) translateY(-2px);
+            transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
         }
 
@@ -323,23 +322,31 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            opacity: 0.1;
+            opacity: 0.5;
             z-index: 1;
         }
 
         .grid-cell {
             position: absolute;
-            width: 40px;
-            height: 40px;
-            border: 1px solid rgba(148, 163, 184, 0.3);
+            width: 50px;
+            height: 50px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            box-sizing: border-box;
         }
 
         .grid-cell.occupied {
-            background: rgba(16, 185, 129, 0.2);
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
         }
 
         .grid-cell.hover {
-            background: rgba(245, 158, 11, 0.3);
+            background: rgba(245, 158, 11, 0.2);
+            border-color: rgba(245, 158, 11, 0.5);
+        }
+
+        .drop-zone-active {
+            background: rgba(16, 185, 129, 0.1) !important;
+            border-color: rgba(16, 185, 129, 0.5) !important;
         }
 
         /* Node styles */
@@ -489,33 +496,20 @@
             border-radius: 0 0 25px 0;
         }
 
-        /* Tree label and arrow at bottom */
-        .tree-base {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            font-family: 'JetBrains Mono', monospace;
-            color: #f1f5f9;
-        }
-
-        .tree-label {
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-        }
-
-        .tree-arrow {
-            font-size: 24px;
-            color: #10b981;
-            margin-bottom: 10px;
-        }
-
+        /* Starter node special styling */
         .starter-node {
             border: 3px solid #f59e0b !important;
             box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.9) 0%, rgba(217, 119, 6, 1) 100%) !important;
+        }
+
+        .starter-node::after {
+            content: "★";
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 12px;
+            color: #fbbf24;
         }
 
         /* Connection lines */
@@ -791,8 +785,8 @@
         let selectedNode = null;
         let connectingFrom = null;
         let treeData = {};
-        let gridVisible = false;
-        let currentTier = 1;
+        let gridVisible = true; // Grid is visible by default
+        let draggedNodeType = null;
 
         // Grid constants
         const GRID_SIZE = 50; // Each grid cell is 50x50 pixels
@@ -878,10 +872,17 @@
         function setupDragAndDrop() {
             document.querySelectorAll('.node-template').forEach(template => {
                 template.addEventListener('dragstart', function(e) {
-                    e.dataTransfer.setData('text/plain', JSON.stringify({
+                    const nodeData = {
                         type: this.dataset.type,
                         size: parseInt(this.dataset.size)
-                    }));
+                    };
+                    draggedNodeType = nodeData;
+                    e.dataTransfer.setData('text/plain', JSON.stringify(nodeData));
+                    e.dataTransfer.effectAllowed = 'copy';
+                });
+
+                template.addEventListener('dragend', function(e) {
+                    draggedNodeType = null;
                 });
             });
         }
@@ -891,17 +892,24 @@
             
             tierContainer.addEventListener('dragover', function(e) {
                 e.preventDefault();
+                e.dataTransfer.dropEffect = 'copy';
                 highlightDropZone(e);
+            });
+
+            tierContainer.addEventListener('dragleave', function(e) {
+                clearDropZoneHighlight();
             });
 
             tierContainer.addEventListener('drop', function(e) {
                 e.preventDefault();
+                clearDropZoneHighlight();
                 handleNodeDrop(e);
             });
 
             tierContainer.addEventListener('click', function(e) {
-                if (e.target.classList.contains('skill-node')) {
-                    selectNode(e.target);
+                if (e.target.classList.contains('skill-node') || e.target.closest('.skill-node')) {
+                    const node = e.target.classList.contains('skill-node') ? e.target : e.target.closest('.skill-node');
+                    selectNode(node);
                 } else {
                     deselectNode();
                 }
@@ -942,13 +950,23 @@
                 if (treeDoc.exists()) {
                     treeData = treeDoc.data();
                 } else {
-                    // Initialize empty tree
+                    // Initialize empty tree with starter node
                     treeData = {
                         id: treeId,
                         name: `${currentTree.charAt(0).toUpperCase() + currentTree.slice(1)} Tree`,
                         associatedStat: currentTree,
-                        tiers: [createEmptyTier(1)]
+                        tiers: []
                     };
+                    
+                    // Create starter tier (Tier 0) with starter node
+                    const starterTier = createEmptyTier(0);
+                    const starterNode = createStarterNode();
+                    starterTier.nodes.push(starterNode);
+                    markGridCells(starterTier, starterNode, true);
+                    treeData.tiers.push(starterTier);
+                    
+                    // Create first regular tier
+                    treeData.tiers.push(createEmptyTier(1));
                 }
                 
                 renderTree();
@@ -957,6 +975,27 @@
                 console.error('Error loading tree:', error);
                 showMessage('ERROR LOADING TREE DATA', 'error');
             }
+        }
+
+        function createStarterNode() {
+            const nodeId = `${currentTree}_starter_${Date.now()}`;
+            return {
+                id: nodeId,
+                type: 'small',
+                tierNumber: 0,
+                gridRow: 8, // Near bottom of grid
+                gridCol: 4, // Centered horizontally
+                gridSize: 1,
+                name: `${currentTree.toUpperCase()} START`,
+                description: `Starting node for ${currentTree} skill tree`,
+                cost: 0,
+                maxPurchases: 1,
+                prerequisites: [],
+                exclusions: [],
+                connections: [],
+                isStarter: true,
+                statBonus: '+0'
+            };
         }
 
         function createEmptyTier(tierNumber) {
@@ -983,10 +1022,22 @@
             tierContainer.innerHTML = '';
 
             if (!treeData.tiers || treeData.tiers.length === 0) {
-                treeData.tiers = [createEmptyTier(1)];
+                // Initialize with starter tier and first regular tier
+                const starterTier = createEmptyTier(0);
+                const starterNode = createStarterNode();
+                starterTier.nodes.push(starterNode);
+                markGridCells(starterTier, starterNode, true);
+                treeData.tiers = [starterTier, createEmptyTier(1)];
             }
 
-            // Render tiers from top to bottom (highest tier first)
+            // Add "Add Tier" button at top
+            const addTierBtn = document.createElement('button');
+            addTierBtn.className = 'add-tier-btn';
+            addTierBtn.textContent = '+ ADD NEW TIER';
+            addTierBtn.onclick = addTier;
+            tierContainer.appendChild(addTierBtn);
+
+            // Render tiers from top to bottom (highest tier first, then descending to 0)
             const sortedTiers = [...treeData.tiers].sort((a, b) => b.tier - a.tier);
 
             sortedTiers.forEach(tier => {
@@ -1006,17 +1057,17 @@
             // Tier header
             const header = document.createElement('div');
             header.className = 'tier-header';
-            header.textContent = `TIER ${tier.tier}`;
+            header.textContent = tier.tier === 0 ? 'STARTER' : `TIER ${tier.tier}`;
             tierDiv.appendChild(header);
 
-            // Grid overlay (initially hidden)
+            // Grid overlay 
             if (gridVisible) {
-                const gridOverlay = createGridOverlay();
+                const gridOverlay = createGridOverlay(tier);
                 tierDiv.appendChild(gridOverlay);
             }
 
             // Add nodes
-            if (tier.nodes) {
+            if (tier.nodes && tier.nodes.length > 0) {
                 tier.nodes.forEach(node => {
                     const nodeElement = createNodeElement(node, tier.tier);
                     tierDiv.appendChild(nodeElement);
@@ -1026,7 +1077,7 @@
             return tierDiv;
         }
 
-        function createGridOverlay() {
+        function createGridOverlay(tier) {
             const overlay = document.createElement('div');
             overlay.className = 'grid-overlay';
 
@@ -1036,6 +1087,15 @@
                     cell.className = 'grid-cell';
                     cell.style.left = (col * GRID_SIZE) + 'px';
                     cell.style.top = (row * GRID_SIZE) + 'px';
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    
+                    // Mark occupied cells
+                    const cellKey = `${row}-${col}`;
+                    if (tier.grid && tier.grid[cellKey]) {
+                        cell.classList.add('occupied');
+                    }
+                    
                     overlay.appendChild(cell);
                 }
             }
@@ -1046,6 +1106,9 @@
         function createNodeElement(node, tierNumber) {
             const nodeDiv = document.createElement('div');
             nodeDiv.className = `skill-node node-${node.type}`;
+            if (node.isStarter) {
+                nodeDiv.classList.add('starter-node');
+            }
             nodeDiv.dataset.nodeId = node.id;
             nodeDiv.dataset.tier = tierNumber;
             
@@ -1055,7 +1118,7 @@
             
             // Set content based on node type
             if (node.type === 'small') {
-                nodeDiv.textContent = node.statBonus || '+1';
+                nodeDiv.textContent = node.statBonus || (node.isStarter ? 'START' : '+1');
             } else if (node.type === 'small-segmented-2') {
                 nodeDiv.innerHTML = createSegmentedContent(node, 2);
             } else if (node.type === 'small-segmented-4') {
@@ -1063,7 +1126,7 @@
             } else {
                 nodeDiv.innerHTML = `
                     <div style="font-weight: 600; font-size: 10px;">${node.name || 'New Node'}</div>
-                    ${node.description ? `<div style="font-size: 8px; opacity: 0.8;">${node.description}</div>` : ''}
+                    ${node.description ? `<div style="font-size: 8px; opacity: 0.8;">${node.description.substring(0, 20)}${node.description.length > 20 ? '...' : ''}</div>` : ''}
                 `;
             }
 
@@ -1107,47 +1170,107 @@
         }
 
         function highlightDropZone(e) {
+            if (!draggedNodeType) return;
+
             const tierElement = e.target.closest('.tier-section');
-            if (tierElement) {
-                const rect = tierElement.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
+            if (!tierElement) return;
+
+            const rect = tierElement.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const gridCol = Math.floor(x / GRID_SIZE);
+            const gridRow = Math.floor(y / GRID_SIZE);
+            
+            // Clear previous highlights
+            clearDropZoneHighlight();
+            
+            if (gridCol >= 0 && gridCol < GRID_COLS && gridRow >= 0 && gridRow < GRID_ROWS) {
+                const tierNumber = parseInt(tierElement.dataset.tier);
                 
-                const gridCol = Math.floor(x / GRID_SIZE);
-                const gridRow = Math.floor(y / GRID_SIZE);
+                // Skip highlighting for starter tier
+                if (tierNumber === 0) return;
                 
-                // Highlight grid cells
-                const cells = tierElement.querySelectorAll('.grid-cell');
-                cells.forEach(cell => cell.classList.remove('hover'));
-                
-                if (gridCol >= 0 && gridCol < GRID_COLS && gridRow >= 0 && gridRow < GRID_ROWS) {
-                    const targetCell = cells[gridRow * GRID_COLS + gridCol];
-                    if (targetCell) {
-                        targetCell.classList.add('hover');
-                    }
+                if (canPlaceNode(tierNumber, gridRow, gridCol, draggedNodeType)) {
+                    // Highlight cells that would be occupied
+                    const cellsToHighlight = getCellsForNode(gridRow, gridCol, draggedNodeType);
+                    cellsToHighlight.forEach(cellKey => {
+                        const [row, col] = cellKey.split('-').map(Number);
+                        const cell = tierElement.querySelector(`.grid-cell[data-row="${row}"][data-col="${col}"]`);
+                        if (cell) {
+                            cell.classList.add('drop-zone-active');
+                        }
+                    });
                 }
             }
+        }
+
+        function clearDropZoneHighlight() {
+            document.querySelectorAll('.drop-zone-active').forEach(cell => {
+                cell.classList.remove('drop-zone-active');
+            });
+        }
+
+        function getCellsForNode(gridRow, gridCol, nodeData) {
+            const { type, size } = nodeData;
+            let cells = [];
+
+            if (size === 1) {
+                cells = [`${gridRow}-${gridCol}`];
+            } else if (size === 2) {
+                cells = [`${gridRow}-${gridCol}`, `${gridRow}-${gridCol + 1}`];
+            } else if (size === 4) {
+                if (type === 'large-circle') {
+                    // 2x2 square
+                    cells = [
+                        `${gridRow}-${gridCol}`,
+                        `${gridRow}-${gridCol + 1}`,
+                        `${gridRow + 1}-${gridCol}`,
+                        `${gridRow + 1}-${gridCol + 1}`
+                    ];
+                } else {
+                    // 4x1 rectangle
+                    cells = [
+                        `${gridRow}-${gridCol}`,
+                        `${gridRow}-${gridCol + 1}`,
+                        `${gridRow}-${gridCol + 2}`,
+                        `${gridRow}-${gridCol + 3}`
+                    ];
+                }
+            }
+
+            return cells;
         }
 
         function handleNodeDrop(e) {
             const tierElement = e.target.closest('.tier-section');
             if (!tierElement) return;
 
+            const tierNumber = parseInt(tierElement.dataset.tier);
+            
+            // Don't allow dropping on starter tier
+            if (tierNumber === 0) {
+                showMessage('Cannot add nodes to starter tier', 'error');
+                return;
+            }
+
             try {
-                const nodeData = JSON.parse(e.dataTransfer.getData('text/plain'));
+                const nodeDataStr = e.dataTransfer.getData('text/plain');
+                if (!nodeDataStr) return;
+                
+                const nodeData = JSON.parse(nodeDataStr);
                 const rect = tierElement.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
                 
                 const gridCol = Math.floor(x / GRID_SIZE);
                 const gridRow = Math.floor(y / GRID_SIZE);
-                const tierNumber = parseInt(tierElement.dataset.tier);
                 
                 if (gridCol >= 0 && gridCol < GRID_COLS && gridRow >= 0 && gridRow < GRID_ROWS) {
                     if (canPlaceNode(tierNumber, gridRow, gridCol, nodeData)) {
                         createNewNode(nodeData, tierNumber, gridRow, gridCol);
                     } else {
-                        showMessage('Cannot place node here - space occupied', 'error');
+                        showMessage('Cannot place node here - space occupied or out of bounds', 'error');
                     }
                 }
             } catch (error) {
@@ -1160,36 +1283,11 @@
             const tier = treeData.tiers.find(t => t.tier === tierNumber);
             if (!tier || !tier.grid) return false;
 
-            const { type, size } = nodeData;
-            let cellsToCheck = [];
-
-            if (size === 1) {
-                cellsToCheck = [`${gridRow}-${gridCol}`];
-            } else if (size === 2) {
-                cellsToCheck = [`${gridRow}-${gridCol}`, `${gridRow}-${gridCol + 1}`];
-            } else if (size === 4) {
-                if (type === 'large-circle') {
-                    // 2x2 square
-                    cellsToCheck = [
-                        `${gridRow}-${gridCol}`,
-                        `${gridRow}-${gridCol + 1}`,
-                        `${gridRow + 1}-${gridCol}`,
-                        `${gridRow + 1}-${gridCol + 1}`
-                    ];
-                } else {
-                    // 4x1 rectangle
-                    cellsToCheck = [
-                        `${gridRow}-${gridCol}`,
-                        `${gridRow}-${gridCol + 1}`,
-                        `${gridRow}-${gridCol + 2}`,
-                        `${gridRow}-${gridCol + 3}`
-                    ];
-                }
-            }
-
-            return cellsToCheck.every(cell => {
-                const [row, col] = cell.split('-').map(Number);
-                return row < GRID_ROWS && col < GRID_COLS && !tier.grid[cell];
+            const cellsToCheck = getCellsForNode(gridRow, gridCol, nodeData);
+            
+            return cellsToCheck.every(cellKey => {
+                const [row, col] = cellKey.split('-').map(Number);
+                return row >= 0 && row < GRID_ROWS && col >= 0 && col < GRID_COLS && !tier.grid[cellKey];
             });
         }
 
@@ -1209,7 +1307,8 @@
                 maxPurchases: 1,
                 prerequisites: [],
                 exclusions: [],
-                connections: []
+                connections: [],
+                isStarter: false
             };
 
             // Add type-specific properties
@@ -1218,7 +1317,7 @@
                     const segmentCount = nodeData.type.includes('4') ? 4 : 2;
                     newNode.stats = new Array(segmentCount).fill('STR');
                 } else {
-                    newNode.statBonus = '+1 STR';
+                    newNode.statBonus = '+1 ' + currentTree.substring(0, 3).toUpperCase();
                 }
             }
 
@@ -1239,33 +1338,13 @@
         }
 
         function markGridCells(tier, node, occupied) {
-            const { gridRow, gridCol, gridSize, type } = node;
-            let cellsToMark = [];
+            const cellsToMark = getCellsForNode(node.gridRow, node.gridCol, {
+                type: node.type,
+                size: node.gridSize
+            });
 
-            if (gridSize === 1) {
-                cellsToMark = [`${gridRow}-${gridCol}`];
-            } else if (gridSize === 2) {
-                cellsToMark = [`${gridRow}-${gridCol}`, `${gridRow}-${gridCol + 1}`];
-            } else if (gridSize === 4) {
-                if (type === 'large-circle') {
-                    cellsToMark = [
-                        `${gridRow}-${gridCol}`,
-                        `${gridRow}-${gridCol + 1}`,
-                        `${gridRow + 1}-${gridCol}`,
-                        `${gridRow + 1}-${gridCol + 1}`
-                    ];
-                } else {
-                    cellsToMark = [
-                        `${gridRow}-${gridCol}`,
-                        `${gridRow}-${gridCol + 1}`,
-                        `${gridRow}-${gridCol + 2}`,
-                        `${gridRow}-${gridCol + 3}`
-                    ];
-                }
-            }
-
-            cellsToMark.forEach(cell => {
-                tier.grid[cell] = occupied ? node.id : null;
+            cellsToMark.forEach(cellKey => {
+                tier.grid[cellKey] = occupied ? node.id : null;
             });
         }
 
@@ -1332,10 +1411,21 @@
                 
                 <div class="form-group">
                     <label class="form-label">Cost</label>
-                    <input type="number" class="form-input" value="${nodeData.cost || 1}" min="1" onchange="updateNodeProperty('${nodeId}', 'cost', parseInt(this.value))">
+                    <input type="number" class="form-input" value="${nodeData.cost || 1}" min="0" onchange="updateNodeProperty('${nodeId}', 'cost', parseInt(this.value))">
                 </div>
             `;
 
+            // Add stat bonus for simple nodes
+            if (nodeData.type === 'small' && !nodeData.type.includes('segmented')) {
+                html += `
+                    <div class="form-group">
+                        <label class="form-label">Stat Bonus</label>
+                        <input type="text" class="form-input" value="${nodeData.statBonus || ''}" onchange="updateNodeProperty('${nodeId}', 'statBonus', this.value)" placeholder="+1 STR">
+                    </div>
+                `;
+            }
+
+            // Add segmented stats for segmented nodes
             if (nodeData.type.includes('small') && nodeData.type.includes('segmented')) {
                 html += `<div class="form-group">
                     <label class="form-label">Stat Types</label>`;
@@ -1344,26 +1434,29 @@
                 for (let i = 0; i < segmentCount; i++) {
                     html += `
                         <select class="form-select" style="margin-bottom: 4px;" onchange="updateNodeStat('${nodeId}', ${i}, this.value)">
-                            <option value="STR" ${nodeData.stats?.[i] === 'STR' ? 'selected' : ''}>STR</option>
-                            <option value="VIT" ${nodeData.stats?.[i] === 'VIT' ? 'selected' : ''}>VIT</option>
-                            <option value="SPD" ${nodeData.stats?.[i] === 'SPD' ? 'selected' : ''}>SPD</option>
-                            <option value="DEF" ${nodeData.stats?.[i] === 'DEF' ? 'selected' : ''}>DEF</option>
-                            <option value="RAS" ${nodeData.stats?.[i] === 'RAS' ? 'selected' : ''}>RAS</option>
-                            <option value="BUJ" ${nodeData.stats?.[i] === 'BUJ' ? 'selected' : ''}>BUJ</option>
-                            <option value="WEP" ${nodeData.stats?.[i] === 'WEP' ? 'selected' : ''}>WEP</option>
-                            <option value="TSH" ${nodeData.stats?.[i] === 'TSH' ? 'selected' : ''}>TSH</option>
-                            <option value="RYK" ${nodeData.stats?.[i] === 'RYK' ? 'selected' : ''}>RYK</option>
+                            <option value="STR" ${nodeData.stats?.[i] === 'STR' ? 'selected' : ''}>STR - Strength</option>
+                            <option value="VIT" ${nodeData.stats?.[i] === 'VIT' ? 'selected' : ''}>VIT - Vitality</option>
+                            <option value="SPD" ${nodeData.stats?.[i] === 'SPD' ? 'selected' : ''}>SPD - Speed</option>
+                            <option value="DEF" ${nodeData.stats?.[i] === 'DEF' ? 'selected' : ''}>DEF - Defense</option>
+                            <option value="RAS" ${nodeData.stats?.[i] === 'RAS' ? 'selected' : ''}>RAS - Reiatsu</option>
+                            <option value="BUJ" ${nodeData.stats?.[i] === 'BUJ' ? 'selected' : ''}>BUJ - Bujutsu</option>
+                            <option value="WEP" ${nodeData.stats?.[i] === 'WEP' ? 'selected' : ''}>WEP - Weaponry</option>
+                            <option value="TSH" ${nodeData.stats?.[i] === 'TSH' ? 'selected' : ''}>TSH - Tamashi</option>
+                            <option value="RYK" ${nodeData.stats?.[i] === 'RYK' ? 'selected' : ''}>RYK - Reiryoku</option>
                         </select>
                     `;
                 }
                 html += `</div>`;
             }
 
-            html += `
-                <div style="margin-top: 20px;">
-                    <button class="btn btn-danger" onclick="deleteNode('${nodeId}', ${tier})">DELETE NODE</button>
-                </div>
-            `;
+            // Don't show delete button for starter nodes
+            if (!nodeData.isStarter) {
+                html += `
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-danger" onclick="deleteNode('${nodeId}', ${tier})">DELETE NODE</button>
+                    </div>
+                `;
+            }
 
             content.innerHTML = html;
         }
@@ -1380,6 +1473,13 @@
             if (nodeData) {
                 nodeData[property] = value;
                 renderTree();
+                // Re-select the node to maintain selection
+                setTimeout(() => {
+                    const updatedNode = document.querySelector(`[data-node-id="${nodeId}"]`);
+                    if (updatedNode) {
+                        selectNode(updatedNode);
+                    }
+                }, 100);
             }
         }
 
@@ -1391,6 +1491,13 @@
                 if (!nodeData.stats) nodeData.stats = [];
                 nodeData.stats[index] = stat;
                 renderTree();
+                // Re-select the node to maintain selection
+                setTimeout(() => {
+                    const updatedNode = document.querySelector(`[data-node-id="${nodeId}"]`);
+                    if (updatedNode) {
+                        selectNode(updatedNode);
+                    }
+                }, 100);
             }
         }
 
@@ -1401,6 +1508,12 @@
                     const nodeIndex = tier.nodes.findIndex(node => node.id === nodeId);
                     if (nodeIndex >= 0) {
                         const node = tier.nodes[nodeIndex];
+                        
+                        // Don't delete starter nodes
+                        if (node.isStarter) {
+                            showMessage('Cannot delete starter node', 'error');
+                            return;
+                        }
                         
                         // Free grid cells
                         markGridCells(tier, node, false);
@@ -1418,22 +1531,57 @@
 
         function addTier() {
             const maxTier = Math.max(...treeData.tiers.map(t => t.tier), 0);
-            const newTier = createEmptyTier(maxTier + 1);
+            const newTierNumber = maxTier + 1;
+            const newTier = createEmptyTier(newTierNumber);
             treeData.tiers.push(newTier);
             renderTree();
-            showMessage(`Added Tier ${maxTier + 1}`, 'success');
+            showMessage(`Added Tier ${newTierNumber}`, 'success');
         }
 
         function clearTier() {
-            if (confirm('Clear current tier of all nodes?')) {
-                // Implementation for clearing current tier
-                showMessage('Tier cleared', 'success');
+            if (selectedNode) {
+                const tierNumber = parseInt(selectedNode.dataset.tier);
+                if (tierNumber === 0) {
+                    showMessage('Cannot clear starter tier', 'error');
+                    return;
+                }
+                
+                if (confirm(`Clear Tier ${tierNumber} of all nodes?`)) {
+                    const tier = treeData.tiers.find(t => t.tier === tierNumber);
+                    if (tier) {
+                        // Free all grid cells
+                        tier.nodes.forEach(node => {
+                            markGridCells(tier, node, false);
+                        });
+                        
+                        // Clear nodes
+                        tier.nodes = [];
+                        
+                        deselectNode();
+                        renderTree();
+                        showMessage(`Tier ${tierNumber} cleared`, 'success');
+                    }
+                }
+            } else {
+                showMessage('Select a node in the tier you want to clear', 'error');
             }
         }
 
         function resetTree() {
-            if (confirm('Reset entire tree? This will delete all nodes.')) {
-                treeData.tiers = [createEmptyTier(1)];
+            if (confirm('Reset entire tree? This will delete all nodes except the starter.')) {
+                // Keep starter tier but reset all others
+                const starterTier = treeData.tiers.find(t => t.tier === 0);
+                if (starterTier) {
+                    treeData.tiers = [starterTier, createEmptyTier(1)];
+                } else {
+                    // Recreate starter tier if it doesn't exist
+                    const newStarterTier = createEmptyTier(0);
+                    const starterNode = createStarterNode();
+                    newStarterTier.nodes.push(starterNode);
+                    markGridCells(newStarterTier, starterNode, true);
+                    treeData.tiers = [newStarterTier, createEmptyTier(1)];
+                }
+                
                 deselectNode();
                 renderTree();
                 showMessage('Tree reset', 'success');
@@ -1446,9 +1594,12 @@
                 btn.classList.remove('active');
             });
             
-            if (tool === 'select') {
-                document.querySelector('.tool-btn').classList.add('active');
-            }
+            const toolButtons = document.querySelectorAll('.tool-btn');
+            toolButtons.forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(tool.toLowerCase())) {
+                    btn.classList.add('active');
+                }
+            });
             
             showMessage(`Tool: ${tool.toUpperCase()}`, 'success');
         }
@@ -1462,11 +1613,11 @@
         function renderConnections() {
             const svg = document.getElementById('connectionSvg');
             svg.innerHTML = '';
-            // Connection rendering will be implemented here
+            // Connection rendering will be implemented in a future update
         }
 
         function previewTree() {
-            showMessage('Preview functionality will be added', 'success');
+            showMessage('Preview functionality will be added in a future update', 'success');
         }
 
         async function saveTree() {
