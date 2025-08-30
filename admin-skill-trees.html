@@ -277,6 +277,15 @@
             height: 500px;
             border-bottom: 2px dashed rgba(148, 163, 184, 0.3);
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tier-content {
+            position: relative;
+            width: 500px;
+            height: 500px;
         }
 
         .tier-header {
@@ -897,7 +906,10 @@
             });
 
             tierContainer.addEventListener('dragleave', function(e) {
-                clearDropZoneHighlight();
+                // Only clear highlights when leaving the container entirely
+                if (!tierContainer.contains(e.relatedTarget)) {
+                    clearDropZoneHighlight();
+                }
             });
 
             tierContainer.addEventListener('drop', function(e) {
@@ -912,6 +924,15 @@
                     selectNode(node);
                 } else {
                     deselectNode();
+                }
+            });
+
+            // Add event listeners to tier sections specifically
+            tierContainer.addEventListener('dragover', function(e) {
+                const tierSection = e.target.closest('.tier-section');
+                if (tierSection) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'copy';
                 }
             });
         }
@@ -983,8 +1004,8 @@
                 id: nodeId,
                 type: 'small',
                 tierNumber: 0,
-                gridRow: 8, // Near bottom of grid
-                gridCol: 4, // Centered horizontally
+                gridRow: 9, // Bottom of grid (last row)
+                gridCol: 4, // Centered horizontally (middle column)
                 gridSize: 1,
                 name: `${currentTree.toUpperCase()} START`,
                 description: `Starting node for ${currentTree} skill tree`,
@@ -994,7 +1015,7 @@
                 exclusions: [],
                 connections: [],
                 isStarter: true,
-                statBonus: '+0'
+                statBonus: 'START'
             };
         }
 
@@ -1030,13 +1051,6 @@
                 treeData.tiers = [starterTier, createEmptyTier(1)];
             }
 
-            // Add "Add Tier" button at top
-            const addTierBtn = document.createElement('button');
-            addTierBtn.className = 'add-tier-btn';
-            addTierBtn.textContent = '+ ADD NEW TIER';
-            addTierBtn.onclick = addTier;
-            tierContainer.appendChild(addTierBtn);
-
             // Render tiers from top to bottom (highest tier first, then descending to 0)
             const sortedTiers = [...treeData.tiers].sort((a, b) => b.tier - a.tier);
 
@@ -1052,28 +1066,32 @@
             const tierDiv = document.createElement('div');
             tierDiv.className = 'tier-section';
             tierDiv.dataset.tier = tier.tier;
-            tierDiv.style.height = (GRID_ROWS * GRID_SIZE) + 'px';
+
+            // Tier content wrapper for centering
+            const tierContent = document.createElement('div');
+            tierContent.className = 'tier-content';
 
             // Tier header
             const header = document.createElement('div');
             header.className = 'tier-header';
             header.textContent = tier.tier === 0 ? 'STARTER' : `TIER ${tier.tier}`;
-            tierDiv.appendChild(header);
+            tierContent.appendChild(header);
 
             // Grid overlay 
             if (gridVisible) {
                 const gridOverlay = createGridOverlay(tier);
-                tierDiv.appendChild(gridOverlay);
+                tierContent.appendChild(gridOverlay);
             }
 
             // Add nodes
             if (tier.nodes && tier.nodes.length > 0) {
                 tier.nodes.forEach(node => {
                     const nodeElement = createNodeElement(node, tier.tier);
-                    tierDiv.appendChild(nodeElement);
+                    tierContent.appendChild(nodeElement);
                 });
             }
 
+            tierDiv.appendChild(tierContent);
             return tierDiv;
         }
 
@@ -1246,6 +1264,9 @@
             const tierElement = e.target.closest('.tier-section');
             if (!tierElement) return;
 
+            const tierContent = tierElement.querySelector('.tier-content');
+            if (!tierContent) return;
+
             const tierNumber = parseInt(tierElement.dataset.tier);
             
             // Don't allow dropping on starter tier
@@ -1259,7 +1280,7 @@
                 if (!nodeDataStr) return;
                 
                 const nodeData = JSON.parse(nodeDataStr);
-                const rect = tierElement.getBoundingClientRect();
+                const rect = tierContent.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
                 
