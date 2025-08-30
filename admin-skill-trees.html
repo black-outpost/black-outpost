@@ -907,9 +907,6 @@
                     };
                     
                     showMessage('Click on a grid cell to place the node', 'success');
-                    
-                    // Enable click-to-place on grid cells
-                    enableGridClickToPlace();
                 });
 
                 // Drag and drop functionality (with text selection fix)
@@ -953,6 +950,8 @@
             });
 
             tierContainer.addEventListener('click', function(e) {
+                console.log('Canvas clicked:', e.target, 'selectedNodeType:', selectedNodeType);
+                
                 // Handle skill node selection
                 if (e.target.classList.contains('skill-node') || e.target.closest('.skill-node')) {
                     const node = e.target.classList.contains('skill-node') ? e.target : e.target.closest('.skill-node');
@@ -960,19 +959,51 @@
                     return;
                 }
                 
-                // Handle grid cell clicks - check if it's a clickable grid cell first
-                if (e.target.classList.contains('grid-cell') && e.target.classList.contains('clickable')) {
-                    // Let the grid cell's own click handler manage this
-                    return;
+                // Handle grid cell clicks for node placement
+                if (e.target.classList.contains('grid-cell')) {
+                    console.log('Grid cell clicked, selectedNodeType:', selectedNodeType);
+                    
+                    if (selectedNodeType) {
+                        e.stopPropagation();
+                        
+                        const tierElement = e.target.closest('.tier-section');
+                        if (!tierElement) {
+                            console.log('No tier element found');
+                            return;
+                        }
+                        
+                        const tierNumber = parseInt(tierElement.dataset.tier);
+                        const row = parseInt(e.target.dataset.row);
+                        const col = parseInt(e.target.dataset.col);
+                        
+                        console.log('Tier:', tierNumber, 'Row:', row, 'Col:', col);
+                        
+                        // Don't allow placing nodes exactly on the starter node position in tier 1
+                        if (tierNumber === 1 && row === 9 && col === 5) {
+                            showMessage('Cannot place node on starter position', 'error');
+                            return;
+                        }
+                        
+                        if (canPlaceNode(tierNumber, row, col, selectedNodeType)) {
+                            console.log('Can place node, creating...');
+                            createNewNode(selectedNodeType, tierNumber, row, col);
+                            clearNodeSelection();
+                            showMessage(`Node placed in tier ${tierNumber}`, 'success');
+                        } else {
+                            console.log('Cannot place node here');
+                            showMessage('Cannot place node here - space occupied or out of bounds', 'error');
+                        }
+                        return;
+                    }
                 }
                 
-                // Handle empty space clicks
-                if (!e.target.classList.contains('grid-cell')) {
-                    if (selectedNodeType) {
-                        clearNodeSelection();
-                    } else {
-                        deselectNode();
-                    }
+                // Handle empty space clicks - deselect node type or selected node
+                console.log('Empty space clicked');
+                if (selectedNodeType) {
+                    clearNodeSelection();
+                    showMessage('Node selection cleared', 'success');
+                } else {
+                    deselectNode();
                 }
             });
         }
