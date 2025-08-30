@@ -184,7 +184,7 @@
             border: 1px solid rgba(71, 85, 105, 0.3);
             border-radius: 8px;
             padding: 8px 12px;
-            cursor: grab;
+            cursor: pointer;
             transition: all 0.3s ease;
             font-family: 'JetBrains Mono', monospace;
             font-size: 11px;
@@ -192,6 +192,7 @@
             align-items: center;
             gap: 8px;
             draggable: true;
+            user-select: none;
         }
 
         .node-template:hover {
@@ -284,7 +285,7 @@
 
         .tier-content {
             position: relative;
-            width: 500px;
+            width: 550px;
             height: 500px;
         }
 
@@ -353,9 +354,19 @@
             border-color: rgba(245, 158, 11, 0.5);
         }
 
-        .drop-zone-active {
-            background: rgba(16, 185, 129, 0.1) !important;
-            border-color: rgba(16, 185, 129, 0.5) !important;
+        .node-template.selected {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(5, 150, 105, 0.2) 100%);
+            border-color: rgba(16, 185, 129, 0.5);
+            color: #10b981;
+        }
+
+        .grid-cell.clickable {
+            cursor: crosshair;
+        }
+
+        .grid-cell.clickable:hover {
+            background: rgba(16, 185, 129, 0.3);
+            border-color: rgba(16, 185, 129, 0.6);
         }
 
         /* Node styles */
@@ -795,11 +806,11 @@
         let connectingFrom = null;
         let treeData = {};
         let gridVisible = true; // Grid is visible by default
-        let draggedNodeType = null;
+        let selectedNodeType = null; // For click-to-place functionality
 
         // Grid constants
         const GRID_SIZE = 50; // Each grid cell is 50x50 pixels
-        const GRID_COLS = 10; // 10 columns per tier  
+        const GRID_COLS = 11; // 11 columns per tier (to have center)
         const GRID_ROWS = 10; // 10 rows per tier
 
         // Initialize
@@ -880,18 +891,50 @@
 
         function setupDragAndDrop() {
             document.querySelectorAll('.node-template').forEach(template => {
+                // Click to select node type for placement
+                template.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Deselect all templates
+                    document.querySelectorAll('.node-template').forEach(t => t.classList.remove('selected'));
+                    
+                    // Select this template
+                    this.classList.add('selected');
+                    selectedNodeType = {
+                        type: this.dataset.type,
+                        size: parseInt(this.dataset.size)
+                    };
+                    
+                    showMessage('Click on a grid cell to place the node', 'success');
+                    
+                    // Enable click-to-place on grid cells
+                    enableGridClickToPlace();
+                });
+
+                // Drag and drop functionality (with text selection fix)
                 template.addEventListener('dragstart', function(e) {
                     const nodeData = {
                         type: this.dataset.type,
                         size: parseInt(this.dataset.size)
                     };
-                    draggedNodeType = nodeData;
+                    selectedNodeType = nodeData;
                     e.dataTransfer.setData('text/plain', JSON.stringify(nodeData));
                     e.dataTransfer.effectAllowed = 'copy';
+                    
+                    // Prevent text selection during drag
+                    document.body.style.userSelect = 'none';
                 });
 
                 template.addEventListener('dragend', function(e) {
-                    draggedNodeType = null;
+                    selectedNodeType = null;
+                    // Restore text selection
+                    document.body.style.userSelect = '';
+                });
+                
+                // Prevent text selection on mousedown
+                template.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
                 });
             });
         }
@@ -902,19 +945,17 @@
             tierContainer.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'copy';
-                highlightDropZone(e);
             });
 
             tierContainer.addEventListener('dragleave', function(e) {
                 // Only clear highlights when leaving the container entirely
                 if (!tierContainer.contains(e.relatedTarget)) {
-                    clearDropZoneHighlight();
+                    // Clear any highlights if needed
                 }
             });
 
             tierContainer.addEventListener('drop', function(e) {
                 e.preventDefault();
-                clearDropZoneHighlight();
                 handleNodeDrop(e);
             });
 
@@ -922,8 +963,15 @@
                 if (e.target.classList.contains('skill-node') || e.target.closest('.skill-node')) {
                     const node = e.target.classList.contains('skill-node') ? e.target : e.target.closest('.skill-node');
                     selectNode(node);
+                } else if (e.target.classList.contains('grid-cell')) {
+                    // Grid cell clicks are handled by enableGridClickToPlace
                 } else {
-                    deselectNode();
+                    // Clicked on empty space - cancel node selection if active
+                    if (selectedNodeType) {
+                        clearNodeSelection();
+                    } else {
+                        deselectNode();
+                    }
                 }
             });
 
@@ -971,7 +1019,7 @@
                 if (treeDoc.exists()) {
                     treeData = treeDoc.data();
                 } else {
-                    // Initialize empty tree with starter node
+                    // Initialize empty tree with starter node in tier 1
                     treeData = {
                         id: treeId,
                         name: `${currentTree.charAt(0).toUpperCase() + currentTree.slice(1)} Tree`,
@@ -979,15 +1027,15 @@
                         tiers: []
                     };
                     
-                    // Create starter tier (Tier 0) with starter node
-                    const starterTier = createEmptyTier(0);
+                    // Create tier 1 with starter node
+                    const tier1 = createEmptyTier(1);
                     const starterNode = createStarterNode();
-                    starterTier.nodes.push(starterNode);
-                    markGridCells(starterTier, starterNode, true);
-                    treeData.tiers.push(starterTier);
+                    tier1.nodes.push(starterNode);
+                    markGridCells(tier1, starterNode, true);
+                    treeData.tiers.push(tier1);
                     
-                    // Create first regular tier
-                    treeData.tiers.push(createEmptyTier(1));
+                    // Create tier 2
+                    treeData.tiers.push(createEmptyTier(2));
                 }
                 
                 renderTree();
@@ -1003,9 +1051,9 @@
             return {
                 id: nodeId,
                 type: 'small',
-                tierNumber: 0,
+                tierNumber: 1,
                 gridRow: 9, // Bottom of grid (last row)
-                gridCol: 4, // Centered horizontally (middle column)
+                gridCol: 5, // Centered horizontally (middle column in 11-column grid)
                 gridSize: 1,
                 name: `${currentTree.toUpperCase()} START`,
                 description: `Starting node for ${currentTree} skill tree`,
@@ -1043,15 +1091,15 @@
             tierContainer.innerHTML = '';
 
             if (!treeData.tiers || treeData.tiers.length === 0) {
-                // Initialize with starter tier and first regular tier
-                const starterTier = createEmptyTier(0);
+                // Initialize with tier 1 containing starter node and tier 2
+                const tier1 = createEmptyTier(1);
                 const starterNode = createStarterNode();
-                starterTier.nodes.push(starterNode);
-                markGridCells(starterTier, starterNode, true);
-                treeData.tiers = [starterTier, createEmptyTier(1)];
+                tier1.nodes.push(starterNode);
+                markGridCells(tier1, starterNode, true);
+                treeData.tiers = [tier1, createEmptyTier(2)];
             }
 
-            // Render tiers from top to bottom (highest tier first, then descending to 0)
+            // Render tiers from top to bottom (highest tier first, then descending to 1)
             const sortedTiers = [...treeData.tiers].sort((a, b) => b.tier - a.tier);
 
             sortedTiers.forEach(tier => {
@@ -1074,7 +1122,7 @@
             // Tier header
             const header = document.createElement('div');
             header.className = 'tier-header';
-            header.textContent = tier.tier === 0 ? 'STARTER' : `TIER ${tier.tier}`;
+            header.textContent = tier.tier === 1 ? 'STARTER' : `TIER ${tier.tier}`;
             tierContent.appendChild(header);
 
             // Grid overlay 
@@ -1187,46 +1235,43 @@
             return colors[stat] || '#64748b';
         }
 
-        function highlightDropZone(e) {
-            if (!draggedNodeType) return;
-
-            const tierElement = e.target.closest('.tier-section');
-            if (!tierElement) return;
-
-            const rect = tierElement.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const gridCol = Math.floor(x / GRID_SIZE);
-            const gridRow = Math.floor(y / GRID_SIZE);
-            
-            // Clear previous highlights
-            clearDropZoneHighlight();
-            
-            if (gridCol >= 0 && gridCol < GRID_COLS && gridRow >= 0 && gridRow < GRID_ROWS) {
-                const tierNumber = parseInt(tierElement.dataset.tier);
-                
-                // Skip highlighting for starter tier
-                if (tierNumber === 0) return;
-                
-                if (canPlaceNode(tierNumber, gridRow, gridCol, draggedNodeType)) {
-                    // Highlight cells that would be occupied
-                    const cellsToHighlight = getCellsForNode(gridRow, gridCol, draggedNodeType);
-                    cellsToHighlight.forEach(cellKey => {
-                        const [row, col] = cellKey.split('-').map(Number);
-                        const cell = tierElement.querySelector(`.grid-cell[data-row="${row}"][data-col="${col}"]`);
-                        if (cell) {
-                            cell.classList.add('drop-zone-active');
-                        }
-                    });
-                }
-            }
+        function enableGridClickToPlace() {
+            document.querySelectorAll('.grid-cell').forEach(cell => {
+                cell.classList.add('clickable');
+                cell.onclick = function(e) {
+                    if (!selectedNodeType) return;
+                    
+                    const tierElement = this.closest('.tier-section');
+                    if (!tierElement) return;
+                    
+                    const tierNumber = parseInt(tierElement.dataset.tier);
+                    const row = parseInt(this.dataset.row);
+                    const col = parseInt(this.dataset.col);
+                    
+                    // Don't allow placing nodes on starter node position in tier 1
+                    if (tierNumber === 1 && row === 9 && col === 5) {
+                        showMessage('Cannot place node on starter position', 'error');
+                        return;
+                    }
+                    
+                    if (canPlaceNode(tierNumber, row, col, selectedNodeType)) {
+                        createNewNode(selectedNodeType, tierNumber, row, col);
+                        clearNodeSelection();
+                    } else {
+                        showMessage('Cannot place node here - space occupied or out of bounds', 'error');
+                    }
+                };
+            });
         }
 
-        function clearDropZoneHighlight() {
-            document.querySelectorAll('.drop-zone-active').forEach(cell => {
-                cell.classList.remove('drop-zone-active');
+        function clearNodeSelection() {
+            selectedNodeType = null;
+            document.querySelectorAll('.node-template').forEach(t => t.classList.remove('selected'));
+            document.querySelectorAll('.grid-cell').forEach(cell => {
+                cell.classList.remove('clickable');
+                cell.onclick = null;
             });
+            showMessage('Node placement cancelled', 'success');
         }
 
         function getCellsForNode(gridRow, gridCol, nodeData) {
@@ -1268,12 +1313,6 @@
             if (!tierContent) return;
 
             const tierNumber = parseInt(tierElement.dataset.tier);
-            
-            // Don't allow dropping on starter tier
-            if (tierNumber === 0) {
-                showMessage('Cannot add nodes to starter tier', 'error');
-                return;
-            }
 
             try {
                 const nodeDataStr = e.dataTransfer.getData('text/plain');
@@ -1286,6 +1325,12 @@
                 
                 const gridCol = Math.floor(x / GRID_SIZE);
                 const gridRow = Math.floor(y / GRID_SIZE);
+                
+                // Don't allow placing nodes on starter node position in tier 1
+                if (tierNumber === 1 && gridRow === 9 && gridCol === 5) {
+                    showMessage('Cannot place node on starter position', 'error');
+                    return;
+                }
                 
                 if (gridCol >= 0 && gridCol < GRID_COLS && gridRow >= 0 && gridRow < GRID_ROWS) {
                     if (canPlaceNode(tierNumber, gridRow, gridCol, nodeData)) {
@@ -1562,8 +1607,8 @@
         function clearTier() {
             if (selectedNode) {
                 const tierNumber = parseInt(selectedNode.dataset.tier);
-                if (tierNumber === 0) {
-                    showMessage('Cannot clear starter tier', 'error');
+                if (tierNumber === 1) {
+                    showMessage('Cannot clear starter tier completely', 'error');
                     return;
                 }
                 
@@ -1590,20 +1635,36 @@
 
         function resetTree() {
             if (confirm('Reset entire tree? This will delete all nodes except the starter.')) {
-                // Keep starter tier but reset all others
-                const starterTier = treeData.tiers.find(t => t.tier === 0);
-                if (starterTier) {
-                    treeData.tiers = [starterTier, createEmptyTier(1)];
+                // Keep tier 1 with starter node but reset all others
+                const tier1 = treeData.tiers.find(t => t.tier === 1);
+                if (tier1) {
+                    // Keep only the starter node in tier 1
+                    const starterNode = tier1.nodes.find(node => node.isStarter);
+                    if (starterNode) {
+                        tier1.nodes = [starterNode];
+                        // Reset grid and mark starter position
+                        tier1.grid = createEmptyGrid();
+                        markGridCells(tier1, starterNode, true);
+                        treeData.tiers = [tier1, createEmptyTier(2)];
+                    } else {
+                        // Recreate tier 1 with starter node
+                        const newTier1 = createEmptyTier(1);
+                        const starterNode = createStarterNode();
+                        newTier1.nodes.push(starterNode);
+                        markGridCells(newTier1, starterNode, true);
+                        treeData.tiers = [newTier1, createEmptyTier(2)];
+                    }
                 } else {
-                    // Recreate starter tier if it doesn't exist
-                    const newStarterTier = createEmptyTier(0);
+                    // Recreate tier 1 with starter node
+                    const newTier1 = createEmptyTier(1);
                     const starterNode = createStarterNode();
-                    newStarterTier.nodes.push(starterNode);
-                    markGridCells(newStarterTier, starterNode, true);
-                    treeData.tiers = [newStarterTier, createEmptyTier(1)];
+                    newTier1.nodes.push(starterNode);
+                    markGridCells(newTier1, starterNode, true);
+                    treeData.tiers = [newTier1, createEmptyTier(2)];
                 }
                 
                 deselectNode();
+                clearNodeSelection();
                 renderTree();
                 showMessage('Tree reset', 'success');
             }
