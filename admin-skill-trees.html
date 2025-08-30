@@ -950,7 +950,7 @@
             });
 
             tierContainer.addEventListener('click', function(e) {
-                console.log('Canvas clicked:', e.target, 'selectedNodeType:', selectedNodeType);
+                console.log('Canvas clicked:', e.target.className, 'selectedNodeType:', selectedNodeType);
                 
                 // Handle skill node selection
                 if (e.target.classList.contains('skill-node') || e.target.closest('.skill-node')) {
@@ -959,11 +959,12 @@
                     return;
                 }
                 
-                // Handle grid cell clicks for node placement
+                // Handle grid cell clicks for node placement - check more specifically
                 if (e.target.classList.contains('grid-cell')) {
-                    console.log('Grid cell clicked, selectedNodeType:', selectedNodeType);
+                    console.log('Grid cell detected! Row:', e.target.dataset.row, 'Col:', e.target.dataset.col);
                     
                     if (selectedNodeType) {
+                        console.log('Attempting to place node...');
                         e.stopPropagation();
                         
                         const tierElement = e.target.closest('.tier-section');
@@ -976,7 +977,7 @@
                         const row = parseInt(e.target.dataset.row);
                         const col = parseInt(e.target.dataset.col);
                         
-                        console.log('Tier:', tierNumber, 'Row:', row, 'Col:', col);
+                        console.log('Placing node at Tier:', tierNumber, 'Row:', row, 'Col:', col);
                         
                         // Don't allow placing nodes exactly on the starter node position in tier 1
                         if (tierNumber === 1 && row === 9 && col === 5) {
@@ -990,15 +991,18 @@
                             clearNodeSelection();
                             showMessage(`Node placed in tier ${tierNumber}`, 'success');
                         } else {
-                            console.log('Cannot place node here');
+                            console.log('Cannot place node - space occupied or invalid');
                             showMessage('Cannot place node here - space occupied or out of bounds', 'error');
                         }
                         return;
+                    } else {
+                        console.log('No node type selected');
                     }
+                    return; // Important: return here so we don't clear selection when clicking grid cells
                 }
                 
-                // Handle empty space clicks - deselect node type or selected node
-                console.log('Empty space clicked');
+                // Handle empty space clicks - only clear if not clicking grid cells
+                console.log('Empty space clicked, clearing selection');
                 if (selectedNodeType) {
                     clearNodeSelection();
                     showMessage('Node selection cleared', 'success');
