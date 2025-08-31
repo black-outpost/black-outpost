@@ -771,6 +771,11 @@
                             <div class="ability-name">${abilityName}</div>
                             <div class="ability-desc">${abilityDesc}</div>
                         `;
+                        
+                        // Auto-scale text if content is too long
+                        if (abilityName.length > 15 || abilityDesc.length > 80) {
+                            nodeDiv.classList.add('text-small');
+                        }
                     } else if (node.type === 'large-circle') {
                         // Large circular major ability nodes  
                         const abilityName = node.abilityName || 'Major Ability';
@@ -780,6 +785,11 @@
                             <div class="ability-name">${abilityName}</div>
                             <div class="ability-desc">${abilityDesc}</div>
                         `;
+                        
+                        // Auto-scale text if content is too long
+                        if (abilityName.length > 20 || abilityDesc.length > 120) {
+                            nodeDiv.classList.add('text-small');
+                        }
                     }
                     
                     nodeDiv.dataset.nodeId = node.id;
