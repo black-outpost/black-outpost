@@ -688,6 +688,17 @@
                 name: `New ${nodeType} Node`,
                 size: size
             };
+
+            // Set default properties based on node type
+            if (nodeType === 'small') {
+                newNode.statBonus = '+1 STR';
+            } else if (nodeType === 'medium-rect') {
+                newNode.abilityName = 'New Ability';
+                newNode.abilityDesc = 'Ability description goes here.';
+            } else if (nodeType === 'large-circle') {
+                newNode.abilityName = 'Major Ability';
+                newNode.abilityDesc = 'Powerful ability with significant effects.';
+            }
             
             // Find highest tier
             let targetTier = Math.max(...treeData.tiers.map(t => t.tier));
@@ -743,7 +754,33 @@
                     
                     nodeDiv.style.left = (node.gridCol * 50) + 'px';
                     nodeDiv.style.top = (node.gridRow * 50) + 'px';
-                    nodeDiv.textContent = node.isStarter ? 'START' : node.name.substring(0, 8);
+                    
+                    // Set content based on node type and reference image format
+                    if (node.isStarter) {
+                        nodeDiv.textContent = 'START';
+                    } else if (node.type === 'small') {
+                        // Small stat nodes show stat bonus like "+1 STR", "+2 SPD"
+                        const statBonus = node.statBonus || '+1 STR';
+                        nodeDiv.textContent = statBonus;
+                    } else if (node.type === 'medium-rect') {
+                        // Medium rectangular ability nodes
+                        const abilityName = node.abilityName || 'New Ability';
+                        const abilityDesc = node.abilityDesc || 'Description of the ability effect and mechanics.';
+                        
+                        nodeDiv.innerHTML = `
+                            <div class="ability-name">${abilityName}</div>
+                            <div class="ability-desc">${abilityDesc}</div>
+                        `;
+                    } else if (node.type === 'large-circle') {
+                        // Large circular major ability nodes  
+                        const abilityName = node.abilityName || 'Major Ability';
+                        const abilityDesc = node.abilityDesc || 'Powerful ability with significant impact on gameplay.';
+                        
+                        nodeDiv.innerHTML = `
+                            <div class="ability-name">${abilityName}</div>
+                            <div class="ability-desc">${abilityDesc}</div>
+                        `;
+                    }
                     
                     nodeDiv.dataset.nodeId = node.id;
                     nodeDiv.draggable = true;
@@ -816,29 +853,62 @@
             
             if (!nodeData) return;
             
-            content.innerHTML = `
+            let html = `
                 <div style="margin-bottom: 16px;">
-                    <label style="display: block; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">NODE ID</label>
+                    <label style="display: block; font-size: 11px; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase;">Node ID</label>
                     <input type="text" value="${nodeData.id}" readonly style="width: 100%; padding: 6px; background: rgba(30,41,59,0.6); border: 1px solid rgba(71,85,105,0.4); border-radius: 6px; color: #f1f5f9; font-size: 11px;">
                 </div>
                 <div style="margin-bottom: 16px;">
-                    <label style="display: block; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">NAME</label>
-                    <input type="text" value="${nodeData.name}" onchange="updateNodeName('${nodeId}', this.value)" style="width: 100%; padding: 6px; background: rgba(30,41,59,0.6); border: 1px solid rgba(71,85,105,0.4); border-radius: 6px; color: #f1f5f9; font-size: 11px;">
+                    <label style="display: block; font-size: 11px; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase;">Type</label>
+                    <input type="text" value="${nodeData.type}" readonly style="width: 100%; padding: 6px; background: rgba(30,41,59,0.6); border: 1px solid rgba(71,85,105,0.4); border-radius: 6px; color: #f1f5f9; font-size: 11px;">
                 </div>
-                ${!nodeData.isStarter ? `
-                <div style="margin-top: 20px;">
-                    <button onclick="deleteNode('${nodeId}')" style="background: linear-gradient(135deg, rgba(239,68,68,0.8) 0%, rgba(220,38,38,0.9) 100%); color: #f1f5f9; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;">DELETE NODE</button>
-                </div>
-                ` : ''}
             `;
+
+            // Show different properties based on node type
+            if (nodeData.type === 'small' && !nodeData.isStarter) {
+                html += `
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 11px; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase;">Stat Bonus</label>
+                        <input type="text" value="${nodeData.statBonus || '+1 STR'}" onchange="updateNodeProperty('${nodeId}', 'statBonus', this.value)" placeholder="+1 STR" style="width: 100%; padding: 6px; background: rgba(30,41,59,0.6); border: 1px solid rgba(71,85,105,0.4); border-radius: 6px; color: #f1f5f9; font-size: 11px;">
+                    </div>
+                `;
+            } else if (nodeData.type === 'medium-rect' || nodeData.type === 'large-circle') {
+                html += `
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 11px; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase;">Ability Name</label>
+                        <input type="text" value="${nodeData.abilityName || 'New Ability'}" onchange="updateNodeProperty('${nodeId}', 'abilityName', this.value)" style="width: 100%; padding: 6px; background: rgba(30,41,59,0.6); border: 1px solid rgba(71,85,105,0.4); border-radius: 6px; color: #f1f5f9; font-size: 11px;">
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 11px; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase;">Ability Description</label>
+                        <textarea onchange="updateNodeProperty('${nodeId}', 'abilityDesc', this.value)" placeholder="Describe the ability effect..." style="width: 100%; padding: 6px; background: rgba(30,41,59,0.6); border: 1px solid rgba(71,85,105,0.4); border-radius: 6px; color: #f1f5f9; font-size: 11px; min-height: 60px; resize: vertical;">${nodeData.abilityDesc || 'Ability description goes here.'}</textarea>
+                    </div>
+                `;
+            }
+
+            if (!nodeData.isStarter) {
+                html += `
+                    <div style="margin-top: 20px;">
+                        <button onclick="deleteNode('${nodeId}')" style="background: linear-gradient(135deg, rgba(239,68,68,0.8) 0%, rgba(220,38,38,0.9) 100%); color: #f1f5f9; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: 'JetBrains Mono', monospace;">DELETE NODE</button>
+                    </div>
+                `;
+            }
+            
+            content.innerHTML = html;
         }
 
-        function updateNodeName(nodeId, newName) {
+        function updateNodeProperty(nodeId, property, value) {
             for (let tier of treeData.tiers) {
                 const node = tier.nodes.find(n => n.id === nodeId);
                 if (node) {
-                    node.name = newName;
+                    node[property] = value;
                     renderBasicTree();
+                    // Reselect the node to maintain selection after re-render
+                    setTimeout(() => {
+                        const nodeElement = document.querySelector(`[data-node-id="${nodeId}"]`);
+                        if (nodeElement) {
+                            selectNode(nodeElement);
+                        }
+                    }, 100);
                     break;
                 }
             }
