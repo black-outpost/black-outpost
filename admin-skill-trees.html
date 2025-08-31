@@ -191,17 +191,12 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            draggable: true;
             user-select: none;
         }
 
         .node-template:hover {
             border-color: rgba(148, 163, 184, 0.5);
             transform: translateY(-1px);
-        }
-
-        .node-template:active {
-            cursor: grabbing;
         }
 
         .canvas-container {
@@ -303,27 +298,6 @@
             z-index: 5;
         }
 
-        .add-tier-btn {
-            display: block;
-            margin: 20px auto;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.8) 0%, rgba(5, 150, 105, 0.9) 100%);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: #f1f5f9;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-
-        .add-tier-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
-        }
-
         /* Grid system */
         .grid-overlay {
             position: absolute;
@@ -349,26 +323,6 @@
             border-color: rgba(16, 185, 129, 0.3);
         }
 
-        .grid-cell.hover {
-            background: rgba(245, 158, 11, 0.2);
-            border-color: rgba(245, 158, 11, 0.5);
-        }
-
-        .node-template.selected {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(5, 150, 105, 0.2) 100%);
-            border-color: rgba(16, 185, 129, 0.5);
-            color: #10b981;
-        }
-
-        .grid-cell.clickable {
-            cursor: crosshair;
-        }
-
-        .grid-cell.clickable:hover {
-            background: rgba(16, 185, 129, 0.3);
-            border-color: rgba(16, 185, 129, 0.6);
-        }
-
         /* Node styles */
         .skill-node {
             position: absolute;
@@ -384,12 +338,6 @@
             z-index: 15;
         }
 
-        .skill-node.dragging {
-            z-index: 20;
-            transform: scale(1.05);
-        }
-
-        /* Small nodes (1 grid cell = 50x50px) */
         .node-small {
             width: 50px;
             height: 50px;
@@ -405,7 +353,6 @@
             color: #f1f5f9;
         }
 
-        /* Medium rectangular nodes (2 grid cells = 100x50px) */
         .node-medium-rect {
             width: 100px;
             height: 50px;
@@ -422,7 +369,6 @@
             padding: 4px;
         }
 
-        /* Large circular nodes (4 grid cells = 100x100px) */
         .node-large-circle {
             width: 100px;
             height: 100px;
@@ -440,7 +386,6 @@
             padding: 8px;
         }
 
-        /* Large rectangular nodes (4 grid cells = 200x50px) */
         .node-large-rect {
             width: 200px;
             height: 50px;
@@ -457,66 +402,6 @@
             padding: 4px 8px;
         }
 
-        /* Segmented small nodes */
-        .node-segmented {
-            position: relative;
-        }
-
-        .segment {
-            position: absolute;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 8px;
-            font-weight: 600;
-            color: #f1f5f9;
-        }
-
-        .segment-2 {
-            width: 25px;
-            height: 50px;
-        }
-
-        .segment-2.left {
-            left: 0;
-            border-radius: 25px 0 0 25px;
-        }
-
-        .segment-2.right {
-            right: 0;
-            border-radius: 0 25px 25px 0;
-        }
-
-        .segment-4 {
-            width: 25px;
-            height: 25px;
-        }
-
-        .segment-4.top-left {
-            top: 0;
-            left: 0;
-            border-radius: 25px 0 0 0;
-        }
-
-        .segment-4.top-right {
-            top: 0;
-            right: 0;
-            border-radius: 0 25px 0 0;
-        }
-
-        .segment-4.bottom-left {
-            bottom: 0;
-            left: 0;
-            border-radius: 0 0 0 25px;
-        }
-
-        .segment-4.bottom-right {
-            bottom: 0;
-            right: 0;
-            border-radius: 0 0 25px 0;
-        }
-
-        /* Starter node special styling */
         .starter-node {
             border: 3px solid #f59e0b !important;
             box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
@@ -532,74 +417,10 @@
             color: #fbbf24;
         }
 
-        /* Connection lines */
-        .connection-svg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        .connection-line {
-            stroke: rgba(148, 163, 184, 0.6);
-            stroke-width: 2;
-            fill: none;
-        }
-
-        .connection-arrow {
-            stroke: rgba(148, 163, 184, 0.8);
-            stroke-width: 2;
-            fill: none;
-        }
-
-        .connection-exclude {
-            stroke: rgba(239, 68, 68, 0.8);
-            stroke-width: 2;
-            stroke-dasharray: 8,4;
-            fill: none;
-        }
-
         .properties-content {
             padding: 16px;
             height: calc(100% - 60px);
             overflow-y: auto;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            color: #94a3b8;
-            margin-bottom: 6px;
-            display: block;
-            text-transform: uppercase;
-        }
-
-        .form-input, .form-select, .form-textarea {
-            width: 100%;
-            padding: 6px 10px;
-            background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(51,65,85,0.4) 100%);
-            border: 1px solid rgba(71, 85, 105, 0.4);
-            border-radius: 6px;
-            color: #f1f5f9;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-        }
-
-        .form-textarea {
-            min-height: 50px;
-            resize: vertical;
-        }
-
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
-            outline: none;
-            border-color: rgba(16, 185, 129, 0.5);
         }
 
         .success-message, .error-message {
@@ -628,29 +449,6 @@
             color: #fecaca;
             border-color: rgba(239, 68, 68, 0.3);
         }
-
-        @media (max-width: 1400px) {
-            .editor-layout {
-                grid-template-columns: 250px 1fr 280px;
-            }
-        }
-
-        @media (max-width: 1200px) {
-            .editor-layout {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto 1fr auto;
-                height: auto;
-            }
-            
-            .sidebar, .properties-panel {
-                height: auto;
-                max-height: 300px;
-            }
-            
-            .tree-canvas {
-                height: 600px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -669,7 +467,6 @@
         </nav>
 
         <div class="editor-layout">
-            <!-- Left Sidebar -->
             <div class="sidebar">
                 <div class="sidebar-header">
                     <div class="sidebar-title">SKILL TREES</div>
@@ -692,67 +489,42 @@
                     <div class="palette-section">
                         <div class="palette-title">Node Types</div>
                         <div class="node-templates">
-                            <div class="node-template" data-type="small" data-size="1">
+                            <div class="node-template" onclick="addNode('small')">
                                 <span style="color: #10b981;">●</span>
                                 Small Node (1x1)
                             </div>
-                            <div class="node-template" data-type="small-segmented-2" data-size="1">
-                                <span style="color: #10b981;">◐</span>
-                                Split Node (1x1)
-                            </div>
-                            <div class="node-template" data-type="small-segmented-4" data-size="1">
-                                <span style="color: #10b981;">◔</span>
-                                Quad Node (1x1)
-                            </div>
-                            <div class="node-template" data-type="medium-rect" data-size="2">
+                            <div class="node-template" onclick="addNode('medium-rect')">
                                 <span style="color: #f59e0b;">▬</span>
                                 Med Rect (2x1)
                             </div>
-                            <div class="node-template" data-type="large-circle" data-size="4">
+                            <div class="node-template" onclick="addNode('large-circle')">
                                 <span style="color: #ef4444;">◯</span>
                                 Large Circle (2x2)
                             </div>
-                            <div class="node-template" data-type="large-rect" data-size="4">
+                            <div class="node-template" onclick="addNode('large-rect')">
                                 <span style="color: #8b5cf6;">▭</span>
                                 Large Rect (4x1)
                             </div>
                         </div>
                     </div>
-                    <div class="palette-section">
-                        <div class="palette-title">Tools</div>
-                        <div style="display: grid; gap: 8px;">
-                            <button class="btn" onclick="setTool('connect')" style="font-size: 11px;">Connect Nodes</button>
-                            <button class="btn" onclick="setTool('exclude')" style="font-size: 11px;">Add Exclusion</button>
-                            <button class="btn" onclick="toggleGrid()" style="font-size: 11px;">Toggle Grid</button>
-                        </div>
-                    </div>
                 </div>
             </div>
 
-            <!-- Main Canvas -->
             <div class="canvas-container">
                 <div class="canvas-header">
                     <div class="canvas-title" id="canvasTitle">STRENGTH TREE</div>
                     <div class="canvas-tools">
-                        <button class="tool-btn active" onclick="setTool('select')">SELECT</button>
                         <button class="tool-btn" onclick="addTier()">ADD TIER</button>
-                        <button class="tool-btn" onclick="previewTree()">PREVIEW</button>
-                        <button class="tool-btn" onclick="clearTier()">CLEAR TIER</button>
-                        <button class="tool-btn btn-danger" onclick="resetTree()">RESET</button>
+                        <button class="tool-btn" onclick="resetTree()">RESET</button>
                     </div>
                 </div>
-                <div class="tree-canvas" id="treeCanvas">
-                    <button class="add-tier-btn" onclick="addTier()">+ ADD NEW TIER</button>
+                <div class="tree-canvas">
                     <div class="tier-container" id="tierContainer">
-                        <!-- Tiers will be dynamically generated here -->
+                        <!-- Content will be generated here -->
                     </div>
-                    <svg class="connection-svg" id="connectionSvg">
-                        <!-- Connection lines will be drawn here -->
-                    </svg>
                 </div>
             </div>
 
-            <!-- Right Properties Panel -->
             <div class="properties-panel">
                 <div class="panel-header">
                     <div class="panel-title">NODE PROPERTIES</div>
@@ -769,7 +541,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
-        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+        import { getFirestore, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
         
         const firebaseConfig = {
             apiKey: "AIzaSyBurBHVh1tNQ5LdPPYEaynkiwm_nJQbM7o",
@@ -784,1039 +556,209 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         
-        window.firebase = {
-            db: db,
-            doc: doc,
-            getDoc: getDoc,
-            setDoc: setDoc,
-            collection: collection,
-            addDoc: addDoc,
-            getDocs: getDocs
-        };
-        
+        window.firebase = { db, doc, getDoc, setDoc };
         window.firebaseReady = true;
     </script>
 
     <script>
-        // Global variables
-        let currentUser = null;
+        // Simple global variables
         let currentTree = 'strength';
-        let currentTool = 'select';
-        let selectedNode = null;
-        let connectingFrom = null;
-        let treeData = {};
-        let gridVisible = true; // Grid is visible by default
-        let selectedNodeType = null; // For click-to-place functionality
+        let treeData = { tiers: [] };
+        let nodeCounter = 0;
 
-        // Grid constants
-        const GRID_SIZE = 50; // Each grid cell is 50x50 pixels
-        const GRID_COLS = 11; // 11 columns per tier (to have center)
-        const GRID_ROWS = 10; // 10 rows per tier
-
-        // Initialize
+        // Initialize when page loads
         window.addEventListener('load', function() {
-            const checkFirebase = setInterval(() => {
-                if (window.firebaseReady) {
-                    clearInterval(checkFirebase);
-                    loadUserData();
-                    initializeEditor();
-                }
-            }, 100);
+            console.log('Page loaded');
+            initializeBasicEditor();
         });
 
+        function initializeBasicEditor() {
+            console.log('Initializing basic editor');
+            
+            // Initialize tree with starter node
+            treeData = {
+                tiers: [{
+                    tier: 1,
+                    nodes: [{
+                        id: 'starter_1',
+                        type: 'small',
+                        gridRow: 9,
+                        gridCol: 5,
+                        isStarter: true,
+                        name: 'START'
+                    }]
+                }]
+            };
+            
+            renderBasicTree();
+        }
+
         function showMessage(message, type = 'success') {
+            console.log(`${type}: ${message}`);
             const messageDiv = document.createElement('div');
             messageDiv.className = `${type}-message`;
             messageDiv.textContent = message;
             document.body.appendChild(messageDiv);
             
-            setTimeout(() => {
-                messageDiv.remove();
-            }, 3000);
+            setTimeout(() => messageDiv.remove(), 3000);
         }
 
-        async function loadUserData() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const login = urlParams.get('login') || localStorage.getItem('currentUser');
+        function addNode(nodeType) {
+            console.log('Adding node:', nodeType);
             
-            if (!login) {
-                showMessage('NO USER SESSION FOUND', 'error');
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 2000);
-                return;
-            }
-
-            try {
-                const userDoc = await window.firebase.getDoc(window.firebase.doc(window.firebase.db, 'users', login));
-                if (!userDoc.exists()) {
-                    showMessage('USER DATA NOT FOUND', 'error');
-                    return;
-                }
-
-                currentUser = { login, ...userDoc.data() };
-
-                if (currentUser.role !== 'admin') {
-                    showMessage('INSUFFICIENT PRIVILEGES', 'error');
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 2000);
-                    return;
-                }
-
-                document.getElementById('backToDashboard').href = `admin-dashboard.html?login=${login}`;
-            } catch (error) {
-                console.error('Error loading data:', error);
-                showMessage('DATABASE CONNECTION ERROR', 'error');
-            }
-        }
-
-        function initializeEditor() {
-            setupEventListeners();
-            loadTreeData();
-        }
-
-        function setupEventListeners() {
-            // Tree tab switching
-            document.getElementById('treeTabs').addEventListener('click', function(e) {
-                if (e.target.classList.contains('tree-tab')) {
-                    switchTree(e.target.dataset.tree);
-                }
-            });
-
-            // Node palette drag and drop
-            setupDragAndDrop();
-            setupCanvasEvents();
-        }
-
-        function setupDragAndDrop() {
-            document.querySelectorAll('.node-template').forEach(template => {
-                // Click to automatically place node
-                template.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    const nodeData = {
-                        type: this.dataset.type,
-                        size: parseInt(this.dataset.size)
-                    };
-                    
-                    // Find the highest tier to place the node in
-                    const highestTier = Math.max(...treeData.tiers.map(t => t.tier));
-                    
-                    // Find first available position
-                    const position = findFirstAvailablePosition(highestTier, nodeData);
-                    
-                    if (position) {
-                        createNewNode(nodeData, position.tier, position.row, position.col);
-                        showMessage(`Node placed in tier ${position.tier}. Drag to reposition.`, 'success');
-                    } else {
-                        // Create new tier if no space available
-                        const newTierNumber = highestTier + 1;
-                        const newTier = createEmptyTier(newTierNumber);
-                        treeData.tiers.push(newTier);
-                        
-                        // Place in first position of new tier
-                        createNewNode(nodeData, newTierNumber, 0, 0);
-                        renderTree();
-                        showMessage(`Node placed in new tier ${newTierNumber}. Drag to reposition.`, 'success');
-                    }
-                });
-                
-                // Prevent text selection on mousedown
-                template.addEventListener('mousedown', function(e) {
-                    e.preventDefault();
-                });
-            });
-        }
-
-        function setupCanvasEvents() {
-            const tierContainer = document.getElementById('tierContainer');
-            
-            tierContainer.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                e.dataTransfer.dropEffect = 'move';
-            });
-
-            tierContainer.addEventListener('drop', function(e) {
-                e.preventDefault();
-                handleNodeReposition(e);
-            });
-
-            tierContainer.addEventListener('click', function(e) {
-                // Handle skill node selection
-                if (e.target.classList.contains('skill-node') || e.target.closest('.skill-node')) {
-                    const node = e.target.classList.contains('skill-node') ? e.target : e.target.closest('.skill-node');
-                    selectNode(node);
-                } else {
-                    // Deselect when clicking empty space
-                    deselectNode();
-                }
-            });
-        }
-
-        function handleNodeReposition(e) {
-            const dropData = e.dataTransfer.getData('application/json');
-            if (!dropData) return;
-            
-            try {
-                const moveData = JSON.parse(dropData);
-                if (moveData.action !== 'move') return;
-                
-                const tierElement = e.target.closest('.tier-section');
-                if (!tierElement) return;
-                
-                const tierContent = tierElement.querySelector('.tier-content');
-                if (!tierContent) return;
-                
-                const newTierNumber = parseInt(tierElement.dataset.tier);
-                const rect = tierContent.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                const newCol = Math.floor(x / GRID_SIZE);
-                const newRow = Math.floor(y / GRID_SIZE);
-                
-                if (newCol >= 0 && newCol < GRID_COLS && newRow >= 0 && newRow < GRID_ROWS) {
-                    moveNode(moveData.nodeId, moveData.tierNumber, newTierNumber, newRow, newCol);
-                }
-                
-            } catch (error) {
-                console.error('Error repositioning node:', error);
-                showMessage('Error moving node', 'error');
-            }
-        }
-
-        function moveNode(nodeId, oldTierNumber, newTierNumber, newRow, newCol) {
-            // Find the node in the old tier
-            const oldTier = treeData.tiers.find(t => t.tier === oldTierNumber);
-            if (!oldTier) return;
-            
-            const nodeIndex = oldTier.nodes.findIndex(node => node.id === nodeId);
-            if (nodeIndex === -1) return;
-            
-            const node = oldTier.nodes[nodeIndex];
-            
-            // Don't allow moving to starter position in tier 1
-            if (newTierNumber === 1 && newRow === 9 && newCol === 5 && !node.isStarter) {
-                showMessage('Cannot move node to starter position', 'error');
-                return;
-            }
-            
-            // Check if position is available in new location
-            const nodeData = { type: node.type, size: node.gridSize };
-            if (!canPlaceNode(newTierNumber, newRow, newCol, nodeData, nodeId)) {
-                showMessage('Cannot move node here - space occupied', 'error');
-                return;
-            }
-            
-            // Free old position
-            markGridCells(oldTier, node, false);
-            
-            // Remove from old tier
-            oldTier.nodes.splice(nodeIndex, 1);
-            
-            // Update node position
-            node.tierNumber = newTierNumber;
-            node.gridRow = newRow;
-            node.gridCol = newCol;
-            
-            // Add to new tier
-            let newTier = treeData.tiers.find(t => t.tier === newTierNumber);
-            if (!newTier) {
-                newTier = createEmptyTier(newTierNumber);
-                treeData.tiers.push(newTier);
-            }
-            
-            newTier.nodes.push(node);
-            markGridCells(newTier, node, true);
-            
-            renderTree();
-            showMessage(`Node moved to tier ${newTierNumber}`, 'success');
-        }
-
-        function switchTree(treeType) {
-            // Save current tree before switching
-            if (currentTree && treeData.tiers) {
-                saveTreeData();
-            }
-
-            currentTree = treeType;
-            
-            // Update active tab
-            document.querySelectorAll('.tree-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelector(`[data-tree="${treeType}"]`).classList.add('active');
-            
-            // Update canvas title
-            document.getElementById('canvasTitle').textContent = treeType.toUpperCase() + ' TREE';
-            
-            // Reset state
-            selectedNode = null;
-            connectingFrom = null;
-            setTool('select');
-            
-            // Load tree data
-            loadTreeData();
-        }
-
-        async function loadTreeData() {
-            try {
-                const treeId = `${currentTree}_tree`;
-                const treeDoc = await window.firebase.getDoc(window.firebase.doc(window.firebase.db, 'skillTrees', treeId));
-                
-                if (treeDoc.exists()) {
-                    treeData = treeDoc.data();
-                } else {
-                    // Initialize empty tree starting with tier 1
-                    treeData = {
-                        id: treeId,
-                        name: `${currentTree.charAt(0).toUpperCase() + currentTree.slice(1)} Tree`,
-                        associatedStat: currentTree,
-                        tiers: []
-                    };
-                    
-                    // Create tier 1 with starter node
-                    const tier1 = createEmptyTier(1);
-                    const starterNode = createStarterNode();
-                    tier1.nodes.push(starterNode);
-                    markGridCells(tier1, starterNode, true);
-                    treeData.tiers.push(tier1);
-                }
-                
-                renderTree();
-                
-            } catch (error) {
-                console.error('Error loading tree:', error);
-                showMessage('ERROR LOADING TREE DATA', 'error');
-            }
-        }
-
-        function createStarterNode() {
-            const nodeId = `${currentTree}_starter_${Date.now()}`;
-            return {
-                id: nodeId,
-                type: 'small',
-                tierNumber: 1,
-                gridRow: 9, // Bottom of grid (last row)
-                gridCol: 5, // Centered horizontally (middle column in 11-column grid: 0,1,2,3,4,5,6,7,8,9,10)
-                gridSize: 1,
-                name: `${currentTree.toUpperCase()} START`,
-                description: `Starting node for ${currentTree} skill tree`,
-                cost: 0,
-                maxPurchases: 1,
-                prerequisites: [],
-                exclusions: [],
-                connections: [],
-                isStarter: true,
-                statBonus: 'START'
-            };
-        }
-
-        function createEmptyTier(tierNumber) {
-            return {
-                tier: tierNumber,
-                requiredNodes: Math.max(0, tierNumber - 1),
-                nodes: [],
-                grid: createEmptyGrid()
-            };
-        }
-
-        function createEmptyGrid() {
-            const grid = {};
-            for (let row = 0; row < GRID_ROWS; row++) {
-                for (let col = 0; col < GRID_COLS; col++) {
-                    grid[`${row}-${col}`] = null; // null = empty, nodeId = occupied
-                }
-            }
-            return grid;
-        }
-
-        function renderTree() {
-            const tierContainer = document.getElementById('tierContainer');
-            tierContainer.innerHTML = '';
-
-            if (!treeData.tiers || treeData.tiers.length === 0) {
-                // Initialize with tier 1 containing starter node
-                const tier1 = createEmptyTier(1);
-                const starterNode = createStarterNode();
-                tier1.nodes.push(starterNode);
-                markGridCells(tier1, starterNode, true);
-                treeData.tiers = [tier1];
-            }
-
-            // Render tiers from top to bottom (highest tier first, then descending to 1)
-            const sortedTiers = [...treeData.tiers].sort((a, b) => b.tier - a.tier);
-
-            sortedTiers.forEach(tier => {
-                const tierElement = createTierElement(tier);
-                tierContainer.appendChild(tierElement);
-            });
-
-            renderConnections();
-            
-            // Enable dragging on all skill nodes after rendering
-            setTimeout(() => {
-                setupNodeDragging();
-            }, 100);
-        }
-
-        function createTierElement(tier) {
-            const tierDiv = document.createElement('div');
-            tierDiv.className = 'tier-section';
-            tierDiv.dataset.tier = tier.tier;
-
-            // Tier content wrapper for centering
-            const tierContent = document.createElement('div');
-            tierContent.className = 'tier-content';
-
-            // Tier header
-            const header = document.createElement('div');
-            header.className = 'tier-header';
-            header.textContent = `TIER ${tier.tier}`;
-            tierContent.appendChild(header);
-
-            // Grid overlay 
-            if (gridVisible) {
-                const gridOverlay = createGridOverlay(tier);
-                tierContent.appendChild(gridOverlay);
-            }
-
-            // Add nodes
-            if (tier.nodes && tier.nodes.length > 0) {
-                tier.nodes.forEach(node => {
-                    const nodeElement = createNodeElement(node, tier.tier);
-                    tierContent.appendChild(nodeElement);
-                });
-            }
-
-            tierDiv.appendChild(tierContent);
-            return tierDiv;
-        }
-
-        function createGridOverlay(tier) {
-            const overlay = document.createElement('div');
-            overlay.className = 'grid-overlay';
-
-            for (let row = 0; row < GRID_ROWS; row++) {
-                for (let col = 0; col < GRID_COLS; col++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'grid-cell';
-                    cell.style.left = (col * GRID_SIZE) + 'px';
-                    cell.style.top = (row * GRID_SIZE) + 'px';
-                    cell.dataset.row = row;
-                    cell.dataset.col = col;
-                    
-                    // Mark occupied cells
-                    const cellKey = `${row}-${col}`;
-                    if (tier.grid && tier.grid[cellKey]) {
-                        cell.classList.add('occupied');
-                    }
-                    
-                    overlay.appendChild(cell);
-                }
-            }
-
-            return overlay;
-        }
-
-        function createNodeElement(node, tierNumber) {
-            const nodeDiv = document.createElement('div');
-            nodeDiv.className = `skill-node node-${node.type}`;
-            if (node.isStarter) {
-                nodeDiv.classList.add('starter-node');
-            }
-            nodeDiv.dataset.nodeId = node.id;
-            nodeDiv.dataset.tier = tierNumber;
-            
-            // Position based on grid coordinates
-            nodeDiv.style.left = (node.gridCol * GRID_SIZE) + 'px';
-            nodeDiv.style.top = (node.gridRow * GRID_SIZE) + 'px';
-            
-            // Set content based on node type
-            if (node.type === 'small') {
-                nodeDiv.textContent = node.statBonus || (node.isStarter ? 'START' : '+1');
-            } else if (node.type === 'small-segmented-2') {
-                nodeDiv.innerHTML = createSegmentedContent(node, 2);
-            } else if (node.type === 'small-segmented-4') {
-                nodeDiv.innerHTML = createSegmentedContent(node, 4);
-            } else {
-                nodeDiv.innerHTML = `
-                    <div style="font-weight: 600; font-size: 10px;">${node.name || 'New Node'}</div>
-                    ${node.description ? `<div style="font-size: 8px; opacity: 0.8;">${node.description.substring(0, 20)}${node.description.length > 20 ? '...' : ''}</div>` : ''}
-                `;
-            }
-
-            return nodeDiv;
-        }
-
-        function createSegmentedContent(node, segments) {
-            let html = '<div class="node-segmented">';
-            
-            if (segments === 2) {
-                html += `
-                    <div class="segment segment-2 left" style="background: ${getStatColor(node.stats?.[0] || 'STR')};">${node.stats?.[0] || 'STR'}</div>
-                    <div class="segment segment-2 right" style="background: ${getStatColor(node.stats?.[1] || 'VIT')};">${node.stats?.[1] || 'VIT'}</div>
-                `;
-            } else if (segments === 4) {
-                html += `
-                    <div class="segment segment-4 top-left" style="background: ${getStatColor(node.stats?.[0] || 'STR')};">${node.stats?.[0] || 'STR'}</div>
-                    <div class="segment segment-4 top-right" style="background: ${getStatColor(node.stats?.[1] || 'VIT')};">${node.stats?.[1] || 'VIT'}</div>
-                    <div class="segment segment-4 bottom-left" style="background: ${getStatColor(node.stats?.[2] || 'SPD')};">${node.stats?.[2] || 'SPD'}</div>
-                    <div class="segment segment-4 bottom-right" style="background: ${getStatColor(node.stats?.[3] || 'DEF')};">${node.stats?.[3] || 'DEF'}</div>
-                `;
-            }
-            
-            html += '</div>';
-            return html;
-        }
-
-        function getStatColor(stat) {
-            const colors = {
-                'STR': '#ef4444',
-                'VIT': '#10b981',
-                'SPD': '#3b82f6',
-                'DEF': '#f59e0b',
-                'RAS': '#8b5cf6',
-                'BUJ': '#ec4899',
-                'WEP': '#06b6d4',
-                'TSH': '#84cc16',
-                'RYK': '#f97316'
-            };
-            return colors[stat] || '#64748b';
-        }
-
-        function enableGridClickToPlace() {
-            document.querySelectorAll('.grid-cell').forEach(cell => {
-                cell.classList.add('clickable');
-                cell.onclick = function(e) {
-                    e.stopPropagation(); // Prevent event bubbling
-                    
-                    if (!selectedNodeType) return;
-                    
-                    const tierElement = this.closest('.tier-section');
-                    if (!tierElement) return;
-                    
-                    const tierNumber = parseInt(tierElement.dataset.tier);
-                    const row = parseInt(this.dataset.row);
-                    const col = parseInt(this.dataset.col);
-                    
-                    // Don't allow placing nodes exactly on the starter node position in tier 1
-                    if (tierNumber === 1 && row === 9 && col === 5) {
-                        showMessage('Cannot place node on starter position', 'error');
-                        return;
-                    }
-                    
-                    if (canPlaceNode(tierNumber, row, col, selectedNodeType)) {
-                        createNewNode(selectedNodeType, tierNumber, row, col);
-                        clearNodeSelection();
-                    } else {
-                        showMessage('Cannot place node here - space occupied or out of bounds', 'error');
-                    }
-                };
-            });
-        }
-
-        function clearNodeSelection() {
-            selectedNodeType = null;
-            document.querySelectorAll('.node-template').forEach(t => t.classList.remove('selected'));
-            document.querySelectorAll('.grid-cell').forEach(cell => {
-                cell.classList.remove('clickable');
-                cell.onclick = null;
-            });
-        }
-
-        function getCellsForNode(gridRow, gridCol, nodeData) {
-            const { type, size } = nodeData;
-            let cells = [];
-
-            if (size === 1) {
-                cells = [`${gridRow}-${gridCol}`];
-            } else if (size === 2) {
-                cells = [`${gridRow}-${gridCol}`, `${gridRow}-${gridCol + 1}`];
-            } else if (size === 4) {
-                if (type === 'large-circle') {
-                    // 2x2 square
-                    cells = [
-                        `${gridRow}-${gridCol}`,
-                        `${gridRow}-${gridCol + 1}`,
-                        `${gridRow + 1}-${gridCol}`,
-                        `${gridRow + 1}-${gridCol + 1}`
-                    ];
-                } else {
-                    // 4x1 rectangle
-                    cells = [
-                        `${gridRow}-${gridCol}`,
-                        `${gridRow}-${gridCol + 1}`,
-                        `${gridRow}-${gridCol + 2}`,
-                        `${gridRow}-${gridCol + 3}`
-                    ];
-                }
-            }
-
-            return cells;
-        }
-
-        function handleNodeDrop(e) {
-            const tierElement = e.target.closest('.tier-section');
-            if (!tierElement) return;
-
-            const tierContent = tierElement.querySelector('.tier-content');
-            if (!tierContent) return;
-
-            const tierNumber = parseInt(tierElement.dataset.tier);
-
-            try {
-                const nodeDataStr = e.dataTransfer.getData('text/plain');
-                if (!nodeDataStr) return;
-                
-                const nodeData = JSON.parse(nodeDataStr);
-                const rect = tierContent.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                const gridCol = Math.floor(x / GRID_SIZE);
-                const gridRow = Math.floor(y / GRID_SIZE);
-                
-                // Don't allow placing nodes on starter node position in tier 1
-                if (tierNumber === 1 && gridRow === 9 && gridCol === 5) {
-                    showMessage('Cannot place node on starter position', 'error');
-                    return;
-                }
-                
-                if (gridCol >= 0 && gridCol < GRID_COLS && gridRow >= 0 && gridRow < GRID_ROWS) {
-                    if (canPlaceNode(tierNumber, gridRow, gridCol, nodeData)) {
-                        createNewNode(nodeData, tierNumber, gridRow, gridCol);
-                    } else {
-                        showMessage('Cannot place node here - space occupied or out of bounds', 'error');
-                    }
-                }
-            } catch (error) {
-                console.error('Error handling drop:', error);
-                showMessage('Error creating node', 'error');
-            }
-        }
-
-        function canPlaceNode(tierNumber, gridRow, gridCol, nodeData, excludeNodeId = null) {
-            const tier = treeData.tiers.find(t => t.tier === tierNumber);
-            if (!tier || !tier.grid) return false;
-
-            const cellsToCheck = getCellsForNode(gridRow, gridCol, nodeData);
-            
-            return cellsToCheck.every(cellKey => {
-                const [row, col] = cellKey.split('-').map(Number);
-                if (row < 0 || row >= GRID_ROWS || col < 0 || col >= GRID_COLS) return false;
-                
-                const occupyingNodeId = tier.grid[cellKey];
-                // Cell is free, or occupied by the node we're moving
-                return !occupyingNodeId || occupyingNodeId === excludeNodeId;
-            });
-        }
-
-        function createNewNode(nodeData, tierNumber, gridRow, gridCol) {
-            const nodeId = `${currentTree}_${tierNumber}_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
-            
+            nodeCounter++;
             const newNode = {
-                id: nodeId,
-                type: nodeData.type,
-                tierNumber: tierNumber,
-                gridRow: gridRow,
-                gridCol: gridCol,
-                gridSize: nodeData.size,
-                name: `New ${nodeData.type} Node`,
-                description: '',
-                cost: 1,
-                maxPurchases: 1,
-                prerequisites: [],
-                exclusions: [],
-                connections: [],
-                isStarter: false
+                id: `node_${nodeCounter}`,
+                type: nodeType,
+                gridRow: Math.floor(Math.random() * 8), // Avoid bottom row (starter)
+                gridCol: Math.floor(Math.random() * 9), // Avoid center column
+                name: `New ${nodeType} Node`
             };
-
-            // Add type-specific properties
-            if (nodeData.type.includes('small')) {
-                if (nodeData.type.includes('segmented')) {
-                    const segmentCount = nodeData.type.includes('4') ? 4 : 2;
-                    newNode.stats = new Array(segmentCount).fill('STR');
-                } else {
-                    newNode.statBonus = '+1 ' + currentTree.substring(0, 3).toUpperCase();
-                }
-            }
-
-            // Find tier and add node
-            let tier = treeData.tiers.find(t => t.tier === tierNumber);
+            
+            // Find highest tier
+            let targetTier = Math.max(...treeData.tiers.map(t => t.tier));
+            let tier = treeData.tiers.find(t => t.tier === targetTier);
+            
             if (!tier) {
-                tier = createEmptyTier(tierNumber);
+                tier = { tier: 1, nodes: [] };
                 treeData.tiers.push(tier);
             }
-
+            
             tier.nodes.push(newNode);
-            
-            // Mark grid cells as occupied
-            markGridCells(tier, newNode, true);
-            
-            renderTree();
-            showMessage(`Created ${nodeData.type} node in tier ${tierNumber}`, 'success');
+            renderBasicTree();
+            showMessage(`${nodeType} node added`);
         }
 
-        function markGridCells(tier, node, occupied) {
-            const cellsToMark = getCellsForNode(node.gridRow, node.gridCol, {
-                type: node.type,
-                size: node.gridSize
-            });
+        function renderBasicTree() {
+            console.log('Rendering tree');
+            const container = document.getElementById('tierContainer');
+            container.innerHTML = '';
 
-            cellsToMark.forEach(cellKey => {
-                tier.grid[cellKey] = occupied ? node.id : null;
-            });
-        }
-
-        function selectNode(nodeElement) {
-            // Deselect all nodes
-            document.querySelectorAll('.skill-node').forEach(node => {
-                node.classList.remove('selected');
-            });
-
-            // Select this node
-            nodeElement.classList.add('selected');
-            selectedNode = nodeElement;
-
-            // Show properties
-            showNodeProperties(nodeElement);
-        }
-
-        function deselectNode() {
-            if (selectedNode) {
-                selectedNode.classList.remove('selected');
-                selectedNode = null;
-                showNodeProperties(null);
-            }
-        }
-
-        function showNodeProperties(nodeElement) {
-            const content = document.getElementById('propertiesContent');
-            
-            if (!nodeElement) {
-                content.innerHTML = `
-                    <div style="text-align: center; color: #64748b; font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-top: 40px;">
-                        SELECT A NODE TO EDIT
-                    </div>
-                `;
-                return;
-            }
-
-            const nodeId = nodeElement.dataset.nodeId;
-            const tier = parseInt(nodeElement.dataset.tier);
-            const nodeData = findNodeData(nodeId, tier);
-
-            if (!nodeData) return;
-
-            let html = `
-                <div class="form-group">
-                    <label class="form-label">Node ID</label>
-                    <input type="text" class="form-input" value="${nodeData.id}" readonly>
-                </div>
+            // Render each tier
+            treeData.tiers.forEach(tier => {
+                const tierDiv = document.createElement('div');
+                tierDiv.className = 'tier-section';
                 
-                <div class="form-group">
-                    <label class="form-label">Type</label>
-                    <input type="text" class="form-input" value="${nodeData.type}" readonly>
-                </div>
+                const tierContent = document.createElement('div');
+                tierContent.className = 'tier-content';
                 
-                <div class="form-group">
-                    <label class="form-label">Name</label>
-                    <input type="text" class="form-input" value="${nodeData.name || ''}" onchange="updateNodeProperty('${nodeId}', 'name', this.value)">
-                </div>
+                const header = document.createElement('div');
+                header.className = 'tier-header';
+                header.textContent = `TIER ${tier.tier}`;
+                tierContent.appendChild(header);
                 
-                <div class="form-group">
-                    <label class="form-label">Description</label>
-                    <textarea class="form-textarea" onchange="updateNodeProperty('${nodeId}', 'description', this.value)">${nodeData.description || ''}</textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Cost</label>
-                    <input type="number" class="form-input" value="${nodeData.cost || 1}" min="0" onchange="updateNodeProperty('${nodeId}', 'cost', parseInt(this.value))">
-                </div>
-            `;
-
-            // Add stat bonus for simple nodes
-            if (nodeData.type === 'small' && !nodeData.type.includes('segmented')) {
-                html += `
-                    <div class="form-group">
-                        <label class="form-label">Stat Bonus</label>
-                        <input type="text" class="form-input" value="${nodeData.statBonus || ''}" onchange="updateNodeProperty('${nodeId}', 'statBonus', this.value)" placeholder="+1 STR">
-                    </div>
-                `;
-            }
-
-            // Add segmented stats for segmented nodes
-            if (nodeData.type.includes('small') && nodeData.type.includes('segmented')) {
-                html += `<div class="form-group">
-                    <label class="form-label">Stat Types</label>`;
-                
-                const segmentCount = nodeData.type.includes('4') ? 4 : 2;
-                for (let i = 0; i < segmentCount; i++) {
-                    html += `
-                        <select class="form-select" style="margin-bottom: 4px;" onchange="updateNodeStat('${nodeId}', ${i}, this.value)">
-                            <option value="STR" ${nodeData.stats?.[i] === 'STR' ? 'selected' : ''}>STR - Strength</option>
-                            <option value="VIT" ${nodeData.stats?.[i] === 'VIT' ? 'selected' : ''}>VIT - Vitality</option>
-                            <option value="SPD" ${nodeData.stats?.[i] === 'SPD' ? 'selected' : ''}>SPD - Speed</option>
-                            <option value="DEF" ${nodeData.stats?.[i] === 'DEF' ? 'selected' : ''}>DEF - Defense</option>
-                            <option value="RAS" ${nodeData.stats?.[i] === 'RAS' ? 'selected' : ''}>RAS - Reiatsu</option>
-                            <option value="BUJ" ${nodeData.stats?.[i] === 'BUJ' ? 'selected' : ''}>BUJ - Bujutsu</option>
-                            <option value="WEP" ${nodeData.stats?.[i] === 'WEP' ? 'selected' : ''}>WEP - Weaponry</option>
-                            <option value="TSH" ${nodeData.stats?.[i] === 'TSH' ? 'selected' : ''}>TSH - Tamashi</option>
-                            <option value="RYK" ${nodeData.stats?.[i] === 'RYK' ? 'selected' : ''}>RYK - Reiryoku</option>
-                        </select>
-                    `;
-                }
-                html += `</div>`;
-            }
-
-            // Don't show delete button for starter nodes
-            if (!nodeData.isStarter) {
-                html += `
-                    <div style="margin-top: 20px;">
-                        <button class="btn btn-danger" onclick="deleteNode('${nodeId}', ${tier})">DELETE NODE</button>
-                    </div>
-                `;
-            }
-
-            content.innerHTML = html;
-        }
-
-        function findNodeData(nodeId, tierNumber) {
-            const tier = treeData.tiers.find(t => t.tier === tierNumber);
-            return tier?.nodes.find(node => node.id === nodeId);
-        }
-
-        function updateNodeProperty(nodeId, property, value) {
-            const tierNumber = parseInt(selectedNode.dataset.tier);
-            const nodeData = findNodeData(nodeId, tierNumber);
-            
-            if (nodeData) {
-                nodeData[property] = value;
-                renderTree();
-                // Re-select the node to maintain selection
-                setTimeout(() => {
-                    const updatedNode = document.querySelector(`[data-node-id="${nodeId}"]`);
-                    if (updatedNode) {
-                        selectNode(updatedNode);
-                    }
-                }, 100);
-            }
-        }
-
-        function updateNodeStat(nodeId, index, stat) {
-            const tierNumber = parseInt(selectedNode.dataset.tier);
-            const nodeData = findNodeData(nodeId, tierNumber);
-            
-            if (nodeData) {
-                if (!nodeData.stats) nodeData.stats = [];
-                nodeData.stats[index] = stat;
-                renderTree();
-                // Re-select the node to maintain selection
-                setTimeout(() => {
-                    const updatedNode = document.querySelector(`[data-node-id="${nodeId}"]`);
-                    if (updatedNode) {
-                        selectNode(updatedNode);
-                    }
-                }, 100);
-            }
-        }
-
-        function deleteNode(nodeId, tierNumber) {
-            if (confirm('Delete this node?')) {
-                const tier = treeData.tiers.find(t => t.tier === tierNumber);
-                if (tier) {
-                    const nodeIndex = tier.nodes.findIndex(node => node.id === nodeId);
-                    if (nodeIndex >= 0) {
-                        const node = tier.nodes[nodeIndex];
-                        
-                        // Don't delete starter nodes
-                        if (node.isStarter) {
-                            showMessage('Cannot delete starter node', 'error');
-                            return;
-                        }
-                        
-                        // Free grid cells
-                        markGridCells(tier, node, false);
-                        
-                        // Remove node
-                        tier.nodes.splice(nodeIndex, 1);
-                        
-                        deselectNode();
-                        renderTree();
-                        showMessage('Node deleted', 'success');
+                // Add grid
+                const grid = document.createElement('div');
+                grid.className = 'grid-overlay';
+                for (let row = 0; row < 10; row++) {
+                    for (let col = 0; col < 11; col++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'grid-cell';
+                        cell.style.left = (col * 50) + 'px';
+                        cell.style.top = (row * 50) + 'px';
+                        grid.appendChild(cell);
                     }
                 }
-            }
+                tierContent.appendChild(grid);
+                
+                // Add nodes
+                tier.nodes.forEach(node => {
+                    const nodeDiv = document.createElement('div');
+                    nodeDiv.className = `skill-node node-${node.type}`;
+                    if (node.isStarter) nodeDiv.classList.add('starter-node');
+                    
+                    nodeDiv.style.left = (node.gridCol * 50) + 'px';
+                    nodeDiv.style.top = (node.gridRow * 50) + 'px';
+                    nodeDiv.textContent = node.isStarter ? 'START' : node.name.substring(0, 8);
+                    
+                    tierContent.appendChild(nodeDiv);
+                });
+                
+                tierDiv.appendChild(tierContent);
+                container.appendChild(tierDiv);
+            });
         }
 
         function addTier() {
             const maxTier = Math.max(...treeData.tiers.map(t => t.tier), 0);
-            const newTierNumber = maxTier + 1;
-            const newTier = createEmptyTier(newTierNumber);
+            const newTier = {
+                tier: maxTier + 1,
+                nodes: []
+            };
             treeData.tiers.push(newTier);
-            renderTree();
-            showMessage(`Added Tier ${newTierNumber}`, 'success');
-        }
-
-        function clearTier() {
-            if (selectedNode) {
-                const tierNumber = parseInt(selectedNode.dataset.tier);
-                if (tierNumber === 1) {
-                    showMessage('Cannot clear starter tier completely', 'error');
-                    return;
-                }
-                
-                if (confirm(`Clear Tier ${tierNumber} of all nodes?`)) {
-                    const tier = treeData.tiers.find(t => t.tier === tierNumber);
-                    if (tier) {
-                        // Free all grid cells
-                        tier.nodes.forEach(node => {
-                            markGridCells(tier, node, false);
-                        });
-                        
-                        // Clear nodes
-                        tier.nodes = [];
-                        
-                        deselectNode();
-                        renderTree();
-                        showMessage(`Tier ${tierNumber} cleared`, 'success');
-                    }
-                }
-            } else {
-                showMessage('Select a node in the tier you want to clear', 'error');
-            }
+            renderBasicTree();
+            showMessage(`Added Tier ${maxTier + 1}`);
         }
 
         function resetTree() {
-            if (confirm('Reset entire tree? This will delete all nodes except the starter.')) {
-                // Keep tier 1 with starter node but reset all others
-                const tier1 = treeData.tiers.find(t => t.tier === 1);
-                if (tier1) {
-                    // Keep only the starter node in tier 1
-                    const starterNode = tier1.nodes.find(node => node.isStarter);
-                    if (starterNode) {
-                        tier1.nodes = [starterNode];
-                        // Reset grid and mark starter position
-                        tier1.grid = createEmptyGrid();
-                        markGridCells(tier1, starterNode, true);
-                        treeData.tiers = [tier1, createEmptyTier(2)];
-                    } else {
-                        // Recreate tier 1 with starter node
-                        const newTier1 = createEmptyTier(1);
-                        const starterNode = createStarterNode();
-                        newTier1.nodes.push(starterNode);
-                        markGridCells(newTier1, starterNode, true);
-                        treeData.tiers = [newTier1, createEmptyTier(2)];
-                    }
-                } else {
-                    // Recreate tier 1 with starter node
-                    const newTier1 = createEmptyTier(1);
-                    const starterNode = createStarterNode();
-                    newTier1.nodes.push(starterNode);
-                    markGridCells(newTier1, starterNode, true);
-                    treeData.tiers = [newTier1, createEmptyTier(2)];
-                }
-                
-                deselectNode();
-                clearNodeSelection();
-                renderTree();
-                showMessage('Tree reset', 'success');
+            if (confirm('Reset tree?')) {
+                treeData = {
+                    tiers: [{
+                        tier: 1,
+                        nodes: [{
+                            id: 'starter_1',
+                            type: 'small',
+                            gridRow: 9,
+                            gridCol: 5,
+                            isStarter: true,
+                            name: 'START'
+                        }]
+                    }]
+                };
+                nodeCounter = 0;
+                renderBasicTree();
+                showMessage('Tree reset');
             }
-        }
-
-        function setTool(tool) {
-            currentTool = tool;
-            document.querySelectorAll('.tool-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            const toolButtons = document.querySelectorAll('.tool-btn');
-            toolButtons.forEach(btn => {
-                if (btn.textContent.toLowerCase().includes(tool.toLowerCase())) {
-                    btn.classList.add('active');
-                }
-            });
-            
-            showMessage(`Tool: ${tool.toUpperCase()}`, 'success');
-        }
-
-        function toggleGrid() {
-            gridVisible = !gridVisible;
-            renderTree();
-            showMessage(`Grid ${gridVisible ? 'enabled' : 'disabled'}`, 'success');
-        }
-
-        function renderConnections() {
-            const svg = document.getElementById('connectionSvg');
-            svg.innerHTML = '';
-            // Connection rendering will be implemented in a future update
-        }
-
-        function previewTree() {
-            showMessage('Preview functionality will be added in a future update', 'success');
         }
 
         async function saveTree() {
             try {
-                showMessage('Saving tree...', 'success');
-                const treeId = `${currentTree}_tree`;
-                await window.firebase.setDoc(window.firebase.doc(window.firebase.db, 'skillTrees', treeId), treeData);
-                showMessage('Tree saved successfully', 'success');
+                if (window.firebaseReady && window.firebase) {
+                    const treeId = `${currentTree}_tree`;
+                    await window.firebase.setDoc(
+                        window.firebase.doc(window.firebase.db, 'skillTrees', treeId), 
+                        treeData
+                    );
+                    showMessage('Tree saved');
+                } else {
+                    showMessage('Firebase not ready', 'error');
+                }
             } catch (error) {
-                console.error('Error saving:', error);
-                showMessage('Error saving tree', 'error');
-            }
-        }
-
-        async function saveTreeData() {
-            if (!currentUser || !treeData.tiers) return;
-            try {
-                const treeId = `${currentTree}_tree`;
-                await window.firebase.setDoc(window.firebase.doc(window.firebase.db, 'skillTrees', treeId), treeData);
-            } catch (error) {
-                console.error('Auto-save error:', error);
+                console.error('Save error:', error);
+                showMessage('Save failed', 'error');
             }
         }
 
         function exportTree() {
             const dataStr = JSON.stringify(treeData, null, 2);
             const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-            
-            const exportFileDefaultName = `${currentTree}_skill_tree.json`;
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-            
-            showMessage('Tree exported', 'success');
+            const link = document.createElement('a');
+            link.setAttribute('href', dataUri);
+            link.setAttribute('download', `${currentTree}_tree.json`);
+            link.click();
+            showMessage('Tree exported');
         }
 
         function importTree() {
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = '.json';
-            
             input.onchange = function(event) {
                 const file = event.target.files[0];
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         try {
-                            const importedData = JSON.parse(e.target.result);
-                            treeData = importedData;
-                            renderTree();
-                            showMessage('Tree imported successfully', 'success');
+                            treeData = JSON.parse(e.target.result);
+                            renderBasicTree();
+                            showMessage('Tree imported');
                         } catch (error) {
-                            showMessage('Invalid JSON file', 'error');
+                            showMessage('Invalid file', 'error');
                         }
                     };
                     reader.readAsText(file);
                 }
             };
-            
             input.click();
         }
 
