@@ -338,6 +338,11 @@
             z-index: 15;
         }
 
+        .skill-node.dragging {
+            z-index: 20;
+            transform: scale(1.05);
+        }
+
         .node-small {
             width: 50px;
             height: 50px;
@@ -489,21 +494,17 @@
                     <div class="palette-section">
                         <div class="palette-title">Node Types</div>
                         <div class="node-templates">
-                            <div class="node-template" onclick="addNode('small')">
+                            <div class="node-template" onclick="addNode('small', 1)">
                                 <span style="color: #10b981;">●</span>
                                 Small Node (1x1)
                             </div>
-                            <div class="node-template" onclick="addNode('medium-rect')">
+                            <div class="node-template" onclick="addNode('medium-rect', 2)">
                                 <span style="color: #f59e0b;">▬</span>
                                 Med Rect (2x1)
                             </div>
-                            <div class="node-template" onclick="addNode('large-circle')">
+                            <div class="node-template" onclick="addNode('large-circle', 4)">
                                 <span style="color: #ef4444;">◯</span>
                                 Large Circle (2x2)
-                            </div>
-                            <div class="node-template" onclick="addNode('large-rect')">
-                                <span style="color: #8b5cf6;">▭</span>
-                                Large Rect (4x1)
                             </div>
                         </div>
                     </div>
@@ -562,15 +563,45 @@
 
     <script>
         // Simple global variables
+        let currentUser = null;
         let currentTree = 'strength';
         let treeData = { tiers: [] };
         let nodeCounter = 0;
+        let selectedNode = null;
 
         // Initialize when page loads
         window.addEventListener('load', function() {
             console.log('Page loaded');
-            initializeBasicEditor();
+            const checkFirebase = setInterval(() => {
+                if (window.firebaseReady) {
+                    clearInterval(checkFirebase);
+                    loadUserData();
+                }
+            }, 100);
         });
+
+        async function loadUserData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const login = urlParams.get('login') || localStorage.getItem('currentUser');
+            
+            if (login) {
+                try {
+                    const userDoc = await window.firebase.getDoc(window.firebase.doc(window.firebase.db, 'users', login));
+                    if (userDoc.exists()) {
+                        currentUser = { login, ...userDoc.data() };
+                        if (currentUser.role === 'admin') {
+                            document.getElementById('backToDashboard').href = `admin-dashboard.html?login=${login}`;
+                            initializeBasicEditor();
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading user:', error);
+                }
+            }
+            
+            initializeBasicEditor(); // Initialize even if user loading fails
+        }
 
         function initializeBasicEditor() {
             console.log('Initializing basic editor');
@@ -585,12 +616,54 @@
                         gridRow: 9,
                         gridCol: 5,
                         isStarter: true,
-                        name: 'START'
+                        name: 'START',
+                        size: 1
+                    }]
+                }]
+            };
+            
+            setupTreeTabs();
+            renderBasicTree();
+        }
+
+        function setupTreeTabs() {
+            document.getElementById('treeTabs').addEventListener('click', function(e) {
+                if (e.target.classList.contains('tree-tab')) {
+                    switchTree(e.target.dataset.tree);
+                }
+            });
+        }
+
+        function switchTree(treeType) {
+            currentTree = treeType;
+            
+            // Update active tab
+            document.querySelectorAll('.tree-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-tree="${treeType}"]`).classList.add('active');
+            
+            // Update canvas title
+            document.getElementById('canvasTitle').textContent = treeType.toUpperCase() + ' TREE';
+            
+            // Reinitialize for new tree
+            treeData = {
+                tiers: [{
+                    tier: 1,
+                    nodes: [{
+                        id: `starter_${treeType}`,
+                        type: 'small',
+                        gridRow: 9,
+                        gridCol: 5,
+                        isStarter: true,
+                        name: 'START',
+                        size: 1
                     }]
                 }]
             };
             
             renderBasicTree();
+            showMessage(`Switched to ${treeType.toUpperCase()} tree`);
         }
 
         function showMessage(message, type = 'success') {
@@ -603,8 +676,8 @@
             setTimeout(() => messageDiv.remove(), 3000);
         }
 
-        function addNode(nodeType) {
-            console.log('Adding node:', nodeType);
+        function addNode(nodeType, size) {
+            console.log('Adding node:', nodeType, 'size:', size);
             
             nodeCounter++;
             const newNode = {
@@ -612,7 +685,8 @@
                 type: nodeType,
                 gridRow: Math.floor(Math.random() * 8), // Avoid bottom row (starter)
                 gridCol: Math.floor(Math.random() * 9), // Avoid center column
-                name: `New ${nodeType} Node`
+                name: `New ${nodeType} Node`,
+                size: size
             };
             
             // Find highest tier
@@ -671,15 +745,149 @@
                     nodeDiv.style.top = (node.gridRow * 50) + 'px';
                     nodeDiv.textContent = node.isStarter ? 'START' : node.name.substring(0, 8);
                     
+                    nodeDiv.dataset.nodeId = node.id;
+                    nodeDiv.draggable = true;
+                    
+                    // Add click handler for selection
+                    nodeDiv.onclick = function(e) {
+                        selectNode(this);
+                        e.stopPropagation();
+                    };
+                    
+                    // Add drag handlers for movement
+                    nodeDiv.ondragstart = function(e) {
+                        this.classList.add('dragging');
+                        e.dataTransfer.setData('text/plain', node.id);
+                    };
+                    
+                    nodeDiv.ondragend = function(e) {
+                        this.classList.remove('dragging');
+                    };
+                    
                     tierContent.appendChild(nodeDiv);
                 });
+                
+                // Add drop handler to tier content
+                tierContent.ondragover = function(e) {
+                    e.preventDefault();
+                };
+                
+                tierContent.ondrop = function(e) {
+                    e.preventDefault();
+                    const nodeId = e.dataTransfer.getData('text/plain');
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const newCol = Math.floor(x / 50);
+                    const newRow = Math.floor(y / 50);
+                    
+                    moveNodeToPosition(nodeId, tier.tier, newRow, newCol);
+                };
                 
                 tierDiv.appendChild(tierContent);
                 container.appendChild(tierDiv);
             });
         }
 
+        function selectNode(nodeElement) {
+            // Deselect all nodes
+            document.querySelectorAll('.skill-node').forEach(node => {
+                node.classList.remove('selected');
+            });
+            
+            // Select this node
+            nodeElement.classList.add('selected');
+            selectedNode = nodeElement;
+            
+            showNodeProperties(nodeElement);
+        }
+
+        function showNodeProperties(nodeElement) {
+            const content = document.getElementById('propertiesContent');
+            const nodeId = nodeElement.dataset.nodeId;
+            
+            // Find node data
+            let nodeData = null;
+            for (let tier of treeData.tiers) {
+                nodeData = tier.nodes.find(n => n.id === nodeId);
+                if (nodeData) break;
+            }
+            
+            if (!nodeData) return;
+            
+            content.innerHTML = `
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">NODE ID</label>
+                    <input type="text" value="${nodeData.id}" readonly style="width: 100%; padding: 6px; background: rgba(30,41,59,0.6); border: 1px solid rgba(71,85,105,0.4); border-radius: 6px; color: #f1f5f9; font-size: 11px;">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">NAME</label>
+                    <input type="text" value="${nodeData.name}" onchange="updateNodeName('${nodeId}', this.value)" style="width: 100%; padding: 6px; background: rgba(30,41,59,0.6); border: 1px solid rgba(71,85,105,0.4); border-radius: 6px; color: #f1f5f9; font-size: 11px;">
+                </div>
+                ${!nodeData.isStarter ? `
+                <div style="margin-top: 20px;">
+                    <button onclick="deleteNode('${nodeId}')" style="background: linear-gradient(135deg, rgba(239,68,68,0.8) 0%, rgba(220,38,38,0.9) 100%); color: #f1f5f9; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;">DELETE NODE</button>
+                </div>
+                ` : ''}
+            `;
+        }
+
+        function updateNodeName(nodeId, newName) {
+            for (let tier of treeData.tiers) {
+                const node = tier.nodes.find(n => n.id === nodeId);
+                if (node) {
+                    node.name = newName;
+                    renderBasicTree();
+                    break;
+                }
+            }
+        }
+
+        function deleteNode(nodeId) {
+            if (confirm('Delete this node?')) {
+                for (let tier of treeData.tiers) {
+                    const nodeIndex = tier.nodes.findIndex(n => n.id === nodeId);
+                    if (nodeIndex >= 0) {
+                        tier.nodes.splice(nodeIndex, 1);
+                        selectedNode = null;
+                        renderBasicTree();
+                        document.getElementById('propertiesContent').innerHTML = `
+                            <div style="text-align: center; color: #64748b; font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-top: 40px;">
+                                SELECT A NODE TO EDIT
+                            </div>
+                        `;
+                        showMessage('Node deleted');
+                        break;
+                    }
+                }
+            }
+        }
+
+        function moveNodeToPosition(nodeId, tierNum, newRow, newCol) {
+            // Keep within bounds
+            if (newRow < 0 || newRow >= 10 || newCol < 0 || newCol >= 11) return;
+            
+            // Don't allow moving to starter position
+            if (newRow === 9 && newCol === 5) {
+                showMessage('Cannot move to starter position', 'error');
+                return;
+            }
+            
+            for (let tier of treeData.tiers) {
+                const node = tier.nodes.find(n => n.id === nodeId);
+                if (node) {
+                    node.gridRow = newRow;
+                    node.gridCol = newCol;
+                    renderBasicTree();
+                    showMessage('Node moved');
+                    break;
+                }
+            }
+        }
+
         function addTier() {
+            console.log('Adding tier');
             const maxTier = Math.max(...treeData.tiers.map(t => t.tier), 0);
             const newTier = {
                 tier: maxTier + 1,
@@ -691,22 +899,30 @@
         }
 
         function resetTree() {
-            if (confirm('Reset tree?')) {
+            console.log('Resetting tree');
+            if (confirm('Reset tree? This will delete all nodes except the starter.')) {
                 treeData = {
                     tiers: [{
                         tier: 1,
                         nodes: [{
-                            id: 'starter_1',
+                            id: `starter_${currentTree}`,
                             type: 'small',
                             gridRow: 9,
                             gridCol: 5,
                             isStarter: true,
-                            name: 'START'
+                            name: 'START',
+                            size: 1
                         }]
                     }]
                 };
                 nodeCounter = 0;
+                selectedNode = null;
                 renderBasicTree();
+                document.getElementById('propertiesContent').innerHTML = `
+                    <div style="text-align: center; color: #64748b; font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-top: 40px;">
+                        SELECT A NODE TO EDIT
+                    </div>
+                `;
                 showMessage('Tree reset');
             }
         }
