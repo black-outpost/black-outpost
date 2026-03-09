@@ -1,0 +1,44 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{uid} {
+      allow read, write: if request.auth.uid == uid;
+      allow read, write: if isAdmin();
+    }
+
+    match /characters/{charId} {
+      allow read: if request.auth.uid == resource.data.userId;
+      allow read: if request.auth.uid != null && isAdmin();
+      allow update: if request.auth.uid == resource.data.userId &&
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['unlockedNodes', 'blockedNodes', 'stats', 'ndr']);
+      allow read, write: if isAdmin();
+    }
+
+    match /skillTrees/{treeId} {
+      allow read: if request.auth.uid != null;
+      allow write: if isAdmin();
+    }
+
+    match /items/{itemId} {
+      allow read: if request.auth.uid != null;
+      allow write: if isAdmin();
+    }
+
+    match /techniques/{techId} {
+      allow read: if request.auth.uid != null;
+      allow write: if isAdmin();
+    }
+
+    match /positions/{posId} {
+      allow read: if request.auth.uid != null;
+      allow write: if isAdmin();
+    }
+
+    function isAdmin() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+  }
+}

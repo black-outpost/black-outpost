@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  /* Kolory Black Outpost */
+  --color-bo-black:     #0a0a0f;
+  --color-bo-dark:      #111118;
+  --color-bo-surface:   #1a1a24;
+  --color-bo-elevated:  #22222f;
+  --color-bo-border:    #2e2e3f;
+  --color-bo-muted:     #4a4a64;
+
+  --color-bo-gold:      #c9a84c;
+  --color-bo-gold-dim:  #8a6d2e;
+  --color-bo-red:       #b83232;
+  --color-bo-red-dim:   #7a1e1e;
+  --color-bo-blue:      #3a6ea8;
+  --color-bo-cyan:      #4abfbf;
+
+  --color-bo-text:      #e8e8f0;
+  --color-bo-text-dim:  #9090aa;
+
+  /* Fonty */
+  --font-display: 'Cinzel', serif;
+  --font-body:    'Rajdhani', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-bo-black);
+  color: var(--color-bo-text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bo-dark); }
+::-webkit-scrollbar-thumb { background: var(--color-bo-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-bo-muted); }
