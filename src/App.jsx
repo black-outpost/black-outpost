@@ -13,10 +13,18 @@ import AdminLayout from './pages/admin/AdminLayout'
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter basename="/black-outpost">
+      <BrowserRouter >
+        {/* Global background image */}
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none',
+          backgroundImage: "url('https://i.imgur.com/dg2BvAB.png')",
+          backgroundSize: 'cover', backgroundPosition: 'center',
+          opacity: 0.05,
+        }} />
+        <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh' }}>
         <Routes>
           {/* Publiczne */}
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<LoginPage />} />
 
           {/* Gracz */}
           <Route path="/app/*" element={
@@ -33,8 +41,9 @@ export default function App() {
           } />
 
           {/* Domyślne przekierowanie */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </div>
       </BrowserRouter>
     </AuthProvider>
   )

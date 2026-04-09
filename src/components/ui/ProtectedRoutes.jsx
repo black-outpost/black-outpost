@@ -4,13 +4,13 @@ import { useAuth } from '../../contexts/AuthContext'
 // Dla każdego zalogowanego gracza
 export function PrivateRoute({ children }) {
   const { currentUser } = useAuth()
-  return currentUser ? children : <Navigate to="/login" replace />
+  return currentUser ? children : <Navigate to="/" replace />
 }
 
 // Tylko dla adminów
 export function AdminRoute({ children }) {
   const { currentUser, isAdmin } = useAuth()
-  if (!currentUser) return <Navigate to="/login" replace />
+  if (!currentUser) return <Navigate to="/" replace />
   if (!isAdmin)     return <Navigate to="/app" replace />
   return children
 }
